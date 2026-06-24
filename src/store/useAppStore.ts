@@ -96,7 +96,7 @@ export const useAppStore = create<AppState>()(
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
     }),
     {
-      name: 'fintrack-store',
+      name: 'fintrack-store-v2',
       partialize: (s) => ({ currency: s.currency, lang: s.lang, coffres: s.coffres, objectifs: s.objectifs, accounts: s.accounts, transactions: s.transactions }),
     }
   )
