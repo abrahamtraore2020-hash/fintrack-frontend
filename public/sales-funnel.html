@@ -210,49 +210,9 @@ footer a:hover{color:var(--gold)}
   </p>
 
   <!-- BOOKS -->
-  <div class="books-wrap">
-    <div style="position:relative;flex-shrink:0">
-      <div class="book-3d-scene">
-        <div class="book-3d">
-          <div class="bk-spine"></div>
-          <div class="bk-front">
-            <div class="bk-tagline">The Illegal Book They Tried to Silence</div>
-            <div class="bk-body">
-              <span class="bk-pre">The Secret Book of</span>
-              <span class="bk-name">FORTUNE</span>
-            </div>
-            <div class="gold-ingot">
-              <span class="ingot-text">FINE<br>GOLD</span>
-              <div class="ingot-line"></div>
-              <span class="ingot-text" style="font-size:5.5px;letter-spacing:.5px">999.9</span>
-            </div>
-            <div class="bk-author">Isak Voren</div>
-          </div>
-        </div>
-      </div>
-      <svg class="headphones" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
-        <path d="M54 15C30 15 15 31 15 50L15 70C15 74 18 76 22 76L33 76C37 76 40 73 40 69L40 56C40 52 37 49 33 49L24 49C24 34 37 24 54 24C71 24 84 34 84 49L75 49C71 49 68 52 68 56L68 69C68 73 71 76 75 76L86 76C90 76 93 74 93 70L93 50C93 31 78 15 54 15Z" fill="#141414" stroke="#282828" stroke-width="1.5"/>
-        <rect x="15" y="56" width="25" height="20" rx="5" fill="#0C0C0C" stroke="#242424" stroke-width="1.5"/>
-        <rect x="68" y="56" width="25" height="20" rx="5" fill="#0C0C0C" stroke="#242424" stroke-width="1.5"/>
-        <rect x="18" y="60" width="19" height="12" rx="3" fill="#080808" stroke="#1E1E1E" stroke-width="1"/>
-        <rect x="71" y="60" width="19" height="12" rx="3" fill="#080808" stroke="#1E1E1E" stroke-width="1"/>
-      </svg>
-    </div>
-    <div class="book-flat-wrap">
-      <div class="book-flat">
-        <div class="bk-tagline" style="font-size:6.5px">The Illegal Book They Tried to Silence</div>
-        <div style="text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
-          <span class="bk-pre" style="font-size:8px">The Secret Book of</span>
-          <span class="bk-name" style="font-size:24px;letter-spacing:3px">FORTUNE</span>
-        </div>
-        <div class="gold-ingot" style="width:56px;height:34px;margin:8px auto">
-          <span class="ingot-text">FINE<br>GOLD</span>
-          <div class="ingot-line"></div>
-          <span class="ingot-text" style="font-size:5px">999.9</span>
-        </div>
-        <div class="bk-author" style="font-size:7px">Isak Voren</div>
-      </div>
-    </div>
+  <div style="display:flex;justify-content:center;margin-bottom:48px">
+    <img src="fortune-book.jpg" alt="The Secret Book of Fortune by Isak Voren"
+         style="max-width:420px;width:90%;border-radius:6px;animation:book-float 4s ease-in-out infinite;filter:drop-shadow(0 40px 80px rgba(198,153,58,.35)) drop-shadow(0 16px 40px rgba(0,0,0,.9));">
   </div>
 
   <!-- HERO OFFER -->
@@ -273,8 +233,8 @@ footer a:hover{color:var(--gold)}
     <!-- BONUS -->
     <div class="bonus-box">
       <img src="bonus-book.jpg" alt="Book of Symbolism" class="bonus-book-img"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="display:none">
-      <div class="bonus-book-fallback" style="display:flex">
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="display:block">
+      <div class="bonus-book-fallback" style="display:none">
         <div class="bsym-title">BOOK OF<br>SYMBOLISM</div>
         <div class="bsym-figure">🦅</div>
         <div class="bsym-author">Harry B. Joseph</div>
@@ -356,24 +316,10 @@ footer a:hover{color:var(--gold)}
       <div class="benefit-card" style="border-left:3px solid var(--gold)"><span class="benefit-num" style="opacity:1">Exclusive Bonus</span><h3>Full Audio Version</h3><p>Listen to the complete book on the go. Included at no extra cost with your order today.</p></div>
     </div>
     <div style="text-align:center;margin-top:48px">
-      <div style="display:inline-block;margin-bottom:24px;perspective:800px">
-        <div style="width:120px;height:168px;transform-style:preserve-3d;transform:rotateY(-14deg) rotateX(3deg);filter:drop-shadow(0 20px 36px rgba(198,153,58,.35)) drop-shadow(0 8px 20px rgba(0,0,0,.8));display:inline-block;animation:book-float 4s ease-in-out infinite;position:relative">
-          <div style="position:absolute;left:-9px;top:2px;bottom:2px;width:9px;background:linear-gradient(90deg,#040300,#1A1200,#040300);border-radius:2px 0 0 2px;transform:rotateY(-90deg) translateZ(-4.5px);transform-origin:right center"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(165deg,#1A1200,#080600 55%,#120E00);border-radius:2px 7px 7px 2px;border-right:2px solid var(--gold);border-top:1px solid #2A2010;border-bottom:1px solid #2A2010;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:13px 10px 11px;overflow:hidden">
-            <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(198,153,58,.08),transparent 50%);pointer-events:none"></div>
-            <span style="font-family:var(--serif);font-size:4px;font-style:italic;color:rgba(198,153,58,.5);letter-spacing:1px;text-align:center;text-transform:uppercase;line-height:1.4">The Illegal Book They Tried to Silence</span>
-            <div style="text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;margin:4px 0">
-              <span style="font-family:var(--serif);font-size:5px;font-style:italic;color:rgba(198,153,58,.6);letter-spacing:1px">The Secret Book of</span>
-              <span style="font-family:var(--sans);font-size:17px;font-weight:700;color:var(--gold);letter-spacing:3px;line-height:1;text-shadow:0 0 20px rgba(198,153,58,.5)">FORTUNE</span>
-            </div>
-            <div style="width:38px;height:23px;background:linear-gradient(135deg,#8B6010,#E8C060 30%,#C9A030 50%,#7A5010 75%,#D4A840);border-radius:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.2);margin:4px auto">
-              <span style="font-family:var(--sans);font-size:4px;font-weight:700;color:#2A1800;letter-spacing:.5px;text-align:center;line-height:1.3">FINE<br>GOLD</span>
-            </div>
-            <span style="font-family:var(--sans);font-size:4.5px;font-weight:600;color:rgba(198,153,58,.5);letter-spacing:2.5px;text-transform:uppercase">Isak Voren</span>
-          </div>
-        </div>
+      <div style="margin-bottom:24px">
+        <img src="fortune-book.jpg" alt="The Secret Book of Fortune"
+             style="width:180px;border-radius:4px;animation:book-float 4s ease-in-out infinite;filter:drop-shadow(0 20px 40px rgba(198,153,58,.4)) drop-shadow(0 8px 20px rgba(0,0,0,.9));">
       </div>
-      <br>
       <a href="https://selar.com/9fb7037593" class="cta-btn cta-btn-shake selar-btn" style="max-width:400px;display:inline-block" target="_blank" rel="noopener">
         Discover Now
       </a>
@@ -427,8 +373,8 @@ footer a:hover{color:var(--gold)}
     <div style="margin-bottom:24px"><span class="saving-badge">You save $33 — 66% discount</span></div>
     <div class="bonus-box" style="text-align:left;margin-bottom:24px">
       <img src="bonus-book.jpg" alt="Book of Symbolism" class="bonus-book-img"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="display:none">
-      <div class="bonus-book-fallback" style="display:flex">
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="display:block">
+      <div class="bonus-book-fallback" style="display:none">
         <div class="bsym-title">BOOK OF<br>SYMBOLISM</div>
         <div class="bsym-figure">🦅</div>
         <div class="bsym-author">Harry B. Joseph</div>
