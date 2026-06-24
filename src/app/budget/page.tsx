@@ -21,14 +21,7 @@ type BudgetItem = {
   color: string
 }
 
-const DEFAULT_BUDGETS: BudgetItem[] = [
-  { id: '1', category: 'Alimentation', emoji: '🍽️', limit: 80000, spent: 67200, color: '#F59E0B' },
-  { id: '2', category: 'Logement', emoji: '🏠', limit: 120000, spent: 120000, color: '#3B82F6' },
-  { id: '3', category: 'Transport', emoji: '🚗', limit: 40000, spent: 28500, color: '#8B5CF6' },
-  { id: '4', category: 'Loisirs', emoji: '🎭', limit: 30000, spent: 31200, color: '#EC4899' },
-  { id: '5', category: 'Santé', emoji: '💊', limit: 25000, spent: 8000, color: '#10B981' },
-  { id: '6', category: 'Télécom', emoji: '📱', limit: 15000, spent: 12500, color: '#6366F1' },
-]
+const DEFAULT_BUDGETS: BudgetItem[] = []
 
 const CATEGORY_OPTIONS = [
   { emoji: '🍽️', label: 'Alimentation' },

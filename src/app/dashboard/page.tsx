@@ -1,44 +1,75 @@
 'use client'
-import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight } from 'lucide-react'
+import { useMemo } from 'react'
+import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight, Plus, Plug } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, CardTitle } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { useDashboard } from '@/hooks/useDashboard'
 import { useAppStore } from '@/store/useAppStore'
 import { formatAmount, CATEGORY_COLORS, CATEGORY_LABELS_FR, timeAgo } from '@/lib/utils'
 
-// Données de démo
-const MONTHLY_DATA = [
-  { month: 'Jan', revenus: 320000, depenses: 210000 },
-  { month: 'Fév', revenus: 410000, depenses: 290000 },
-  { month: 'Mar', revenus: 380000, depenses: 340000 },
-  { month: 'Avr', revenus: 500000, depenses: 280000 },
-  { month: 'Mai', revenus: 450000, depenses: 310000 },
-  { month: 'Jun', revenus: 485000, depenses: 312400 },
-]
-
-const PIE_DATA = [
-  { name: 'Alimentation', value: 28, color: CATEGORY_COLORS.food },
-  { name: 'Logement', value: 35, color: CATEGORY_COLORS.housing },
-  { name: 'Transport', value: 12, color: CATEGORY_COLORS.transport },
-  { name: 'Loisirs', value: 10, color: CATEGORY_COLORS.entertainment },
-  { name: 'Autre', value: 15, color: CATEGORY_COLORS.other },
-]
-
-const RECENT_TX = [
-  { id: '1', description: 'Wave — Virement reçu', category: 'salary', type: 'income', amount: 150000, date: new Date().toISOString(), currency: 'XOF' },
-  { id: '2', description: 'Supermarché Hayat', category: 'food', type: 'expense', amount: 24500, date: new Date(Date.now()-86400000).toISOString(), currency: 'XOF' },
-  { id: '3', description: 'Freelance — Projet web', category: 'freelance', type: 'income', amount: 200000, date: new Date(Date.now()-172800000).toISOString(), currency: 'XOF' },
-  { id: '4', description: 'Loyer mensuel', category: 'housing', type: 'expense', amount: 120000, date: new Date(Date.now()-259200000).toISOString(), currency: 'XOF' },
-]
-
 export default function DashboardPage() {
-  const { user } = useAppStore()
-  const trialDaysLeft = 11
+  const { user, transactions, coffres, objectifs } = useAppStore()
+
+  // Calculs réels basés sur les vraies transactions
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  const monthlyTransactions = transactions.filter(tx => {
+    const d = new Date(tx.date)
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear
+  })
+
+  const revenus = monthlyTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  const depenses = monthlyTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  const solde = revenus - depenses
+  const totalCoffres = coffres.reduce((s, c) => s + c.currentAmount, 0)
+
+  // Graphique mensuel des 6 derniers mois
+  const monthlyData = useMemo(() => {
+    const months = []
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(currentYear, currentMonth - i, 1)
+      const m = d.getMonth()
+      const y = d.getFullYear()
+      const label = d.toLocaleDateString('fr-FR', { month: 'short' })
+      const txs = transactions.filter(tx => {
+        const td = new Date(tx.date)
+        return td.getMonth() === m && td.getFullYear() === y
+      })
+      months.push({
+        month: label,
+        revenus: txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0),
+        depenses: txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+      })
+    }
+    return months
+  }, [transactions])
+
+  // Répartition dépenses par catégorie (mois en cours)
+  const pieData = useMemo(() => {
+    const cats: Record<string, number> = {}
+    monthlyTransactions.filter(t => t.type === 'expense').forEach(t => {
+      cats[t.category] = (cats[t.category] || 0) + t.amount
+    })
+    return Object.entries(cats).map(([cat, value]) => ({
+      name: CATEGORY_LABELS_FR[cat as keyof typeof CATEGORY_LABELS_FR] || cat,
+      value,
+      color: CATEGORY_COLORS[cat as keyof typeof CATEGORY_COLORS] || '#9CA3AF',
+    }))
+  }, [monthlyTransactions])
+
+  const recentTx = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5)
+
+  // Jours d'essai restants
+  const trialDaysLeft = user?.trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / 86400000))
+    : 14
+
+  const isEmpty = transactions.length === 0
 
   return (
     <AppLayout>
@@ -56,56 +87,89 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="mb-5">
         <h1 className="text-lg font-bold text-gray-800 dark:text-white">
-          Bonjour, <span className="text-glow-blue">{user?.firstName || 'Kofi'}</span> 👋
+          Bonjour, <span className="text-glow-blue">{user?.firstName || ''}</span> 👋
         </h1>
-        <p className="text-sm text-gray-500">Aperçu de vos finances — Juin 2025</p>
+        <p className="text-sm text-gray-500">
+          Aperçu de vos finances — {now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+        </p>
       </div>
 
-      {/* Stats */}
+      {/* Stats réelles */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard label="Revenus du mois" value="485 000 FCFA" change="+12% vs mois dernier" changeType="up" icon={TrendingUp} iconColor="text-green-600" iconBg="bg-green-50" valueColor="text-green-600" />
-        <StatCard label="Dépenses du mois" value="312 400 FCFA" change="+5% vs mois dernier" changeType="down" icon={TrendingDown} iconColor="text-red-500" iconBg="bg-red-50" valueColor="text-red-500" />
-        <StatCard label="Solde net" value="172 600 FCFA" change="Bonne trajectoire" changeType="up" icon={Wallet} iconColor="text-yellow-600" iconBg="bg-yellow-50" valueColor="text-yellow-600" />
-        <StatCard label="Total coffres" value="94 000 FCFA" change="2 objectifs en cours" changeType="neutral" icon={Vault} iconColor="text-blue-500" iconBg="bg-blue-50" valueColor="text-glow-blue" />
+        <StatCard label="Revenus du mois" value={`${revenus.toLocaleString('fr-FR')} FCFA`} change={revenus > 0 ? 'Ce mois-ci' : 'Aucun revenu'} changeType={revenus > 0 ? 'up' : 'neutral'} icon={TrendingUp} iconColor="text-green-600" iconBg="bg-green-50" valueColor="text-green-600" />
+        <StatCard label="Dépenses du mois" value={`${depenses.toLocaleString('fr-FR')} FCFA`} change={depenses > 0 ? 'Ce mois-ci' : 'Aucune dépense'} changeType={depenses > 0 ? 'down' : 'neutral'} icon={TrendingDown} iconColor="text-red-500" iconBg="bg-red-50" valueColor="text-red-500" />
+        <StatCard label="Solde net" value={`${solde.toLocaleString('fr-FR')} FCFA`} change={solde >= 0 ? 'Bonne trajectoire' : 'Déficit ce mois'} changeType={solde >= 0 ? 'up' : 'down'} icon={Wallet} iconColor="text-yellow-600" iconBg="bg-yellow-50" valueColor="text-yellow-600" />
+        <StatCard label="Total coffres" value={`${totalCoffres.toLocaleString('fr-FR')} FCFA`} change={`${coffres.length} coffre${coffres.length !== 1 ? 's' : ''}`} changeType="neutral" icon={Vault} iconColor="text-blue-500" iconBg="bg-blue-50" valueColor="text-glow-blue" />
       </div>
+
+      {/* État vide — guide de démarrage */}
+      {isEmpty && (
+        <Card className="mb-5 border-2 border-dashed border-gold/40">
+          <div className="text-center py-4">
+            <div className="text-4xl mb-3">🚀</div>
+            <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-2">Commencez à utiliser FinTrack</h3>
+            <p className="text-xs text-gray-500 mb-4">Connectez un compte ou ajoutez vos premières transactions pour voir vos finances ici.</p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Link href="/integrations">
+                <Button size="sm"><Plug size={13} /> Connecter un compte</Button>
+              </Link>
+              <Link href="/coffres">
+                <Button variant="outline" size="sm"><Plus size={13} /> Créer un coffre</Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         {/* Graphique revenus vs dépenses */}
         <Card>
           <CardTitle><TrendingUp size={16} className="text-gold" /> Revenus vs Dépenses</CardTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={MONTHLY_DATA}>
-              <defs>
-                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22C55E" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="depGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip formatter={(v: number) => [`${v.toLocaleString('fr-FR')} FCFA`, '']} contentStyle={{ fontSize: 12, borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-              <Area type="monotone" dataKey="revenus" stroke="#22C55E" strokeWidth={2} fill="url(#revGrad)" name="Revenus" />
-              <Area type="monotone" dataKey="depenses" stroke="#EF4444" strokeWidth={2} fill="url(#depGrad)" name="Dépenses" />
-            </AreaChart>
-          </ResponsiveContainer>
+          {monthlyData.every(m => m.revenus === 0 && m.depenses === 0) ? (
+            <div className="h-[200px] flex items-center justify-center text-gray-400 text-xs">
+              Aucune donnée — connectez un compte pour voir le graphique
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={monthlyData}>
+                <defs>
+                  <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22C55E" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="depGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#EF4444" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip formatter={(v: number) => [`${v.toLocaleString('fr-FR')} FCFA`, '']} contentStyle={{ fontSize: 12, borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                <Area type="monotone" dataKey="revenus" stroke="#22C55E" strokeWidth={2} fill="url(#revGrad)" name="Revenus" />
+                <Area type="monotone" dataKey="depenses" stroke="#EF4444" strokeWidth={2} fill="url(#depGrad)" name="Dépenses" />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </Card>
 
         {/* Répartition dépenses */}
         <Card>
           <CardTitle><Wallet size={16} className="text-gold" /> Répartition des dépenses</CardTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={PIE_DATA} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={3}>
-                {PIE_DATA.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-              </Pie>
-              <Tooltip formatter={(v: number) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8 }} />
-              <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-            </PieChart>
-          </ResponsiveContainer>
+          {pieData.length === 0 ? (
+            <div className="h-[200px] flex items-center justify-center text-gray-400 text-xs">
+              Aucune dépense ce mois-ci
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={3}>
+                  {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Pie>
+                <Tooltip formatter={(v: number) => [`${v.toLocaleString('fr-FR')} F`, '']} contentStyle={{ fontSize: 11, borderRadius: 8 }} />
+                <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </Card>
       </div>
 
@@ -114,41 +178,63 @@ export default function DashboardPage() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <CardTitle className="mb-0"><ArrowRight size={16} className="text-gold" /> Transactions récentes</CardTitle>
-            <Link href="/transactions" className="text-xs text-blue-500 hover:underline">Voir tout</Link>
+            <Link href="/rapports" className="text-xs text-blue-500 hover:underline">Voir tout</Link>
           </div>
-          <div className="space-y-2">
-            {RECENT_TX.map(tx => (
-              <div key={tx.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: CATEGORY_COLORS[tx.category as keyof typeof CATEGORY_COLORS] + '20' }}>
-                  <span className="text-sm">{tx.type === 'income' ? '💰' : '💸'}</span>
+          {recentTx.length === 0 ? (
+            <div className="text-center py-6 text-gray-400">
+              <p className="text-sm">Aucune transaction</p>
+              <Link href="/integrations" className="text-xs text-gold mt-1 hover:underline block">Connecter un compte →</Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {recentTx.map(tx => (
+                <div key={tx.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-gray-50 dark:bg-dark-bg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: (CATEGORY_COLORS[tx.category as keyof typeof CATEGORY_COLORS] || '#9CA3AF') + '20' }}>
+                    <span className="text-sm">{tx.type === 'income' ? '💰' : '💸'}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{tx.description}</p>
+                    <p className="text-[10px] text-gray-400">{timeAgo(tx.date)}</p>
+                  </div>
+                  <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
+                    {tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString('fr-FR')} F
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-gray-700 truncate">{tx.description}</p>
-                  <p className="text-[10px] text-gray-400">{timeAgo(tx.date)}</p>
-                </div>
-                <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
-                  {tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString('fr-FR')} F
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </Card>
 
         {/* Conseil IA */}
         <Card>
           <CardTitle><Brain size={16} className="text-gold" /> Conseil IA du jour</CardTitle>
-          <div className="bg-gradient-to-br from-blue-50 to-yellow-50 border border-blue-100 rounded-xl p-4 mb-3">
-            <p className="text-xs text-gray-600 leading-relaxed">
-              <span className="text-glow-blue font-semibold">💡 Analyse IA :</span> Vos dépenses alimentaires représentent <strong>28%</strong> de vos revenus ce mois-ci. En les réduisant à 20%, vous pourriez épargner{' '}
-              <strong className="text-green-600">~38 800 FCFA</strong> supplémentaires par mois, soit{' '}
-              <strong className="text-yellow-700">465 600 FCFA/an</strong> de plus dans vos coffres.
-            </p>
-          </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-            <p className="text-xs text-gray-600 leading-relaxed">
-              <span className="text-yellow-700 font-semibold">🎯 Objectif épargne :</span> À votre rythme actuel, vous atteindrez votre objectif <strong>Vacances Dakar</strong> en <strong>8 mois</strong>. En ajoutant 5 000 FCFA/mois, vous pouvez réduire ce délai à <strong>5 mois</strong>.
-            </p>
-          </div>
+          {isEmpty ? (
+            <div className="bg-gradient-to-br from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 border border-blue-100 dark:border-blue-800/40 rounded-xl p-4">
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                <span className="text-glow-blue font-semibold">💡 Conseil de démarrage :</span> Commencez par connecter votre compte Wave ou Orange Money dans <strong>Intégrations</strong>. Vos transactions seront importées automatiquement et l'IA pourra vous donner des conseils personnalisés.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="bg-gradient-to-br from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 border border-blue-100 dark:border-blue-800/40 rounded-xl p-4 mb-3">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <span className="text-glow-blue font-semibold">💡 Analyse IA :</span>{' '}
+                  {depenses > 0 && revenus > 0
+                    ? `Vous avez dépensé ${Math.round((depenses / revenus) * 100)}% de vos revenus ce mois-ci. ${depenses / revenus < 0.7 ? 'Bonne maîtrise du budget !' : 'Essayez de réduire vos dépenses pour augmenter votre épargne.'}`
+                    : 'Ajoutez vos transactions pour recevoir des conseils personnalisés.'
+                  }
+                </p>
+              </div>
+              {objectifs.length > 0 && (
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/40 rounded-xl p-4">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <span className="text-yellow-700 font-semibold">🎯 Objectif :</span>{' '}
+                    Vous avez <strong>{objectifs.length} objectif{objectifs.length > 1 ? 's' : ''}</strong> en cours. Consultez la page <strong>Prévisions</strong> pour voir votre trajectoire.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
         </Card>
       </div>
     </AppLayout>

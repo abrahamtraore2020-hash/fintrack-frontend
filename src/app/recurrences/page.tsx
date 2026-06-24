@@ -32,14 +32,7 @@ const FREQ_LABELS: Record<Frequency, string> = {
   daily: 'Quotidien', weekly: 'Hebdomadaire', monthly: 'Mensuel', yearly: 'Annuel',
 }
 
-const SEED: Recurrence[] = [
-  { id: '1', name: 'Loyer mensuel', emoji: '🏠', amount: 120000, type: 'expense', frequency: 'monthly', nextDate: '2025-07-01', category: 'Logement', active: true, account: 'Wave' },
-  { id: '2', name: 'Salaire', emoji: '💰', amount: 350000, type: 'income', frequency: 'monthly', nextDate: '2025-06-30', category: 'Revenus', active: true, account: 'Wave' },
-  { id: '3', name: 'Abonnement Netflix', emoji: '🎬', amount: 8000, type: 'expense', frequency: 'monthly', nextDate: '2025-06-28', category: 'Loisirs', active: true, account: 'Carte bancaire' },
-  { id: '4', name: 'Forfait téléphone', emoji: '📱', amount: 5000, type: 'expense', frequency: 'monthly', nextDate: '2025-07-05', category: 'Télécom', active: true, account: 'Orange Money' },
-  { id: '5', name: 'Cotisation mutuelle', emoji: '🛡️', amount: 15000, type: 'expense', frequency: 'monthly', nextDate: '2025-07-10', category: 'Santé', active: false, account: 'Wave' },
-  { id: '6', name: 'Revenu locatif', emoji: '🏢', amount: 80000, type: 'income', frequency: 'monthly', nextDate: '2025-07-01', category: 'Revenus', active: true, account: 'Banque' },
-]
+const SEED: Recurrence[] = []
 
 const CATEGORY_EMOJIS: Record<string, string> = {
   'Logement': '🏠', 'Revenus': '💰', 'Loisirs': '🎭', 'Télécom': '📱',
