@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #FFD700;
+  --gold-dark: #E6C200;
+  --gold-light: #FFF9D6;
+  --blue-glow: rgba(59,130,246,0.15);
+  --blue-text: #3B82F6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #F8F9FC;
+  color: #1A1A2E;
+}
+
+.dark body { background: #0F1117; color: #F8F9FC; }
+
+/* Blue glow text effect */
+.text-glow-blue {
+  color: #3B82F6;
+  text-shadow: 0 0 20px rgba(59,130,246,0.4), 0 0 40px rgba(59,130,246,0.2);
+}
+
+/* Gold glow */
+.text-glow-gold {
+  color: #E6C200;
+  text-shadow: 0 0 15px rgba(255,215,0,0.4);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
+
+/* Progress bar animation */
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress); }
+}
+.progress-animated { animation: progressFill 1s ease-out forwards; }
+
+/* Card hover */
+.card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+/* Fade in */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeInUp 0.3s ease-out; }
+
+/* Dark mode overrides */
+.dark .bg-white { background-color: #1A1D27; }
+.dark .border-gray-100 { border-color: #2A2D3A; }
+.dark .text-gray-800 { color: #F0F0F8; }
+.dark .text-gray-700 { color: #D1D5DB; }
+.dark .text-gray-500 { color: #9CA3AF; }
+.dark .bg-gray-50 { background-color: #16192A; }
+.dark .bg-gray-100 { background-color: #1E2236; }
+.dark .border-gray-200 { border-color: #2A2D3A; }
+
+/* Gold classes */
+.bg-gold { background-color: #FFD700; }
+.text-gold { color: #FFD700; }
+.border-gold { border-color: #FFD700; }
+.bg-gold-100 { background-color: #FFF9D6; }
+.bg-gold-50 { background-color: #FFFDF0; }
+.shadow-gold { box-shadow: 0 4px 20px rgba(255,215,0,0.2); }
+.hover\:bg-gold-50:hover { background-color: #FFFDF0; }
+
+/* Gradient dark bg */
+.bg-gradient-dark { background-image: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%); }
