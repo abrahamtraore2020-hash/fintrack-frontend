@@ -28,7 +28,7 @@ export function useAuth() {
         if (event === 'SIGNED_IN') router.push('/dashboard')
       } else {
         logout()
-        if (!pathname.startsWith('/auth')) router.push('/auth')
+        if (!pathname?.startsWith('/auth')) router.push('/auth')
       }
     })
     return () => subscription.unsubscribe()

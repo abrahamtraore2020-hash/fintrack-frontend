@@ -102,7 +102,7 @@ export function BottomNav() {
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-dark-card border-t border-gray-100 dark:border-dark-border md:hidden">
         <div className="flex items-center justify-around h-16 px-1">
           {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-            const active = pathname === href || pathname.startsWith(href + '/')
+            const active = pathname === href || (pathname?.startsWith(href + '/') ?? false)
             return (
               <Link key={href} href={href}
                 className={cn(

@@ -159,7 +159,7 @@ export default function PrevisionsPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-yellow-50 dark:bg-yellow-900/20">
-                          {obj.icon || '🎯'}
+                          🎯
                         </div>
                         <div>
                           <h3 className="text-sm font-semibold text-gray-800 dark:text-white">{obj.name}</h3>

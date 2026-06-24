@@ -37,9 +37,9 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex w-52 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border flex-col py-3 px-2 flex-shrink-0">
-      <SidebarSection label="Principal"  links={mainLinks}    pathname={pathname} />
-      <SidebarSection label="Analyse"    links={analyseLinks} pathname={pathname} />
-      <SidebarSection label="Compte"     links={compteLinks}  pathname={pathname} unreadCount={unreadCount} />
+      <SidebarSection label="Principal"  links={mainLinks}    pathname={pathname ?? ''} />
+      <SidebarSection label="Analyse"    links={analyseLinks} pathname={pathname ?? ''} />
+      <SidebarSection label="Compte"     links={compteLinks}  pathname={pathname ?? ''} unreadCount={unreadCount} />
       <div className="mt-auto">
         <button onClick={signOut}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition-colors">
