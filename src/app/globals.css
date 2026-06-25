@@ -4,9 +4,9 @@
 @tailwind utilities;
 
 :root {
-  --gold: #10B981;
-  --gold-dark: #059669;
-  --gold-light: #DCFCE7;
+  --gold: #06D6A0;
+  --gold-dark: #00B48A;
+  --gold-light: #CCFBF1;
   --accent: #EAB308;
   --accent-light: #FEF9C3;
   --blue-glow: rgba(59,130,246,0.15);
@@ -17,19 +17,18 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: #F8FAFB;
-  color: #0A1A0F;
+  background: #F7FFFE;
+  color: #071A14;
 }
 
-.dark body { background: #0A0F0D; color: #F0FDF4; }
+.dark body { background: #080E0C; color: #F0FEFA; }
 
-/* Green glow text */
+/* Vert ciel brillant glow */
 .text-glow-blue {
-  color: #10B981;
-  text-shadow: 0 0 20px rgba(16,185,129,0.45), 0 0 40px rgba(16,185,129,0.2);
+  color: #06D6A0;
+  text-shadow: 0 0 20px rgba(6,214,160,0.5), 0 0 40px rgba(6,214,160,0.25);
 }
 
-/* Accent yellow glow */
 .text-glow-gold {
   color: #EAB308;
   text-shadow: 0 0 15px rgba(234,179,8,0.4);
@@ -38,8 +37,8 @@ body {
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D1FAE5; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #A7F3D0; }
+::-webkit-scrollbar-thumb { background: #99F6E4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5EEAD4; }
 
 /* Progress bar animation */
 @keyframes progressFill {
@@ -50,7 +49,7 @@ body {
 
 /* Card hover */
 .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-.card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.12); }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(6,214,160,0.15); }
 
 /* Fade in */
 @keyframes fadeInUp {
@@ -60,32 +59,43 @@ body {
 .animate-fade-in { animation: fadeInUp 0.3s ease-out; }
 
 /* Dark mode overrides */
-.dark .bg-white { background-color: #111A14; }
-.dark .border-gray-100 { border-color: #1E3328; }
+.dark .bg-white { background-color: #0F1A16; }
+.dark .border-gray-100 { border-color: #1A2E27; }
 .dark .text-gray-800 { color: #ECFDF5; }
-.dark .text-gray-700 { color: #D1FAE5; }
-.dark .text-gray-500 { color: #6EE7B7; }
-.dark .bg-gray-50 { background-color: #0D1F12; }
-.dark .bg-gray-100 { background-color: #132218; }
-.dark .border-gray-200 { border-color: #1E3328; }
+.dark .text-gray-700 { color: #CCFBF1; }
+.dark .text-gray-500 { color: #5EEAD4; }
+.dark .bg-gray-50 { background-color: #0B1612; }
+.dark .bg-gray-100 { background-color: #101E18; }
+.dark .border-gray-200 { border-color: #1A2E27; }
 
-/* Primary green classes */
-.bg-gold { background-color: #10B981; }
-.text-gold { color: #10B981; }
-.border-gold { border-color: #10B981; }
-.bg-gold-100 { background-color: #DCFCE7; }
-.bg-gold-50 { background-color: #F0FDF4; }
-.shadow-gold { box-shadow: 0 4px 20px rgba(16,185,129,0.25); }
-.hover\:bg-gold-50:hover { background-color: #F0FDF4; }
-.ring-gold { --tw-ring-color: #10B981; }
+/* Vert ciel brillant — classes primaires */
+.bg-gold { background-color: #06D6A0; }
+.text-gold { color: #06D6A0; }
+.border-gold { border-color: #06D6A0; }
+.bg-gold-100 { background-color: #CCFBF1; }
+.bg-gold-50 { background-color: #F0FEFA; }
+.shadow-gold { box-shadow: 0 4px 24px rgba(6,214,160,0.30); }
+.hover\:bg-gold-50:hover { background-color: #F0FEFA; }
+.ring-gold { --tw-ring-color: #06D6A0; }
 
-/* Accent yellow classes */
+/* Accent jaune */
 .bg-accent { background-color: #EAB308; }
 .text-accent { color: #EAB308; }
 .bg-accent-light { background-color: #FEF9C3; }
 
 /* Gradient dark bg */
-.bg-gradient-dark { background-image: linear-gradient(135deg, #0A1F14 0%, #0D2B1A 50%, #0A3320 100%); }
+.bg-gradient-dark { background-image: linear-gradient(135deg, #080E0C 0%, #0D1F18 50%, #0A2A1E 100%); }
+
+/* Shine effect sur les boutons */
+@keyframes shine {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+.btn-shine {
+  background: linear-gradient(90deg, #06D6A0 0%, #2DD4BF 40%, #06D6A0 60%, #00B48A 100%);
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+}
 
 /* African coin float animation */
 @keyframes floatCoin {
