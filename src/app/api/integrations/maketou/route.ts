@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const MAKETOU_BASE = 'https://api.maketou.com'
+const MAKETOU_BASE = 'https://api.maketou.net'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,20 +9,29 @@ export async function POST(req: NextRequest) {
 
     const headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
 
-    // Essayer différents endpoints possibles
-    const ENDPOINTS = ['/api/orders', '/api/sales', '/api/transactions', '/orders', '/sales']
+    // Endpoints Maketou sous /api/v1/
+    const ENDPOINTS = [
+      '/api/v1/stores/sales',
+      '/api/v1/sales',
+      '/api/v1/orders',
+      '/api/v1/stores/orders',
+      '/api/v1/transactions',
+      '/api/v1/stores/carts',
+    ]
     let allOrders: any[] = []
 
     for (const endpoint of ENDPOINTS) {
-      const res = await fetch(`${MAKETOU_BASE}${endpoint}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
-        const items = data.data || data.orders || data.sales || data.transactions || data || []
-        if (Array.isArray(items) && items.length >= 0) {
-          allOrders = items
-          break
+      try {
+        const res = await fetch(`${MAKETOU_BASE}${endpoint}`, { headers })
+        if (res.ok) {
+          const data = await res.json()
+          const items = data.data || data.orders || data.sales || data.carts || data.transactions || []
+          if (Array.isArray(items)) {
+            allOrders = items
+            break
+          }
         }
-      }
+      } catch { continue }
     }
 
     const transactions = allOrders.map((order: any) => {
