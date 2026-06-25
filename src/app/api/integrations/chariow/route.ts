@@ -57,20 +57,21 @@ export async function POST(req: NextRequest) {
 
     // Convertir les commandes Chariow en transactions FinTrack
     const transactions = orders.map((order: any) => {
-      // Chercher le montant dans tous les champs possibles
-      const rawAmount =
-        order.total ?? order.amount ?? order.price ??
-        order.total_price ?? order.grand_total ?? order.subtotal ??
-        order.total_amount ?? order.revenue ?? order.net_amount ?? 0
-      const amount = Math.max(0, Number(rawAmount) || 0)
+      // Chariow: montants sont des objets { value, formatted, currency }
+      const amount = Math.max(0,
+        Number(order.amount?.value ?? order.settlement?.amount?.value ?? order.payment?.amount?.value ?? 0)
+      )
+      const currency = (order.amount?.currency || order.settlement?.amount?.currency || 'XOF').toUpperCase()
+      const productName = order.product?.name || order.product_name || order.title || ('Commande #' + order.id)
+      const date = (order.completed_at || order.created_at || new Date().toISOString()).split('T')[0]
 
       return {
         type: 'income' as const,
         amount,
-        currency: 'XOF' as const,
+        currency: (currency === 'XOF' || currency === 'USD' || currency === 'EUR') ? currency as 'XOF' | 'USD' | 'EUR' : 'XOF' as const,
         category: 'freelance' as const,
-        description: `Chariow – ${order.product_name || order.title || order.reference || order.name || 'Commande #' + order.id}`,
-        date: order.created_at ? order.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        description: `Chariow – ${productName}`,
+        date,
         accountId: '',
         isRecurring: false,
         coffreId: undefined,
