@@ -577,13 +577,31 @@ export default function IntegrationsPage() {
             </div>
             {accounts.find(a => a.name === 'Chariow') ? (
               accounts.filter(a => a.name === 'Chariow').map(acc => (
-                <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
-                  LogoEl={<div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center font-bold text-sm text-white">CH</div>}
-                  onDelete={() => setConfirmDel(acc.id)}
-                  onToggleVisible={() => setHiddenIds(p => { const n = new Set(p); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
-                  onToggleExpand={() => setExpandedIds(p => ({ ...p, [acc.id]: !p[acc.id] }))}
-                  expanded={!!expandedIds[acc.id]}
-                />
+                <div key={acc.id}>
+                  <AccountCard account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
+                    LogoEl={<div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center font-bold text-sm text-white">CH</div>}
+                    onDelete={() => setConfirmDel(acc.id)}
+                    onToggleVisible={() => setHiddenIds(p => { const n = new Set(p); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
+                    onToggleExpand={() => setExpandedIds(p => ({ ...p, [acc.id]: !p[acc.id] }))}
+                    expanded={!!expandedIds[acc.id]}
+                  />
+                  {user?.id && (
+                    <div className="mt-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3">
+                      <p className="text-[11px] font-semibold text-yellow-800 dark:text-yellow-300 mb-1">⚡ URL Webhook (Pulse) — pour recevoir les ventes en temps réel</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-2">Colle cette URL dans <strong>Chariow → Automation → Pulses → Add Pulse</strong></p>
+                      <div className="flex items-center gap-2 bg-white dark:bg-dark-card rounded-lg px-3 py-2 border border-yellow-200 dark:border-yellow-800/40">
+                        <code className="text-[10px] text-gray-700 dark:text-gray-300 flex-1 break-all">
+                          {`${window.location.origin}/api/webhooks/chariow/${user.id}`}
+                        </code>
+                        <button
+                          onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/api/webhooks/chariow/${user.id}`); toast.success('URL copiée !') }}
+                          className="text-[10px] text-yellow-600 font-semibold hover:text-yellow-700 flex-shrink-0">
+                          Copier
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))
             ) : (
               <div className="border-2 border-dashed border-yellow-200 dark:border-yellow-800/40 rounded-xl p-4 text-center">
