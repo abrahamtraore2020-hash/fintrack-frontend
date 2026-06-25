@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Plus, Eye, EyeOff, Trash2, RefreshCw, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, Link2, Globe } from 'lucide-react'
+import { Plus, Eye, EyeOff, Trash2, RefreshCw, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, Link2, Globe, ShoppingBag, Loader2, Key } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -211,17 +211,21 @@ function AccountCard({ account, allTx, onDelete, onToggleVisible, onToggleExpand
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────────
-type ModalMode = 'mobile' | 'platform' | 'url' | null
+type ModalMode = 'mobile' | 'platform' | 'url' | 'chariow' | null
 
 export default function IntegrationsPage() {
   const { user } = useAppStore()
   const { data: accounts = [], createAccount, removeAccount } = useAccounts()
-  const { data: transactions = [], create: createTransaction } = useTransactions(500)
+  const { data: transactions = [], create } = useTransactions(500)
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
 
   const [modal, setModal]               = useState<ModalMode>(null)
   const [expandedIds, setExpandedIds]   = useState<Record<string, boolean>>({})
   const [confirmDel, setConfirmDel]     = useState<string | null>(null)
+
+  // Chariow
+  const [chariowKey, setChariowKey] = useState('')
+  const [chariowLoading, setChariowLoading] = useState(false)
 
   // Mobile Money form
   const [selectedMobile, setSelectedMobile] = useState('')
@@ -268,7 +272,7 @@ export default function IntegrationsPage() {
           const realId = savedAcc.id
           const txs = genTx(realId, opts.provider, opts.name)
           txs.forEach(tx => {
-            createTransaction.mutate({
+            create.mutate({
               type: tx.type,
               amount: tx.amount,
               currency: tx.currency,
@@ -311,6 +315,43 @@ export default function IntegrationsPage() {
   }
 
   const handleDelete = (id: string) => { removeAccount.mutate(id); setConfirmDel(null) }
+
+  const handleConnectChariow = async () => {
+    if (!chariowKey.trim()) { toast.error('Entrez votre clé API Chariow'); return }
+    setChariowLoading(true)
+    try {
+      const res = await fetch('/api/integrations/chariow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: chariowKey.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error || 'Clé API invalide'); return }
+
+      // Sauvegarder le compte dans Supabase
+      const acc = await createAccount.mutateAsync({
+        type: 'platform', provider: 'custom' as any,
+        name: 'Chariow',
+        balance: data.revenue || 0,
+        currency: 'XOF', isConnected: true,
+        lastSync: new Date().toISOString(),
+        apiKey: chariowKey.trim(),
+      })
+
+      // Sauvegarder les transactions
+      for (const tx of data.transactions || []) {
+        await create.mutateAsync({ ...tx, accountId: acc.id })
+      }
+
+      toast.success(`Chariow connecté ! ${data.total} commandes importées`)
+      setModal(null)
+      setChariowKey('')
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur de connexion')
+    } finally {
+      setChariowLoading(false)
+    }
+  }
   const toggleExpand = (id: string) => setExpandedIds(p => ({ ...p, [id]: !p[id] }))
 
   const availableMobile = MOBILE_MONEY_PROVIDERS.filter(p => !connectedProviders.includes(p.id as any))
@@ -431,6 +472,36 @@ export default function IntegrationsPage() {
             )}
           </div>
 
+          {/* Chariow */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5">
+                <ShoppingBag size={12} className="text-gold" /> Chariow (e-commerce Afrique)
+              </p>
+              {!accounts.find(a => a.name === 'Chariow') && (
+                <Button size="sm" variant="outline" onClick={() => setModal('chariow')}><Plus size={12}/> Connecter</Button>
+              )}
+            </div>
+            {accounts.find(a => a.name === 'Chariow') ? (
+              accounts.filter(a => a.name === 'Chariow').map(acc => (
+                <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
+                  LogoEl={<div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center font-bold text-sm text-white">CH</div>}
+                  onDelete={() => setConfirmDel(acc.id)}
+                  onToggleVisible={() => setHiddenIds(p => { const n = new Set(p); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
+                  onToggleExpand={() => setExpandedIds(p => ({ ...p, [acc.id]: !p[acc.id] }))}
+                  expanded={!!expandedIds[acc.id]}
+                />
+              ))
+            ) : (
+              <div className="border-2 border-dashed border-yellow-200 dark:border-yellow-800/40 rounded-xl p-4 text-center">
+                <div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center font-bold text-sm text-white mx-auto mb-2">CH</div>
+                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Connectez votre boutique Chariow</p>
+                <p className="text-[11px] text-gray-400 mb-3">Importez automatiquement vos commandes et revenus depuis Chariow</p>
+                <Button size="sm" onClick={() => setModal('chariow')}><Key size={12}/> Entrer ma clé API</Button>
+              </div>
+            )}
+          </div>
+
           {/* URL / custom integrations */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -542,6 +613,40 @@ export default function IntegrationsPage() {
           <div className="flex gap-2 pt-1">
             <Button variant="outline" className="flex-1" onClick={closeModal}>Annuler</Button>
             <Button className="flex-1" onClick={handleConnectPlatform} disabled={!selectedPlatform}>Connecter</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Chariow */}
+      <Modal isOpen={modal === 'chariow'} onClose={() => { setModal(null); setChariowKey('') }} title="Connecter Chariow" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">CH</div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">Chariow</p>
+              <p className="text-[11px] text-gray-400">Importez vos commandes et revenus automatiquement</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              Trouvez votre clé API dans votre dashboard Chariow → <strong>Développeurs → API</strong>
+            </p>
+            <Input
+              label="Clé API Chariow"
+              placeholder="sk_xxxxx_xxxxxxxxxxxxxxxx"
+              value={chariowKey}
+              onChange={e => setChariowKey(e.target.value)}
+              type="password"
+            />
+          </div>
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-[11px] text-gray-500 dark:text-gray-400">
+            🔒 Votre clé est stockée de façon sécurisée et ne sera jamais partagée.
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => { setModal(null); setChariowKey('') }}>Annuler</Button>
+            <Button className="flex-1" onClick={handleConnectChariow} disabled={chariowLoading}>
+              {chariowLoading ? <Loader2 size={15} className="animate-spin" /> : 'Connecter'}
+            </Button>
           </div>
         </div>
       </Modal>
