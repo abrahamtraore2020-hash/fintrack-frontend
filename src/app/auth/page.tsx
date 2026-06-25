@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import toast from 'react-hot-toast'
+import { MaskBaoule, MaskDogon, MaskDan, CoinFCFA, BilletAfrica } from '@/components/ui/AfricanIllustrations'
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -123,6 +124,13 @@ export default function AuthPage() {
       <div className="hidden lg:flex w-5/12 bg-gradient-dark flex-col justify-between p-10 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gold/5" />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-blue-500/10" />
+        {/* Illustrations africaines — blanc translucide */}
+        <MaskBaoule  size={180} opacity={0.08} className="absolute -top-4 -right-6 rotate-6 pointer-events-none" />
+        <MaskDogon   size={140} opacity={0.07} className="absolute bottom-24 -left-8 -rotate-3 pointer-events-none" />
+        <MaskDan     size={110} opacity={0.07} className="absolute top-1/3 right-2 rotate-2 pointer-events-none" />
+        <CoinFCFA    size={80}  opacity={0.08} className="absolute bottom-6 right-16 rotate-12 pointer-events-none" />
+        <BilletAfrica width={130} opacity={0.07} className="absolute bottom-40 left-8 -rotate-8 pointer-events-none" />
+        <CoinFCFA    size={50}  opacity={0.06} className="absolute top-20 left-12 -rotate-6 pointer-events-none" />
         <div className="flex items-center gap-2.5 relative z-10">
           <div className="w-9 h-9 bg-gold rounded-xl flex items-center justify-center">
             <Wallet size={18} className="text-[#1A1A2E]" />

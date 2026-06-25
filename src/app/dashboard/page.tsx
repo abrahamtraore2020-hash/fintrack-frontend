@@ -13,6 +13,7 @@ import { useObjectifs } from '@/hooks/useObjectifs'
 import { useTransactions } from '@/hooks/useTransactions'
 import { formatAmount, CATEGORY_COLORS, CATEGORY_LABELS_FR, timeAgo } from '@/lib/utils'
 import { CurrencyBanner } from '@/components/ui/AfricanCurrencies'
+import { BackgroundDecor } from '@/components/ui/AfricanIllustrations'
 
 export default function DashboardPage() {
   const { user } = useAppStore()
@@ -80,6 +81,7 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
+      <BackgroundDecor />
       {/* Trial Banner */}
       {trialDaysLeft > 0 && (
         <div className="flex items-center justify-between bg-gradient-dark rounded-xl px-5 py-3.5 mb-5">
