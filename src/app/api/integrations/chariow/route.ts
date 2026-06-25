@@ -7,21 +7,41 @@ export async function POST(req: NextRequest) {
     const { apiKey } = await req.json()
     if (!apiKey) return NextResponse.json({ error: 'Clé API manquante' }, { status: 400 })
 
-    // Vérifier la clé et récupérer les commandes
-    const res = await fetch(`${CHARIOW_BASE}/orders`, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      return NextResponse.json({ error: 'Clé API invalide ou accès refusé', details: err }, { status: res.status })
+    // Récupérer toutes les commandes via pagination curseur
+    const headers = {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
     }
 
-    const data = await res.json()
-    const orders = data.data || data.orders || data || []
+    let allOrders: any[] = []
+    let cursor: string | null = null
+    let hasMore = true
+
+    while (hasMore) {
+      const url: string = cursor
+        ? `${CHARIOW_BASE}/orders?cursor=${cursor}&per_page=50`
+        : `${CHARIOW_BASE}/orders?per_page=50`
+
+      const res = await fetch(url, { headers })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        return NextResponse.json({ error: 'Clé API invalide ou accès refusé', details: err }, { status: res.status })
+      }
+
+      const data = await res.json()
+      const pageOrders = data.data?.data || data.data || data.orders || data || []
+      allOrders = [...allOrders, ...pageOrders]
+
+      const pagination = data.data?.pagination || data.pagination
+      hasMore = pagination?.has_more === true
+      cursor = pagination?.next_cursor || null
+
+      // Sécurité : max 1000 commandes
+      if (allOrders.length >= 1000) break
+    }
+
+    const orders = allOrders
 
     // Convertir les commandes Chariow en transactions FinTrack
     const transactions = orders.map((order: any) => ({
