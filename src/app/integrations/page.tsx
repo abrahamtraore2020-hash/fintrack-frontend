@@ -244,6 +244,7 @@ export default function IntegrationsPage() {
   // Maketou
   const [maketouKey, setMaketouKey] = useState('')
   const [maketouLoading, setMaketouLoading] = useState(false)
+  const [maketouSyncLoading, setMaketouSyncLoading] = useState(false)
 
   // Mobile Money form
   const [selectedMobile, setSelectedMobile] = useState('')
@@ -409,6 +410,43 @@ export default function IntegrationsPage() {
       setLoading(false)
     }
   }
+
+  const handleSyncMaketou = async (acc: { id: string; apiKey?: string }) => {
+    if (!acc.apiKey) { toast.error('Clé API introuvable — reconnectez Maketou'); return }
+    setMaketouSyncLoading(true)
+    try {
+      const res = await fetch('/api/integrations/maketou', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: acc.apiKey }),
+      })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error || 'Synchronisation échouée'); return }
+
+      // Éviter les doublons : filtrer les transactions déjà importées
+      const existingKeys = new Set(
+        transactions
+          .filter(t => t.description?.startsWith('Maketou –'))
+          .map(t => `${t.date}-${t.amount}-${t.description}`)
+      )
+      const newTx = (data.transactions || []).filter((t: any) =>
+        !existingKeys.has(`${t.date}-${t.amount}-${t.description}`)
+      )
+
+      for (const tx of newTx) {
+        await create.mutateAsync({ ...tx, accountId: acc.id })
+      }
+
+      toast.success(newTx.length > 0
+        ? `✅ ${newTx.length} nouvelle(s) transaction(s) importée(s)`
+        : '✅ Déjà à jour — aucune nouvelle vente'
+      )
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur de synchronisation')
+    } finally {
+      setMaketouSyncLoading(false)
+    }
+  }
   const toggleExpand = (id: string) => setExpandedIds(p => ({ ...p, [id]: !p[id] }))
 
   const availableMobile = MOBILE_MONEY_PROVIDERS.filter(p => !connectedProviders.includes(p.id as any))
@@ -547,13 +585,26 @@ export default function IntegrationsPage() {
               </div>
               {accounts.find(a => a.name === p.name) ? (
                 accounts.filter(a => a.name === p.name).map(acc => (
-                  <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
-                    LogoEl={<div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white" style={{ background: p.color }}>{p.initials}</div>}
-                    onDelete={() => setConfirmDel(acc.id)}
-                    onToggleVisible={() => setHiddenIds(prev => { const n = new Set(prev); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
-                    onToggleExpand={() => setExpandedIds(prev => ({ ...prev, [acc.id]: !prev[acc.id] }))}
-                    expanded={!!expandedIds[acc.id]}
-                  />
+                  <div key={acc.id}>
+                    <AccountCard account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
+                      LogoEl={<div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white" style={{ background: p.color }}>{p.initials}</div>}
+                      onDelete={() => setConfirmDel(acc.id)}
+                      onToggleVisible={() => setHiddenIds(prev => { const n = new Set(prev); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
+                      onToggleExpand={() => setExpandedIds(prev => ({ ...prev, [acc.id]: !prev[acc.id] }))}
+                      expanded={!!expandedIds[acc.id]}
+                    />
+                    {p.key === 'maketou' && (
+                      <div className="mt-2 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[11px] font-semibold text-orange-800 dark:text-orange-300">🔄 Synchronisation manuelle</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">Maketou ne supporte pas encore les webhooks. Clique pour importer les nouvelles ventes.</p>
+                        </div>
+                        <Button size="sm" onClick={() => handleSyncMaketou(acc)} disabled={maketouSyncLoading}>
+                          {maketouSyncLoading ? <Loader2 size={13} className="animate-spin" /> : '🔄 Sync'}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 ))
               ) : (
                 <div className="border-2 border-dashed border-gray-200 dark:border-dark-border rounded-xl p-4 text-center">
