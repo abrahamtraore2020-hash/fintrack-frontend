@@ -1,6 +1,6 @@
 ﻿'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+import { supabase, ensureSession } from '@/lib/supabase'
 import { useAppStore } from '@/store/useAppStore'
 import { Coffre } from '@/types'
 import toast from 'react-hot-toast'
@@ -51,6 +51,7 @@ export function useCoffres() {
 
   const create = useMutation({
     mutationFn: async (input: CreateCoffreInput) => {
+      await ensureSession()
       if (!user?.id) throw new Error('Non authentifié')
       const payload: Record<string, unknown> = {
         user_id: user.id, name: input.name, icon: input.icon, color: input.color,

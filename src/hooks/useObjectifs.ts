@@ -1,6 +1,6 @@
 ﻿'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+import { supabase, ensureSession } from '@/lib/supabase'
 import { useAppStore } from '@/store/useAppStore'
 import { Objectif } from '@/types'
 import toast from 'react-hot-toast'
@@ -41,6 +41,7 @@ export function useObjectifs() {
 
   const create = useMutation({
     mutationFn: async (obj: { name: string; coffreId: string; targetAmount: number; deadline: string }) => {
+      await ensureSession()
       if (!user?.id) throw new Error('Non authentifié')
       const { error } = await supabase.from('objectifs').insert({
         user_id: user.id,

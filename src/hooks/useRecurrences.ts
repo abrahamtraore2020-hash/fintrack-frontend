@@ -1,6 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+import { supabase, ensureSession } from '@/lib/supabase'
 import { useAppStore } from '@/store/useAppStore'
 import toast from 'react-hot-toast'
 
@@ -55,6 +55,7 @@ export function useRecurrences() {
 
   const create = useMutation({
     mutationFn: async (item: Omit<RecurrenceItem, 'id' | 'userId' | 'createdAt'>) => {
+      await ensureSession()
       if (!user?.id) throw new Error('Non authentifié')
       const { data, error } = await supabase
         .from('recurrences')

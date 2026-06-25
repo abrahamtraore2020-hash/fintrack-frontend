@@ -1,6 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+import { supabase, ensureSession } from '@/lib/supabase'
 import { useAppStore } from '@/store/useAppStore'
 import { Account } from '@/types'
 import toast from 'react-hot-toast'
@@ -41,6 +41,7 @@ export function useAccounts() {
 
   const createAccount = useMutation({
     mutationFn: async (acc: Omit<Account, 'id' | 'userId' | 'createdAt'>) => {
+      await ensureSession()
       if (!user?.id) throw new Error('Non authentifié')
       const { data, error } = await supabase
         .from('accounts')
@@ -70,6 +71,7 @@ export function useAccounts() {
 
   const removeAccount = useMutation({
     mutationFn: async (id: string) => {
+      await ensureSession()
       const { error } = await supabase.from('accounts').delete().eq('id', id)
       if (error) throw error
     },
