@@ -12,6 +12,7 @@ import { useCoffres } from '@/hooks/useCoffres'
 import { useObjectifs } from '@/hooks/useObjectifs'
 import { useTransactions } from '@/hooks/useTransactions'
 import { formatAmount, CATEGORY_COLORS, CATEGORY_LABELS_FR, timeAgo } from '@/lib/utils'
+import { CurrencyBanner } from '@/components/ui/AfricanCurrencies'
 
 export default function DashboardPage() {
   const { user } = useAppStore()
@@ -91,7 +92,7 @@ export default function DashboardPage() {
       )}
 
       {/* Header */}
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className="text-lg font-bold text-gray-800 dark:text-white">
           Bonjour, <span className="text-glow-blue">{user?.firstName || ''}</span> 👋
         </h1>
@@ -99,6 +100,9 @@ export default function DashboardPage() {
           Aperçu de vos finances — {now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
         </p>
       </div>
+
+      {/* Monnaies africaines */}
+      <CurrencyBanner className="mb-5" />
 
       {/* Stats réelles */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
