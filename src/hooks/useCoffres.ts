@@ -51,10 +51,9 @@ export function useCoffres() {
 
   const create = useMutation({
     mutationFn: async (input: CreateCoffreInput) => {
-      await ensureSession()
-      if (!user?.id) throw new Error('Non authentifié')
+      const uid = await ensureSession()
       const payload: Record<string, unknown> = {
-        user_id: user.id, name: input.name, icon: input.icon, color: input.color,
+        user_id: uid, name: input.name, icon: input.icon, color: input.color,
         target_amount: input.targetAmount, current_amount: 0, currency: 'XOF',
         mode: input.mode, status: 'active',
       }

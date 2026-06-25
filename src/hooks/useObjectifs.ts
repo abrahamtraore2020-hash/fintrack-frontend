@@ -41,10 +41,9 @@ export function useObjectifs() {
 
   const create = useMutation({
     mutationFn: async (obj: { name: string; coffreId: string; targetAmount: number; deadline: string }) => {
-      await ensureSession()
-      if (!user?.id) throw new Error('Non authentifié')
+      const uid = await ensureSession()
       const { error } = await supabase.from('objectifs').insert({
-        user_id: user.id,
+        user_id: uid,
         coffre_id: obj.coffreId || null,
         name: obj.name,
         target_amount: obj.targetAmount,

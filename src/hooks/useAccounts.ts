@@ -41,12 +41,11 @@ export function useAccounts() {
 
   const createAccount = useMutation({
     mutationFn: async (acc: Omit<Account, 'id' | 'userId' | 'createdAt'>) => {
-      await ensureSession()
-      if (!user?.id) throw new Error('Non authentifié')
+      const uid = await ensureSession()
       const { data, error } = await supabase
         .from('accounts')
         .insert({
-          user_id: user.id,
+          user_id: uid,
           type: acc.type,
           provider: acc.provider,
           name: acc.name,
@@ -73,6 +72,7 @@ export function useAccounts() {
     mutationFn: async (id: string) => {
       await ensureSession()
       const { error } = await supabase.from('accounts').delete().eq('id', id)
+
       if (error) throw error
     },
     onSuccess: () => {

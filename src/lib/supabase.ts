@@ -11,21 +11,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 })
 
-// Appeler cette fonction avant toute mutation Supabase
-// Elle rafraîchit le token si expiré, sinon ne fait rien
-export async function ensureSession(): Promise<boolean> {
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    if (error || !session) return false
+// Retourne l'user ID validé en temps réel depuis Supabase
+// Rafraîchit le token si expiré, lance une erreur si vraiment déconnecté
+export async function ensureSession(): Promise<string> {
+  // getUser() fait une requête réseau pour valider le token — c'est la source de vérité
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-    const expiresAt = (session.expires_at ?? 0) * 1000
-    // Rafraîchir si le token expire dans moins de 60 secondes
-    if (expiresAt - Date.now() < 60_000) {
-      const { error: refreshError } = await supabase.auth.refreshSession()
-      if (refreshError) return false
+  if (error || !user) {
+    // Token invalide → tenter un refresh
+    const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession()
+    if (refreshError || !refreshData.user) {
+      throw new Error('Session expirée. Veuillez vous reconnecter.')
     }
-    return true
-  } catch {
-    return false
+    return refreshData.user.id
   }
+
+  return user.id
 }

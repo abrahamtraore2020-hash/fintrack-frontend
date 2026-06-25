@@ -55,12 +55,11 @@ export function useRecurrences() {
 
   const create = useMutation({
     mutationFn: async (item: Omit<RecurrenceItem, 'id' | 'userId' | 'createdAt'>) => {
-      await ensureSession()
-      if (!user?.id) throw new Error('Non authentifié')
+      const uid = await ensureSession()
       const { data, error } = await supabase
         .from('recurrences')
         .insert({
-          user_id: user.id,
+          user_id: uid,
           name: item.name,
           emoji: item.emoji,
           amount: item.amount,
