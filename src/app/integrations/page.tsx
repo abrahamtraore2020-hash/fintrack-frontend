@@ -263,7 +263,94 @@ export default function IntegrationsPage() {
 
   const connectedProviders = accounts.map(a => a.provider)
   const mobileAccounts     = accounts.filter(a => a.type === 'mobile_money')
+  const bankAccounts       = accounts.filter(a => a.type === 'bank')
   const platformAccounts   = accounts.filter(a => a.type === 'platform' || a.type === 'custom')
+
+  // Banques
+  const [bankModal, setBankModal] = useState(false)
+  const [bankName, setBankName] = useState('')
+  const [bankCustomName, setBankCustomName] = useState('')
+  const [bankBalance, setBankBalance] = useState('')
+  const [bankLoading, setBankLoading] = useState(false)
+  const [csvFile, setCsvFile] = useState<File | null>(null)
+  const [csvLoading, setCsvLoading] = useState(false)
+
+  const AFRICAN_BANKS = [
+    { id: 'ecobank', name: 'Ecobank', color: '#003087', abbr: 'ECO' },
+    { id: 'uba', name: 'UBA', color: '#C8102E', abbr: 'UBA' },
+    { id: 'coris', name: 'Coris Bank', color: '#1A5276', abbr: 'COR' },
+    { id: 'sgbf', name: 'SG (Société Générale)', color: '#E60026', abbr: 'SG' },
+    { id: 'bici', name: 'BICI', color: '#005BAC', abbr: 'BICI' },
+    { id: 'boa', name: 'BOA (Bank of Africa)', color: '#007A3D', abbr: 'BOA' },
+    { id: 'bicici', name: 'BICICI', color: '#003087', abbr: 'BIC' },
+    { id: 'gtbank', name: 'GTBank', color: '#F97316', abbr: 'GT' },
+    { id: 'zenith', name: 'Zenith Bank', color: '#DC2626', abbr: 'ZEN' },
+    { id: 'absa', name: 'ABSA', color: '#DC143C', abbr: 'ABS' },
+    { id: 'other', name: 'Autre banque', color: '#6B7280', abbr: '🏦' },
+  ]
+
+  const handleAddBank = async () => {
+    const bank = AFRICAN_BANKS.find(b => b.id === bankName)
+    const name = bankName === 'other' ? bankCustomName : bank?.name
+    if (!name) { toast.error('Choisissez une banque'); return }
+    setBankLoading(true)
+    try {
+      await createAccount.mutateAsync({
+        type: 'bank' as any,
+        provider: bankName as any,
+        name,
+        balance: Number(bankBalance) || 0,
+        currency: 'XOF',
+        isConnected: true,
+        lastSync: new Date().toISOString(),
+        apiKey: '',
+      })
+      toast.success(`${name} ajoutée !`)
+      setBankModal(false)
+      setBankName(''); setBankCustomName(''); setBankBalance('')
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur')
+    } finally {
+      setBankLoading(false)
+    }
+  }
+
+  const handleCsvImport = async (acc: { id: string }) => {
+    if (!csvFile) { toast.error('Sélectionnez un fichier CSV'); return }
+    setCsvLoading(true)
+    try {
+      const text = await csvFile.text()
+      const lines = text.split('\n').filter(l => l.trim())
+      const header = lines[0].split(/[,;]/).map(h => h.trim().toLowerCase())
+      const idxDate   = header.findIndex(h => h.includes('date'))
+      const idxAmount = header.findIndex(h => h.includes('montant') || h.includes('amount') || h.includes('credit') || h.includes('debit'))
+      const idxDesc   = header.findIndex(h => h.includes('libelle') || h.includes('description') || h.includes('label'))
+      let added = 0
+      for (const line of lines.slice(1)) {
+        const cols = line.split(/[,;]/).map(c => c.trim().replace(/"/g, ''))
+        const rawAmount = Number(cols[idxAmount]?.replace(/\s/g, '').replace(',', '.')) || 0
+        if (!rawAmount) continue
+        await create.mutateAsync({
+          type: rawAmount > 0 ? 'income' : 'expense',
+          amount: Math.abs(rawAmount),
+          currency: 'XOF',
+          category: 'other' as any,
+          description: cols[idxDesc] || 'Import banque',
+          date: cols[idxDate] || new Date().toISOString().split('T')[0],
+          accountId: acc.id,
+          isRecurring: false,
+          coffreId: undefined,
+        })
+        added++
+      }
+      toast.success(`${added} transactions importées depuis le relevé`)
+      setCsvFile(null)
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur import CSV')
+    } finally {
+      setCsvLoading(false)
+    }
+  }
 
   const openModal = (m: ModalMode) => setModal(m)
   const closeModal = () => {
@@ -515,6 +602,58 @@ export default function IntegrationsPage() {
           {availableMobile.length > 0 && mobileAccounts.length === 0 && null}
         </div>
 
+        {/* ── Section Banques ──────────────────────────────────────────── */}
+        <div className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2">🏦 Banques africaines</h2>
+            <Button size="sm" variant="outline" onClick={() => setBankModal(true)}><Plus size={12}/> Ajouter ma banque</Button>
+          </div>
+
+          {bankAccounts.length === 0 ? (
+            <div className="border-2 border-dashed border-gray-200 dark:border-dark-border rounded-xl p-6 text-center">
+              <div className="flex justify-center gap-2 mb-3 flex-wrap">
+                {['Ecobank','UBA','BOA','Coris'].map(b => (
+                  <div key={b} className="px-3 py-1 bg-gray-100 dark:bg-dark-bg rounded-lg text-xs font-bold text-gray-500">{b}</div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Connectez votre banque et importez vos relevés de compte</p>
+              <Button size="sm" onClick={() => setBankModal(true)}><Plus size={12}/> Ajouter ma banque</Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {bankAccounts.map(acc => (
+                <div key={acc.id} className="border border-gray-200 dark:border-dark-border rounded-xl p-4 bg-white dark:bg-dark-card">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-xs"
+                        style={{ background: AFRICAN_BANKS.find(b => b.id === acc.provider)?.color || '#374151' }}>
+                        {AFRICAN_BANKS.find(b => b.id === acc.provider)?.abbr || '🏦'}
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-800 dark:text-white">{acc.name}</p>
+                        <p className="text-[10px] text-gray-400">Compte bancaire</p>
+                      </div>
+                    </div>
+                    <button onClick={() => removeAccount.mutate(acc.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                      <Trash2 size={14}/>
+                    </button>
+                  </div>
+                  <p className="text-sm font-bold text-gray-800 dark:text-white mb-3">{(acc.balance || 0).toLocaleString('fr-FR')} F</p>
+                  {/* Import relevé CSV */}
+                  <div className="border border-dashed border-gray-200 dark:border-dark-border rounded-lg p-2">
+                    <p className="text-[10px] text-gray-500 mb-1.5">Importer un relevé (.csv)</p>
+                    <input type="file" accept=".csv,.txt" onChange={e => setCsvFile(e.target.files?.[0] || null)}
+                      className="text-[10px] text-gray-500 w-full mb-2 file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-gold/10 file:text-gold-dark"/>
+                    <Button size="sm" variant="outline" className="w-full text-[10px] py-1" onClick={() => handleCsvImport(acc)} disabled={csvLoading || !csvFile}>
+                      {csvLoading ? <Loader2 size={10} className="animate-spin"/> : <RefreshCw size={10}/>} Importer
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* ── Section Plateformes & URLs ───────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -701,6 +840,41 @@ export default function IntegrationsPage() {
       </div>
 
       {/* ── Modals ──────────────────────────────────────────────────────── */}
+
+      {/* Banque */}
+      <Modal isOpen={bankModal} onClose={() => setBankModal(false)} title="Ajouter ma banque">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Choisissez votre banque</label>
+            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+              {AFRICAN_BANKS.map(b => (
+                <button key={b.id} onClick={() => setBankName(b.id)}
+                  className={cn('flex items-center gap-2 p-2.5 rounded-xl border-2 text-left transition-all', bankName === b.id ? 'border-gold bg-gold/5' : 'border-gray-200 dark:border-dark-border hover:border-gold/50')}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0"
+                    style={{ background: b.color }}>
+                    {b.abbr}
+                  </div>
+                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300 leading-tight">{b.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {bankName === 'other' && (
+            <Input label="Nom de la banque" placeholder="Ex: Ma banque locale" value={bankCustomName} onChange={e => setBankCustomName(e.target.value)}/>
+          )}
+
+          <Input label="Solde actuel (optionnel)" type="number" placeholder="Ex: 250000" value={bankBalance} onChange={e => setBankBalance(e.target.value)}/>
+
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300">
+            💡 Après avoir ajouté votre banque, vous pourrez importer votre relevé de compte au format CSV depuis votre espace en ligne.
+          </div>
+
+          <Button className="w-full" onClick={handleAddBank} disabled={bankLoading || !bankName}>
+            {bankLoading ? <Loader2 size={14} className="animate-spin"/> : <Plus size={14}/>} Ajouter la banque
+          </Button>
+        </div>
+      </Modal>
 
       {/* Mobile Money */}
       <Modal isOpen={modal === 'mobile'} onClose={closeModal} title="Connecter Mobile Money / Wallet">
