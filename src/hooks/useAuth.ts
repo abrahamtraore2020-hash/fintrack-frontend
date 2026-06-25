@@ -18,6 +18,9 @@ export function useAuth() {
     if (!isSupabaseConfigured()) return
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Token rafraîchi automatiquement — rien à faire
+      if (event === 'TOKEN_REFRESHED') return
+
       if (session?.user) {
         const { data: profile } = await supabase
           .from('users')
