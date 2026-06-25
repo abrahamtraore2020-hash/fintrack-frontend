@@ -52,6 +52,9 @@ export async function POST(req: NextRequest) {
 
     const orders = allOrders
 
+    // Debug : retourner le premier ordre brut pour identifier les champs
+    const rawSample = orders.length > 0 ? orders[0] : null
+
     // Convertir les commandes Chariow en transactions FinTrack
     const transactions = orders.map((order: any) => {
       // Chercher le montant dans tous les champs possibles
@@ -79,6 +82,7 @@ export async function POST(req: NextRequest) {
       transactions,
       total: transactions.length,
       revenue: transactions.reduce((s: number, t: any) => s + t.amount, 0),
+      _debug_first_order: rawSample,
     })
   } catch (e: any) {
     return NextResponse.json({ error: e.message || 'Erreur serveur' }, { status: 500 })
