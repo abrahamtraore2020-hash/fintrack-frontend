@@ -53,18 +53,26 @@ export async function POST(req: NextRequest) {
     const orders = allOrders
 
     // Convertir les commandes Chariow en transactions FinTrack
-    const transactions = orders.map((order: any) => ({
-      id: `chariow-${order.id}`,
-      type: 'income' as const,
-      amount: Number(order.total || order.amount || order.price || 0),
-      currency: 'XOF' as const,
-      category: 'freelance' as const,
-      description: `Chariow – ${order.product_name || order.title || order.name || 'Commande #' + order.id}`,
-      date: order.created_at ? order.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
-      accountId: '',
-      isRecurring: false,
-      createdAt: order.created_at || new Date().toISOString(),
-    }))
+    const transactions = orders.map((order: any) => {
+      // Chercher le montant dans tous les champs possibles
+      const rawAmount =
+        order.total ?? order.amount ?? order.price ??
+        order.total_price ?? order.grand_total ?? order.subtotal ??
+        order.total_amount ?? order.revenue ?? order.net_amount ?? 0
+      const amount = Math.max(0, Number(rawAmount) || 0)
+
+      return {
+        type: 'income' as const,
+        amount,
+        currency: 'XOF' as const,
+        category: 'freelance' as const,
+        description: `Chariow – ${order.product_name || order.title || order.reference || order.name || 'Commande #' + order.id}`,
+        date: order.created_at ? order.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        accountId: '',
+        isRecurring: false,
+        coffreId: undefined,
+      }
+    })
 
     return NextResponse.json({
       success: true,
