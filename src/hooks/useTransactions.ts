@@ -42,10 +42,11 @@ export function useTransactions(limit = 50) {
 
   const create = useMutation({
     mutationFn: async (tx: Omit<Transaction, 'id' | 'userId' | 'createdAt'>) => {
+      if (!user?.id) throw new Error('Non authentifié')
       const { data, error } = await supabase
         .from('transactions')
         .insert({
-          user_id: user!.id,
+          user_id: user.id,
           account_id: tx.accountId,
           type: tx.type,
           amount: tx.amount,

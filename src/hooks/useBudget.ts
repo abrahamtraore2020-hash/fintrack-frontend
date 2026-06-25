@@ -47,10 +47,11 @@ export function useBudget() {
 
   const create = useMutation({
     mutationFn: async (item: Omit<BudgetItem, 'id' | 'userId' | 'createdAt'>) => {
+      if (!user?.id) throw new Error('Non authentifié')
       const { data, error } = await supabase
         .from('budgets')
         .insert({
-          user_id: user!.id,
+          user_id: user.id,
           category: item.category,
           emoji: item.emoji,
           budget_limit: item.budgetLimit,

@@ -76,7 +76,7 @@ export function useNotifications() {
       await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('user_id', user!.id)
+        .eq('user_id', user?.id ?? '')
         .eq('is_read', false)
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
@@ -93,7 +93,7 @@ export function useNotifications() {
     mutationFn: async (alarm: Partial<Alarm>) => {
       const { data, error } = await supabase
         .from('alarms')
-        .insert({ ...alarm, user_id: user!.id })
+        .insert({ ...alarm, user_id: user?.id })
         .select()
         .single()
       if (error) throw error
