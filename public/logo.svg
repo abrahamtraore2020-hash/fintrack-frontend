@@ -1,0 +1,34 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="100%" stop-color="#0a0f1e"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="outerGlow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feFlood flood-color="#4a9eff" flood-opacity="0.4" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Outer glow ring -->
+  <rect x="8" y="8" width="184" height="184" rx="42" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.3" filter="url(#outerGlow)"/>
+  <!-- Main background -->
+  <rect x="16" y="16" width="168" height="168" rx="36" fill="url(#bgGrad)"/>
+  <!-- Glass overlay -->
+  <rect x="16" y="16" width="168" height="80" rx="36" fill="white" opacity="0.04"/>
+  <rect x="16" y="16" width="168" height="168" rx="36" fill="none" stroke="white" stroke-width="1" opacity="0.12"/>
+  <!-- FT Monogram -->
+  <!-- F - vertical bar -->
+  <rect x="56" y="60" width="14" height="82" rx="7" fill="white"/>
+  <!-- F - top horizontal -->
+  <rect x="56" y="60" width="58" height="14" rx="7" fill="white"/>
+  <!-- F - middle horizontal (also T crossbar) -->
+  <rect x="56" y="92" width="72" height="14" rx="7" fill="white"/>
+  <!-- T - vertical bar going down -->
+  <rect x="114" y="92" width="14" height="50" rx="7" fill="white"/>
+</svg>

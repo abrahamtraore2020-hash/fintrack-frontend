@@ -37,6 +37,11 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex w-52 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border flex-col py-3 px-2 flex-shrink-0">
+      {/* Logo sidebar */}
+      <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 mb-2">
+        <img src="/logo.svg" alt="FUNTRACK" className="w-8 h-8 rounded-xl" />
+        <span className="font-bold text-gray-800 dark:text-white text-sm tracking-wide">FUN<span className="text-gold">TRACK</span></span>
+      </Link>
       <SidebarSection label="Principal"  links={mainLinks}    pathname={pathname ?? ''} />
       <SidebarSection label="Analyse"    links={analyseLinks} pathname={pathname ?? ''} />
       <SidebarSection label="Compte"     links={compteLinks}  pathname={pathname ?? ''} unreadCount={unreadCount} />

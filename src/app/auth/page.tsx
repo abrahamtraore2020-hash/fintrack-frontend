@@ -132,10 +132,11 @@ export default function AuthPage() {
         <BilletAfrica width={130} opacity={0.07} className="absolute bottom-40 left-8 -rotate-8 pointer-events-none" />
         <CoinFCFA    size={50}  opacity={0.06} className="absolute top-20 left-12 -rotate-6 pointer-events-none" />
         <div className="flex items-center gap-2.5 relative z-10">
-          <div className="w-9 h-9 bg-gold rounded-xl flex items-center justify-center">
-            <Wallet size={18} className="text-[#1A1A2E]" />
+          <img src="/logo.svg" alt="FUNTRACK" className="w-10 h-10 rounded-xl" />
+          <div>
+            <span className="text-white font-bold text-lg tracking-widest">FUNTRACK</span>
+            <p className="text-white/40 text-[9px] tracking-widest uppercase">Track. Analyze. Improve.</p>
           </div>
-          <span className="text-white font-bold text-lg">Fin<span className="text-gold">Track</span></span>
         </div>
         <div className="relative z-10">
           <h2 className="text-white text-3xl font-bold leading-tight mb-3 text-glow-blue">

@@ -36,10 +36,8 @@ export function Navbar() {
 
       {/* Logo */}
       <Link href="/dashboard" className="flex items-center gap-2">
-        <div className="w-7 h-7 bg-gold rounded-lg flex items-center justify-center">
-          <Wallet size={14} className="text-[#1A1A2E]" />
-        </div>
-        <span className="font-bold text-gray-800 dark:text-white text-sm">Fin<span className="text-gold">Track</span></span>
+        <img src="/logo.svg" alt="FUNTRACK" className="w-8 h-8 rounded-xl" />
+        <span className="font-bold text-gray-800 dark:text-white text-sm tracking-wide">FUN<span className="text-gold">TRACK</span></span>
       </Link>
 
       {/* Desktop nav links */}
