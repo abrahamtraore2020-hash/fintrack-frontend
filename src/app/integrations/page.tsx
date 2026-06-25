@@ -211,7 +211,7 @@ function AccountCard({ account, allTx, onDelete, onToggleVisible, onToggleExpand
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────────
-type ModalMode = 'mobile' | 'platform' | 'url' | 'chariow' | null
+type ModalMode = 'mobile' | 'platform' | 'url' | 'chariow' | 'stripe' | 'paypal' | 'shopify' | 'maketou' | null
 
 export default function IntegrationsPage() {
   const { user } = useAppStore()
@@ -226,6 +226,24 @@ export default function IntegrationsPage() {
   // Chariow
   const [chariowKey, setChariowKey] = useState('')
   const [chariowLoading, setChariowLoading] = useState(false)
+
+  // Stripe
+  const [stripeKey, setStripeKey] = useState('')
+  const [stripeLoading, setStripeLoading] = useState(false)
+
+  // PayPal
+  const [paypalClientId, setPaypalClientId] = useState('')
+  const [paypalSecret, setPaypalSecret] = useState('')
+  const [paypalLoading, setPaypalLoading] = useState(false)
+
+  // Shopify
+  const [shopifyDomain, setShopifyDomain] = useState('')
+  const [shopifyToken, setShopifyToken] = useState('')
+  const [shopifyLoading, setShopifyLoading] = useState(false)
+
+  // Maketou
+  const [maketouKey, setMaketouKey] = useState('')
+  const [maketouLoading, setMaketouLoading] = useState(false)
 
   // Mobile Money form
   const [selectedMobile, setSelectedMobile] = useState('')
@@ -352,6 +370,45 @@ export default function IntegrationsPage() {
       setChariowLoading(false)
     }
   }
+
+  const handleConnectApiPlatform = async (
+    platform: string,
+    endpoint: string,
+    body: object,
+    name: string,
+    currency: 'XOF' | 'USD' | 'EUR',
+    setLoading: (v: boolean) => void,
+    onSuccess: () => void,
+  ) => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/integrations/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error || 'Connexion échouée'); return }
+
+      const acc = await createAccount.mutateAsync({
+        type: 'platform', provider: 'custom' as any,
+        name, balance: data.revenue || 0,
+        currency, isConnected: true,
+        lastSync: new Date().toISOString(),
+        apiKey: '',
+      })
+      for (const tx of data.transactions || []) {
+        await create.mutateAsync({ ...tx, accountId: acc.id })
+      }
+      toast.success(`${name} connecté ! ${data.total} transactions importées`)
+      setModal(null)
+      onSuccess()
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur de connexion')
+    } finally {
+      setLoading(false)
+    }
+  }
   const toggleExpand = (id: string) => setExpandedIds(p => ({ ...p, [id]: !p[id] }))
 
   const availableMobile = MOBILE_MONEY_PROVIDERS.filter(p => !connectedProviders.includes(p.id as any))
@@ -471,6 +528,42 @@ export default function IntegrationsPage() {
               </div>
             )}
           </div>
+
+          {/* Stripe */}
+          {[
+            { key: 'stripe', name: 'Stripe', color: '#635BFF', label: 'Stripe (paiements internationaux)', initials: 'ST' },
+            { key: 'paypal', name: 'PayPal', color: '#003087', label: 'PayPal', initials: 'PP' },
+            { key: 'shopify', name: 'Shopify', color: '#95BF47', label: 'Shopify (e-commerce)', initials: 'SH' },
+            { key: 'maketou', name: 'Maketou', color: '#FF6B35', label: 'Maketou (Afrique francophone)', initials: 'MK' },
+          ].map(p => (
+            <div key={p.key} className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5">
+                  <ShoppingBag size={12} style={{ color: p.color }} /> {p.label}
+                </p>
+                {!accounts.find(a => a.name === p.name) && (
+                  <Button size="sm" variant="outline" onClick={() => setModal(p.key as ModalMode)}><Plus size={12} /> Connecter</Button>
+                )}
+              </div>
+              {accounts.find(a => a.name === p.name) ? (
+                accounts.filter(a => a.name === p.name).map(acc => (
+                  <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
+                    LogoEl={<div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white" style={{ background: p.color }}>{p.initials}</div>}
+                    onDelete={() => setConfirmDel(acc.id)}
+                    onToggleVisible={() => setHiddenIds(prev => { const n = new Set(prev); n.has(acc.id) ? n.delete(acc.id) : n.add(acc.id); return n })}
+                    onToggleExpand={() => setExpandedIds(prev => ({ ...prev, [acc.id]: !prev[acc.id] }))}
+                    expanded={!!expandedIds[acc.id]}
+                  />
+                ))
+              ) : (
+                <div className="border-2 border-dashed border-gray-200 dark:border-dark-border rounded-xl p-4 text-center">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white mx-auto mb-2" style={{ background: p.color }}>{p.initials}</div>
+                  <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Connectez {p.name}</p>
+                  <Button size="sm" onClick={() => setModal(p.key as ModalMode)}><Key size={12} /> Connecter</Button>
+                </div>
+              )}
+            </div>
+          ))}
 
           {/* Chariow */}
           <div className="mb-4">
@@ -613,6 +706,93 @@ export default function IntegrationsPage() {
           <div className="flex gap-2 pt-1">
             <Button variant="outline" className="flex-1" onClick={closeModal}>Annuler</Button>
             <Button className="flex-1" onClick={handleConnectPlatform} disabled={!selectedPlatform}>Connecter</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Stripe */}
+      <Modal isOpen={modal === 'stripe'} onClose={() => { setModal(null); setStripeKey('') }} title="Connecter Stripe" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style={{ background: '#635BFF' }}>ST</div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">Stripe</p>
+              <p className="text-[11px] text-gray-400">Importez vos paiements Stripe automatiquement</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Trouvez votre clé dans <strong>Stripe → Développeurs → Clés API → Clé secrète</strong></p>
+          <Input label="Clé secrète Stripe" placeholder="sk_live_xxxxxxxxxxxxx" value={stripeKey} onChange={e => setStripeKey(e.target.value)} type="password" />
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-[11px] text-gray-500 dark:text-gray-400">🔒 Votre clé est stockée de façon sécurisée.</div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => { setModal(null); setStripeKey('') }}>Annuler</Button>
+            <Button className="flex-1" disabled={stripeLoading} onClick={() => handleConnectApiPlatform('stripe', 'stripe', { apiKey: stripeKey.trim() }, 'Stripe', 'USD', setStripeLoading, () => setStripeKey(''))}>
+              {stripeLoading ? <Loader2 size={15} className="animate-spin" /> : 'Connecter'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* PayPal */}
+      <Modal isOpen={modal === 'paypal'} onClose={() => { setModal(null); setPaypalClientId(''); setPaypalSecret('') }} title="Connecter PayPal" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style={{ background: '#003087' }}>PP</div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">PayPal</p>
+              <p className="text-[11px] text-gray-400">Importez vos transactions PayPal</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Trouvez vos identifiants dans <strong>PayPal Developer → My Apps & Credentials</strong></p>
+          <Input label="Client ID" placeholder="AXxxxxxxxxxxxxxxxxxx" value={paypalClientId} onChange={e => setPaypalClientId(e.target.value)} />
+          <Input label="Client Secret" placeholder="EKxxxxxxxxxxxxxxxxxx" value={paypalSecret} onChange={e => setPaypalSecret(e.target.value)} type="password" />
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => { setModal(null); setPaypalClientId(''); setPaypalSecret('') }}>Annuler</Button>
+            <Button className="flex-1" disabled={paypalLoading} onClick={() => handleConnectApiPlatform('paypal', 'paypal', { clientId: paypalClientId.trim(), clientSecret: paypalSecret.trim() }, 'PayPal', 'USD', setPaypalLoading, () => { setPaypalClientId(''); setPaypalSecret('') })}>
+              {paypalLoading ? <Loader2 size={15} className="animate-spin" /> : 'Connecter'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Shopify */}
+      <Modal isOpen={modal === 'shopify'} onClose={() => { setModal(null); setShopifyDomain(''); setShopifyToken('') }} title="Connecter Shopify" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style={{ background: '#95BF47' }}>SH</div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">Shopify</p>
+              <p className="text-[11px] text-gray-400">Importez vos commandes Shopify</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Trouvez le token dans <strong>Shopify → Apps → Develop Apps → Admin API access token</strong></p>
+          <Input label="Domaine boutique" placeholder="ma-boutique.myshopify.com" value={shopifyDomain} onChange={e => setShopifyDomain(e.target.value)} />
+          <Input label="Access Token" placeholder="shpat_xxxxxxxxxxxxx" value={shopifyToken} onChange={e => setShopifyToken(e.target.value)} type="password" />
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => { setModal(null); setShopifyDomain(''); setShopifyToken('') }}>Annuler</Button>
+            <Button className="flex-1" disabled={shopifyLoading} onClick={() => handleConnectApiPlatform('shopify', 'shopify', { shopDomain: shopifyDomain.trim(), accessToken: shopifyToken.trim() }, 'Shopify', 'USD', setShopifyLoading, () => { setShopifyDomain(''); setShopifyToken('') })}>
+              {shopifyLoading ? <Loader2 size={15} className="animate-spin" /> : 'Connecter'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Maketou */}
+      <Modal isOpen={modal === 'maketou'} onClose={() => { setModal(null); setMaketouKey('') }} title="Connecter Maketou" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0" style={{ background: '#FF6B35' }}>MK</div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">Maketou</p>
+              <p className="text-[11px] text-gray-400">Importez vos ventes de produits numériques</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Trouvez votre clé dans <strong>Maketou → Paramètres → API</strong></p>
+          <Input label="Clé API Maketou" placeholder="mk_xxxxxxxxxxxxx" value={maketouKey} onChange={e => setMaketouKey(e.target.value)} type="password" />
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => { setModal(null); setMaketouKey('') }}>Annuler</Button>
+            <Button className="flex-1" disabled={maketouLoading} onClick={() => handleConnectApiPlatform('maketou', 'maketou', { apiKey: maketouKey.trim() }, 'Maketou', 'XOF', setMaketouLoading, () => setMaketouKey(''))}>
+              {maketouLoading ? <Loader2 size={15} className="animate-spin" /> : 'Connecter'}
+            </Button>
           </div>
         </div>
       </Modal>
