@@ -7,7 +7,15 @@ import { PWARegister } from './PWARegister'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: { queries: { staleTime: 1000 * 60 * 5, retry: 1 } },
+    defaultOptions: {
+      queries: {
+        staleTime: 0,           // données toujours considérées périmées
+        refetchOnWindowFocus: true,   // recharge quand on revient sur l'app
+        refetchOnReconnect: true,     // recharge après reconnexion réseau
+        refetchOnMount: true,         // recharge à chaque ouverture de page
+        retry: 1,
+      },
+    },
   }))
 
   return (
