@@ -25,9 +25,31 @@ export function useAuth() {
           .eq('id', session.user.id)
           .single()
         if (profile) {
-          setUser(profile)
+          setUser({
+            id: profile.id, email: profile.email,
+            firstName: profile.first_name || '',
+            lastName: profile.last_name || '',
+            avatar: profile.avatar,
+            profile: profile.profile || 'personal',
+            plan: profile.plan || 'starter',
+            trialEndsAt: profile.trial_ends_at,
+            currency: profile.currency || 'XOF',
+            lang: profile.lang || 'fr',
+            createdAt: profile.created_at,
+          })
         } else {
-          // Profil absent — on crée un utilisateur minimal pour que les hooks fonctionnent
+          // Profil absent dans public.users — on le crée maintenant
+          await supabase.from('users').insert({
+            id: session.user.id,
+            email: session.user.email || '',
+            first_name: '',
+            last_name: '',
+            profile: 'personal',
+            plan: 'starter',
+            currency: 'XOF',
+            lang: 'fr',
+            trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
+          })
           setUser({
             id: session.user.id,
             email: session.user.email || '',
@@ -38,6 +60,7 @@ export function useAuth() {
             currency: 'XOF',
             lang: 'fr',
             createdAt: session.user.created_at,
+            trialEndsAt: new Date(Date.now() + 14 * 86400000).toISOString(),
           })
         }
         if (event === 'SIGNED_IN') router.push('/dashboard')
@@ -68,8 +91,21 @@ export function useAuth() {
     }
     if (data.user) {
       const { data: profile } = await supabase.from('users').select('*').eq('id', data.user.id).single()
-      if (profile) setUser(profile)
-      else setUser({ id: data.user.id, email, firstName: '', lastName: '', profile: 'personal' as any, plan: 'starter', currency: 'XOF', lang: 'fr', createdAt: new Date().toISOString() })
+      if (profile) {
+        setUser({
+          id: profile.id, email: profile.email,
+          firstName: profile.first_name || '',
+          lastName: profile.last_name || '',
+          profile: profile.profile || 'personal',
+          plan: profile.plan || 'starter',
+          currency: profile.currency || 'XOF',
+          lang: profile.lang || 'fr',
+          trialEndsAt: profile.trial_ends_at,
+          createdAt: profile.created_at,
+        })
+      } else {
+        setUser({ id: data.user.id, email, firstName: '', lastName: '', profile: 'personal', plan: 'starter', currency: 'XOF', lang: 'fr', createdAt: new Date().toISOString() })
+      }
     }
     router.push('/dashboard')
   }
@@ -81,10 +117,11 @@ export function useAuth() {
     if (error) throw error
     if (data.user) {
       await supabase.from('users').insert({
-        id: data.user.id, email, firstName, lastName,
+        id: data.user.id, email,
+        first_name: firstName,
+        last_name: lastName,
         profile, plan: 'starter', currency: 'XOF', lang: 'fr',
-        createdAt: new Date().toISOString(),
-        trialEndsAt: new Date(Date.now() + 14 * 86400000).toISOString(),
+        trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
       })
       // Si session active (email confirmation désactivée) → rediriger direct
       if (data.session) {
