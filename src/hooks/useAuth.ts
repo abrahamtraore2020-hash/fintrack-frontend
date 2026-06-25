@@ -17,6 +17,22 @@ export function useAuth() {
   useEffect(() => {
     if (!isSupabaseConfigured()) return
 
+    // Forcer un refresh de session au démarrage
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+      if (error || !session) return
+      // Si le token est expiré, tenter un refresh
+      const expiresAt = session.expires_at ?? 0
+      if (expiresAt * 1000 < Date.now()) {
+        const { error: refreshError } = await supabase.auth.refreshSession()
+        if (refreshError) {
+          // Refresh token aussi expiré → forcer déconnexion
+          await supabase.auth.signOut()
+          logout()
+          router.push('/auth')
+        }
+      }
+    })
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Token rafraîchi automatiquement — rien à faire
       if (event === 'TOKEN_REFRESHED') return
