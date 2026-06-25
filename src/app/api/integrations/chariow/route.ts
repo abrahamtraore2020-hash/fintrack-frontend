@@ -13,32 +13,41 @@ export async function POST(req: NextRequest) {
       'Content-Type': 'application/json',
     }
 
+    // Vérifier d'abord que la clé est valide via /store
+    const storeRes = await fetch(`${CHARIOW_BASE}/store`, { headers })
+    if (!storeRes.ok) {
+      return NextResponse.json({ error: 'Clé API invalide. Vérifiez votre clé dans Chariow → Développeurs → API' }, { status: 401 })
+    }
+
+    // Essayer plusieurs endpoints pour les ventes/commandes
+    const SALES_ENDPOINTS = ['/sales', '/orders', '/purchases', '/transactions']
     let allOrders: any[] = []
-    let cursor: string | null = null
-    let hasMore = true
+    let foundEndpoint = ''
 
-    while (hasMore) {
-      const url: string = cursor
-        ? `${CHARIOW_BASE}/orders?cursor=${cursor}&per_page=50`
-        : `${CHARIOW_BASE}/orders?per_page=50`
-
-      const res = await fetch(url, { headers })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        return NextResponse.json({ error: 'Clé API invalide ou accès refusé', details: err }, { status: res.status })
+    for (const endpoint of SALES_ENDPOINTS) {
+      const testRes = await fetch(`${CHARIOW_BASE}${endpoint}?per_page=50`, { headers })
+      if (testRes.ok) {
+        const testData = await testRes.json()
+        const items = testData.data?.data || testData.data || testData.orders || testData.sales || []
+        if (Array.isArray(items)) {
+          allOrders = items
+          foundEndpoint = endpoint
+          // Paginer si nécessaire
+          let cursor: string | null = testData.data?.pagination?.next_cursor || null
+          let hasMore: boolean = testData.data?.pagination?.has_more === true
+          while (hasMore && allOrders.length < 1000) {
+            const nextUrl: string = `${CHARIOW_BASE}${endpoint}?cursor=${cursor}&per_page=50`
+            const nextRes = await fetch(nextUrl, { headers })
+            if (!nextRes.ok) break
+            const nextData = await nextRes.json()
+            const nextItems = nextData.data?.data || nextData.data || []
+            allOrders = [...allOrders, ...(Array.isArray(nextItems) ? nextItems : [])]
+            cursor = nextData.data?.pagination?.next_cursor || null
+            hasMore = nextData.data?.pagination?.has_more === true
+          }
+          break
+        }
       }
-
-      const data = await res.json()
-      const pageOrders = data.data?.data || data.data || data.orders || data || []
-      allOrders = [...allOrders, ...pageOrders]
-
-      const pagination = data.data?.pagination || data.pagination
-      hasMore = pagination?.has_more === true
-      cursor = pagination?.next_cursor || null
-
-      // Sécurité : max 1000 commandes
-      if (allOrders.length >= 1000) break
     }
 
     const orders = allOrders
