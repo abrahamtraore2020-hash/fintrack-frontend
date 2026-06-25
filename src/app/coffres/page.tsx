@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
-import { Plus, Info, Zap, Trash2 } from 'lucide-react'
+import { Plus, Info, Zap, Trash2, Loader2 } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -10,18 +10,17 @@ import { ProgressBar } from '@/components/ui/ProgressBar'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { calcProgress } from '@/lib/utils'
-import { useAppStore } from '@/store/useAppStore'
-import { Coffre } from '@/types'
-import toast from 'react-hot-toast'
+import { useCoffres } from '@/hooks/useCoffres'
 
 const MODE_LABELS = { manual: 'Manuel', auto: 'Automatique', hybrid: 'Auto + Manuel' }
 const MODE_COLORS: Record<string, any> = { manual: 'blue', auto: 'green', hybrid: 'gold' }
 
-const ICONS = ['💰', '✈️', '💻', '🛡️', '🚗', '🏠', '📱', '🎓', '💊', '🎯', '💍', '🌍']
+const ICONS = ['U+1F4B0', 'U+2708', 'U+1F4BB', 'U+1F6E1', 'U+1F697', 'U+1F3E0', 'U+1F4F1', 'U+1F393', 'U+1F48A', 'U+1F3AF', 'U+1F48D', 'U+1F30D']
+const EMOJIS = ['💰', '✈️', '💻', '🛡️', '🚗', '🏠', '📱', '🎓', '💊', '🎯', '💍', '🌍']
 const COLORS = ['#FFD700', '#22C55E', '#8B5CF6', '#3B82F6', '#EF4444', '#F97316', '#EC4899', '#14B8A6']
 
 export default function CoffresPage() {
-  const { coffres, addCoffre, deleteCoffre, user } = useAppStore()
+  const { data: coffres = [], isLoading, create, remove } = useCoffres()
   const [showModal, setShowModal] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [newCoffre, setNewCoffre] = useState({
@@ -30,61 +29,55 @@ export default function CoffresPage() {
   })
 
   const handleCreate = () => {
-    if (!newCoffre.name || !newCoffre.targetAmount) {
-      toast.error('Remplissez le nom et le montant cible')
-      return
-    }
-    const coffre: Coffre = {
-      id: `cof-${Date.now()}`,
-      userId: user?.id || 'guest',
+    if (!newCoffre.name || !newCoffre.targetAmount) return
+    create.mutate({
       name: newCoffre.name,
       icon: newCoffre.icon,
       color: newCoffre.color,
       targetAmount: Number(newCoffre.targetAmount),
-      currentAmount: 0,
-      currency: 'XOF',
-      mode: newCoffre.mode as any,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      ...(newCoffre.mode !== 'manual' && {
-        rule: {
-          type: newCoffre.ruleType as any,
-          value: Number(newCoffre.ruleValue),
-          trigger: newCoffre.ruleTrigger as any,
-        }
-      })
-    }
-    addCoffre(coffre)
-    setShowModal(false)
-    setNewCoffre({ name: '', targetAmount: '', mode: 'manual', icon: '💰', color: '#FFD700', ruleType: 'percentage', ruleValue: '5', ruleTrigger: 'each_income' })
-    toast.success('Coffre créé !')
+      mode: newCoffre.mode,
+      ruleType: newCoffre.ruleType,
+      ruleValue: Number(newCoffre.ruleValue),
+      ruleTrigger: newCoffre.ruleTrigger,
+    }, {
+      onSuccess: () => {
+        setShowModal(false)
+        setNewCoffre({ name: '', targetAmount: '', mode: 'manual', icon: '💰', color: '#FFD700', ruleType: 'percentage', ruleValue: '5', ruleTrigger: 'each_income' })
+      }
+    })
   }
 
   const handleDelete = (id: string) => {
-    deleteCoffre(id)
-    setConfirmDelete(null)
-    toast.success('Coffre supprimé')
+    remove.mutate(id, { onSuccess: () => setConfirmDelete(null) })
   }
+
+  if (isLoading) return (
+    <AppLayout>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="animate-spin text-gold" size={32} />
+      </div>
+    </AppLayout>
+  )
 
   return (
     <AppLayout>
       <div className="mb-5 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-gray-800 dark:text-white">Mes <span className="text-glow-blue">Coffres</span> Virtuels</h1>
-          <p className="text-sm text-gray-500">Enveloppes d'épargne virtuelles — votre argent reste dans vos vrais comptes</p>
+          <p className="text-sm text-gray-500">Enveloppes d epargne virtuelles — votre argent reste dans vos vrais comptes</p>
         </div>
         <Button onClick={() => setShowModal(true)}><Plus size={15} /> Nouveau coffre</Button>
       </div>
 
       <div className="flex items-center gap-2.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/40 rounded-xl px-4 py-3 mb-5 text-xs text-yellow-800 dark:text-yellow-300">
         <Info size={15} className="text-yellow-600 flex-shrink-0" />
-        <p><strong>Important :</strong> FinTrack ne touche jamais à votre argent réel. Les coffres tracent virtuellement vos allocations — l'argent reste dans vos comptes Wave, bancaires, etc.</p>
+        <p><strong>Important :</strong> FinTrack ne touche jamais à votre argent réel. Les coffres tracent virtuellement vos allocations.</p>
       </div>
 
       {coffres.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🏦</div>
-          <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">Aucun coffre pour l'instant</h3>
+          <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">Aucun coffre pour l instant</h3>
           <p className="text-sm text-gray-400 mb-5">Créez votre premier coffre virtuel pour commencer à épargner</p>
           <Button onClick={() => setShowModal(true)}><Plus size={14} /> Créer mon premier coffre</Button>
         </div>
@@ -129,7 +122,7 @@ export default function CoffresPage() {
 
           {coffres.some(c => c.rule && c.mode !== 'manual') && (
             <Card>
-              <CardTitle><Zap size={16} className="text-gold" /> Règles d'alimentation automatique</CardTitle>
+              <CardTitle><Zap size={16} className="text-gold" /> Règles d alimentation automatique</CardTitle>
               <div className="space-y-2.5">
                 {coffres.filter(c => c.rule && c.mode !== 'manual').map(c => (
                   <div key={c.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-dark-bg rounded-lg">
@@ -149,7 +142,6 @@ export default function CoffresPage() {
         </>
       )}
 
-      {/* Modal création */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nouveau coffre virtuel" size="md">
         <div className="space-y-4">
           <Input label="Nom du coffre" placeholder="Ex: Vacances, Voiture, Urgence..." value={newCoffre.name} onChange={e => setNewCoffre({ ...newCoffre, name: e.target.value })} />
@@ -157,7 +149,7 @@ export default function CoffresPage() {
           <div>
             <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Icône</label>
             <div className="flex flex-wrap gap-2">
-              {ICONS.map(icon => (
+              {EMOJIS.map(icon => (
                 <button key={icon} onClick={() => setNewCoffre({ ...newCoffre, icon })}
                   className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center transition-all ${newCoffre.icon === icon ? 'bg-gold-100 border-2 border-gold' : 'bg-gray-100 dark:bg-dark-bg hover:bg-yellow-50'}`}>
                   {icon}
@@ -179,7 +171,7 @@ export default function CoffresPage() {
 
           <Input label="Montant cible (FCFA)" type="number" placeholder="200000" value={newCoffre.targetAmount} onChange={e => setNewCoffre({ ...newCoffre, targetAmount: e.target.value })} />
 
-          <Select label="Mode d'alimentation" value={newCoffre.mode} onChange={e => setNewCoffre({ ...newCoffre, mode: e.target.value })} options={[
+          <Select label="Mode d alimentation" value={newCoffre.mode} onChange={e => setNewCoffre({ ...newCoffre, mode: e.target.value })} options={[
             { value: 'manual', label: 'Manuel — Je verse quand je veux' },
             { value: 'auto', label: 'Automatique — Règle définie' },
             { value: 'hybrid', label: 'Hybride — Auto + Manuel combinés' },
@@ -197,17 +189,20 @@ export default function CoffresPage() {
 
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1" onClick={() => setShowModal(false)}>Annuler</Button>
-            <Button className="flex-1" onClick={handleCreate}>Créer le coffre</Button>
+            <Button className="flex-1" onClick={handleCreate} disabled={create.isPending}>
+              {create.isPending ? <Loader2 size={15} className="animate-spin" /> : 'Créer le coffre'}
+            </Button>
           </div>
         </div>
       </Modal>
 
-      {/* Modal confirmation suppression */}
       <Modal isOpen={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Supprimer ce coffre ?" size="sm">
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Cette action est irréversible. Le solde virtuel sera perdu.</p>
         <div className="flex gap-2">
           <Button variant="outline" className="flex-1" onClick={() => setConfirmDelete(null)}>Annuler</Button>
-          <Button variant="danger" className="flex-1" onClick={() => confirmDelete && handleDelete(confirmDelete)}>Supprimer</Button>
+          <Button variant="danger" className="flex-1" onClick={() => confirmDelete && handleDelete(confirmDelete)} disabled={remove.isPending}>
+            {remove.isPending ? <Loader2 size={15} className="animate-spin" /> : 'Supprimer'}
+          </Button>
         </div>
       </Modal>
     </AppLayout>

@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
-import { Target, Plus, TrendingUp, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react'
+import { Target, Plus, TrendingUp, AlertTriangle, CheckCircle, Trash2, Loader2 } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -10,63 +10,56 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { calcProgress } from '@/lib/utils'
-import { useAppStore } from '@/store/useAppStore'
-import { Objectif } from '@/types'
-import toast from 'react-hot-toast'
+import { useObjectifs } from '@/hooks/useObjectifs'
+import { useCoffres } from '@/hooks/useCoffres'
 
 const STATUS_CONFIG = {
   on_track: { label: 'En bonne voie', variant: 'green' as const, icon: CheckCircle },
   at_risk: { label: 'En retard', variant: 'red' as const, icon: AlertTriangle },
   completed: { label: 'Atteint !', variant: 'gold' as const, icon: CheckCircle },
-  overdue: { label: 'Dépassé', variant: 'red' as const, icon: AlertTriangle },
+  overdue: { label: 'Depassé', variant: 'red' as const, icon: AlertTriangle },
 }
 
 export default function ObjectifsPage() {
-  const { objectifs, coffres, addObjectif, deleteObjectif, user } = useAppStore()
+  const { data: objectifs = [], isLoading, create, remove } = useObjectifs()
+  const { data: coffres = [] } = useCoffres()
   const [showModal, setShowModal] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', coffreId: '', targetAmount: '', deadline: '' })
 
   const handleCreate = () => {
-    if (!form.name || !form.targetAmount || !form.deadline) {
-      toast.error('Remplissez tous les champs obligatoires')
-      return
-    }
-    const target = Number(form.targetAmount)
-    const coffre = coffres.find(c => c.id === form.coffreId)
-    const current = coffre?.currentAmount || 0
-    const objectif: Objectif = {
-      id: `obj-${Date.now()}`,
-      userId: user?.id || 'guest',
-      coffreId: form.coffreId,
+    if (!form.name || !form.targetAmount || !form.deadline) return
+    create.mutate({
       name: form.name,
-      targetAmount: target,
-      currentAmount: current,
-      currency: 'XOF',
+      coffreId: form.coffreId,
+      targetAmount: Number(form.targetAmount),
       deadline: form.deadline,
-      status: 'on_track',
-      progressPercent: Math.round((current / target) * 100),
-      estimatedCompletion: 'À calculer',
-      createdAt: new Date().toISOString(),
-    }
-    addObjectif(objectif)
-    setShowModal(false)
-    setForm({ name: '', coffreId: '', targetAmount: '', deadline: '' })
-    toast.success('Objectif créé !')
+    }, {
+      onSuccess: () => {
+        setShowModal(false)
+        setForm({ name: '', coffreId: '', targetAmount: '', deadline: '' })
+      }
+    })
   }
 
   const handleDelete = (id: string) => {
-    deleteObjectif(id)
-    setConfirmDelete(null)
-    toast.success('Objectif supprimé')
+    remove.mutate(id, { onSuccess: () => setConfirmDelete(null) })
   }
+
+  if (isLoading) return (
+    <AppLayout>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="animate-spin text-gold" size={32} />
+      </div>
+    </AppLayout>
+  )
 
   return (
     <AppLayout>
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-gray-800 dark:text-white">Mes <span className="text-glow-blue">Objectifs</span> d'Épargne</h1>
-          <p className="text-sm text-gray-500">Définissez vos cibles et suivez votre progression avec l'aide de l'IA</p>
+          <h1 className="text-lg font-bold text-gray-800 dark:text-white">Mes <span className="text-glow-blue">Objectifs</span> d Epargne</h1>
+          <p className="text-sm text-gray-500">Définissez vos cibles et suivez votre progression avec l aide de l IA</p>
         </div>
         <Button onClick={() => setShowModal(true)}><Plus size={15} /> Nouvel objectif</Button>
       </div>
@@ -74,7 +67,7 @@ export default function ObjectifsPage() {
       {objectifs.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🎯</div>
-          <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">Aucun objectif pour l'instant</h3>
+          <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">Aucun objectif pour l instant</h3>
           <p className="text-sm text-gray-400 mb-5">Définissez votre premier objectif financier pour rester motivé</p>
           <Button onClick={() => setShowModal(true)}><Plus size={14} /> Créer mon premier objectif</Button>
         </div>
@@ -82,7 +75,7 @@ export default function ObjectifsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
           {objectifs.map(obj => {
             const pct = calcProgress(obj.currentAmount, obj.targetAmount)
-            const sc = STATUS_CONFIG[obj.status as keyof typeof STATUS_CONFIG]
+            const sc = STATUS_CONFIG[obj.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.on_track
             const StatusIcon = sc.icon
             const coffre = coffres.find(c => c.id === obj.coffreId)
             return (
@@ -95,7 +88,7 @@ export default function ObjectifsPage() {
                     <div>
                       <h3 className="font-semibold text-gray-800 dark:text-white text-sm">{obj.name}</h3>
                       <p className="text-[11px] text-gray-400">
-                        {coffre ? `Coffre: ${coffre.name}` : 'Sans coffre'} · Échéance {new Date(obj.deadline).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                        {coffre ? `Coffre: ${coffre.name}` : 'Sans coffre'} · Echeance {new Date(obj.deadline).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
                       </p>
                     </div>
                   </div>
@@ -117,7 +110,7 @@ export default function ObjectifsPage() {
                     <TrendingUp size={12} className="inline mr-1" />
                     {obj.targetAmount - obj.currentAmount > 0 ? (obj.targetAmount - obj.currentAmount).toLocaleString('fr-FR') + ' F restants' : 'Objectif atteint !'}
                   </span>
-                  <span className="text-xs font-medium text-glow-blue">~{obj.estimatedCompletion}</span>
+                  <span className="text-xs font-medium text-glow-blue">{pct}%</span>
                 </div>
                 {obj.aiAdvice && (
                   <div className="mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 rounded-lg p-3 text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -134,9 +127,9 @@ export default function ObjectifsPage() {
         </div>
       )}
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nouvel objectif d'épargne">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nouvel objectif d epargne">
         <div className="space-y-4">
-          <Input label="Nom de l'objectif" placeholder="Ex: Vacances, Voiture, Maison..." value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+          <Input label="Nom de l objectif" placeholder="Ex: Vacances, Voiture, Maison..." value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
           {coffres.length > 0 && (
             <Select label="Coffre associé (optionnel)" value={form.coffreId} onChange={e => setForm({ ...form, coffreId: e.target.value })}
               options={[{ value: '', label: 'Aucun coffre' }, ...coffres.map(c => ({ value: c.id, label: `${c.icon} ${c.name}` }))]} />
@@ -145,7 +138,9 @@ export default function ObjectifsPage() {
           <Input label="Date limite" type="date" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} />
           <div className="flex gap-2 pt-1">
             <Button variant="outline" className="flex-1" onClick={() => setShowModal(false)}>Annuler</Button>
-            <Button className="flex-1" onClick={handleCreate}>Créer l'objectif</Button>
+            <Button className="flex-1" onClick={handleCreate} disabled={create.isPending}>
+              {create.isPending ? <Loader2 size={15} className="animate-spin" /> : "Creer l objectif"}
+            </Button>
           </div>
         </div>
       </Modal>
@@ -154,7 +149,9 @@ export default function ObjectifsPage() {
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Cette action est irréversible.</p>
         <div className="flex gap-2">
           <Button variant="outline" className="flex-1" onClick={() => setConfirmDelete(null)}>Annuler</Button>
-          <Button variant="danger" className="flex-1" onClick={() => confirmDelete && handleDelete(confirmDelete)}>Supprimer</Button>
+          <Button variant="danger" className="flex-1" onClick={() => confirmDelete && handleDelete(confirmDelete)} disabled={remove.isPending}>
+            {remove.isPending ? <Loader2 size={15} className="animate-spin" /> : 'Supprimer'}
+          </Button>
         </div>
       </Modal>
     </AppLayout>
