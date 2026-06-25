@@ -8,6 +8,8 @@ import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { useAppStore } from '@/store/useAppStore'
+import { useAccounts } from '@/hooks/useAccounts'
+import { useTransactions } from '@/hooks/useTransactions'
 import { Account, Transaction } from '@/types'
 import toast from 'react-hot-toast'
 import { cn } from '@/lib/utils'
@@ -212,7 +214,10 @@ function AccountCard({ account, allTx, onDelete, onToggleVisible, onToggleExpand
 type ModalMode = 'mobile' | 'platform' | 'url' | null
 
 export default function IntegrationsPage() {
-  const { accounts, addAccount, deleteAccount, toggleAccountVisible, addTransactions, transactions, user } = useAppStore()
+  const { user } = useAppStore()
+  const { data: accounts = [], createAccount, removeAccount } = useAccounts()
+  const { data: transactions = [], create: createTransaction } = useTransactions(500)
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
 
   const [modal, setModal]               = useState<ModalMode>(null)
   const [expandedIds, setExpandedIds]   = useState<Record<string, boolean>>({})
@@ -246,22 +251,40 @@ export default function IntegrationsPage() {
   }
 
   const connect = (opts: { id: string; name: string; type: any; provider: any; logoEl?: React.ReactNode }) => {
-    const accountId = `acc-${Date.now()}`
-    const newAcc: Account & { visible?: boolean } = {
-      id: accountId, userId: user?.id || 'guest',
-      type: opts.type, provider: opts.provider,
-      name: opts.name,
-      balance: Math.floor(Math.random() * 250000) + 30000,
-      currency: 'XOF', isConnected: true,
-      lastSync: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      visible: true,
-    }
-    addAccount(newAcc)
-    addTransactions(genTx(accountId, opts.provider, opts.name))
-    setExpandedIds(p => ({ ...p, [accountId]: true }))
-    toast.success(`${opts.name} connecté ! Transactions importées.`)
-    return accountId
+    const tempId = `temp-${Date.now()}`
+    const balance = Math.floor(Math.random() * 250000) + 30000
+    createAccount.mutate(
+      {
+        type: opts.type,
+        provider: opts.provider,
+        name: opts.name,
+        balance,
+        currency: 'XOF',
+        isConnected: true,
+        lastSync: new Date().toISOString(),
+      },
+      {
+        onSuccess: (savedAcc) => {
+          const realId = savedAcc.id
+          const txs = genTx(realId, opts.provider, opts.name)
+          txs.forEach(tx => {
+            createTransaction.mutate({
+              type: tx.type,
+              amount: tx.amount,
+              currency: tx.currency,
+              category: tx.category,
+              description: tx.description,
+              date: tx.date,
+              accountId: realId,
+              isRecurring: false,
+            })
+          })
+          setExpandedIds(p => ({ ...p, [realId]: true }))
+          toast.success(`${opts.name} connecté ! Transactions importées.`)
+        },
+      }
+    )
+    return tempId
   }
 
   const handleConnectMobile = () => {
@@ -287,7 +310,7 @@ export default function IntegrationsPage() {
     closeModal()
   }
 
-  const handleDelete = (id: string) => { deleteAccount(id); setConfirmDel(null); toast.success('Intégration supprimée') }
+  const handleDelete = (id: string) => { removeAccount.mutate(id); setConfirmDel(null) }
   const toggleExpand = (id: string) => setExpandedIds(p => ({ ...p, [id]: !p[id] }))
 
   const availableMobile = MOBILE_MONEY_PROVIDERS.filter(p => !connectedProviders.includes(p.id as any))
@@ -323,10 +346,10 @@ export default function IntegrationsPage() {
             const prov = MOBILE_MONEY_PROVIDERS.find(p => p.id === acc.provider)
             const Logo = prov ? <prov.Logo size={40}/> : <UrlLogo size={40} name={acc.name}/>
             return (
-              <AccountCard key={acc.id} account={acc} allTx={transactions}
+              <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
                 LogoEl={Logo}
                 onDelete={() => setConfirmDel(acc.id)}
-                onToggleVisible={() => toggleAccountVisible(acc.id)}
+                onToggleVisible={() => setHiddenIds(prev => { const next = new Set(prev); next.has(acc.id) ? next.delete(acc.id) : next.add(acc.id); return next })}
                 onToggleExpand={() => toggleExpand(acc.id)}
                 expanded={!!expandedIds[acc.id]}
               />
@@ -385,10 +408,10 @@ export default function IntegrationsPage() {
               const prov = PLATFORM_PROVIDERS.find(p => p.id === acc.provider)
               const Logo = prov ? <prov.Logo size={40}/> : <UrlLogo size={40} name={acc.name}/>
               return (
-                <AccountCard key={acc.id} account={acc} allTx={transactions}
+                <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
                   LogoEl={Logo}
                   onDelete={() => setConfirmDel(acc.id)}
-                  onToggleVisible={() => toggleAccountVisible(acc.id)}
+                  onToggleVisible={() => setHiddenIds(prev => { const next = new Set(prev); next.has(acc.id) ? next.delete(acc.id) : next.add(acc.id); return next })}
                   onToggleExpand={() => toggleExpand(acc.id)}
                   expanded={!!expandedIds[acc.id]}
                 />
@@ -425,10 +448,10 @@ export default function IntegrationsPage() {
             )}
 
             {platformAccounts.filter(a => a.type === 'custom').map(acc => (
-              <AccountCard key={acc.id} account={acc} allTx={transactions}
+              <AccountCard key={acc.id} account={{ ...acc, visible: !hiddenIds.has(acc.id) }} allTx={transactions}
                 LogoEl={<UrlLogo size={40} name={acc.name}/>}
                 onDelete={() => setConfirmDel(acc.id)}
-                onToggleVisible={() => toggleAccountVisible(acc.id)}
+                onToggleVisible={() => setHiddenIds(prev => { const next = new Set(prev); next.has(acc.id) ? next.delete(acc.id) : next.add(acc.id); return next })}
                 onToggleExpand={() => toggleExpand(acc.id)}
                 expanded={!!expandedIds[acc.id]}
               />

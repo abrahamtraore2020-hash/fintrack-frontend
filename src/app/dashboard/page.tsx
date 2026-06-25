@@ -8,10 +8,16 @@ import { Card, CardTitle } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
 import { Button } from '@/components/ui/Button'
 import { useAppStore } from '@/store/useAppStore'
+import { useCoffres } from '@/hooks/useCoffres'
+import { useObjectifs } from '@/hooks/useObjectifs'
+import { useTransactions } from '@/hooks/useTransactions'
 import { formatAmount, CATEGORY_COLORS, CATEGORY_LABELS_FR, timeAgo } from '@/lib/utils'
 
 export default function DashboardPage() {
-  const { user, transactions, coffres, objectifs } = useAppStore()
+  const { user } = useAppStore()
+  const { data: coffres = [] } = useCoffres()
+  const { data: objectifs = [] } = useObjectifs()
+  const { data: transactions = [] } = useTransactions(200)
 
   // Calculs réels basés sur les vraies transactions
   const now = new Date()
@@ -47,7 +53,7 @@ export default function DashboardPage() {
       })
     }
     return months
-  }, [transactions])
+  }, [transactions, currentMonth, currentYear])
 
   // Répartition dépenses par catégorie (mois en cours)
   const pieData = useMemo(() => {

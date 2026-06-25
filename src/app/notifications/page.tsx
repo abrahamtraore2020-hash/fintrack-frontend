@@ -9,7 +9,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
-import { useAppStore } from '@/store/useAppStore'
+import { useNotifications } from '@/hooks/useNotifications'
 import { timeAgo } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -23,7 +23,8 @@ const CHANNELS = [
 ]
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead } = useAppStore()
+  const { notifications: notifQuery, markRead, markAllRead } = useNotifications()
+  const notifications = notifQuery.data || []
   const [alarms, setAlarms] = useState<Alarm[]>([])
   const [channels, setChannels] = useState({ email: true, push_mobile: true, web_push: false, in_app: true })
   const [showModal, setShowModal] = useState(false)
@@ -56,7 +57,7 @@ export default function NotificationsPage() {
           <div className="flex items-center justify-between mb-3">
             <CardTitle className="mb-0"><Bell size={16} className="text-gold" /> Notifications récentes</CardTitle>
             {unread.length > 0 && (
-              <button onClick={markAllAsRead} className="text-xs text-gold hover:underline flex items-center gap-1">
+              <button onClick={() => markAllRead.mutate()} className="text-xs text-gold hover:underline flex items-center gap-1">
                 <Check size={11} /> Tout marquer lu
               </button>
             )}
@@ -70,7 +71,7 @@ export default function NotificationsPage() {
           ) : (
             <div className="space-y-2.5">
               {notifications.slice(0, 10).map(n => (
-                <button key={n.id} onClick={() => markAsRead(n.id)}
+                <button key={n.id} onClick={() => markRead.mutate(n.id)}
                   className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${!n.isRead ? 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-100 dark:border-yellow-800/30' : 'bg-white dark:bg-transparent border-gray-100 dark:border-dark-border'}`}>
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0 bg-gray-100 dark:bg-dark-bg">🔔</div>
                   <div className="flex-1 min-w-0">

@@ -11,28 +11,16 @@ import { Badge } from '@/components/ui/Badge'
 import { Toggle } from '@/components/ui/Toggle'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { useRecurrences, RecurrenceItem } from '@/hooks/useRecurrences'
 
 type Frequency = 'daily' | 'weekly' | 'monthly' | 'yearly'
 type RecurType = 'expense' | 'income'
 
-type Recurrence = {
-  id: string
-  name: string
-  emoji: string
-  amount: number
-  type: RecurType
-  frequency: Frequency
-  nextDate: string
-  category: string
-  active: boolean
-  account: string
-}
+type Recurrence = RecurrenceItem
 
 const FREQ_LABELS: Record<Frequency, string> = {
   daily: 'Quotidien', weekly: 'Hebdomadaire', monthly: 'Mensuel', yearly: 'Annuel',
 }
-
-const SEED: Recurrence[] = []
 
 const CATEGORY_EMOJIS: Record<string, string> = {
   'Logement': '🏠', 'Revenus': '💰', 'Loisirs': '🎭', 'Télécom': '📱',
@@ -40,7 +28,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 }
 
 export default function RecurrencesPage() {
-  const [items, setItems] = useState<Recurrence[]>(SEED)
+  const { data: items = [], isLoading, create, update, remove, toggle } = useRecurrences()
   const [showModal, setShowModal] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | RecurType>('all')
@@ -73,16 +61,17 @@ export default function RecurrencesPage() {
   const save = () => {
     if (!form.name || !form.amount) return toast.error('Remplissez tous les champs')
     if (editId) {
-      setItems(p => p.map(i => i.id === editId ? { ...i, ...form, amount: Number(form.amount), emoji: CATEGORY_EMOJIS[form.category] || '📦' } : i))
-      toast.success('Transaction récurrente mise à jour')
+      update.mutate({ id: editId, ...form, amount: Number(form.amount), emoji: CATEGORY_EMOJIS[form.category] || '📦' })
     } else {
-      setItems(p => [...p, { id: `r-${Date.now()}`, ...form, amount: Number(form.amount), active: true, emoji: CATEGORY_EMOJIS[form.category] || '📦' }])
-      toast.success('Transaction récurrente créée')
+      create.mutate({ ...form, amount: Number(form.amount), active: true, emoji: CATEGORY_EMOJIS[form.category] || '📦' })
     }
     setShowModal(false)
   }
-  const remove = (id: string) => { setItems(p => p.filter(i => i.id !== id)); toast.success('Supprimé') }
-  const toggle = (id: string) => setItems(p => p.map(i => i.id === id ? { ...i, active: !i.active } : i))
+  const handleRemove = (id: string) => remove.mutate(id)
+  const handleToggle = (id: string) => {
+    const item = items.find(i => i.id === id)
+    if (item) toggle.mutate({ id, active: !item.active })
+  }
 
   const daysUntil = (date: string) => {
     const diff = Math.ceil((new Date(date).getTime() - Date.now()) / 86400000)
@@ -101,7 +90,7 @@ export default function RecurrencesPage() {
           </h1>
           <p className="text-sm text-gray-500">Abonnements, salaires, loyers — automatisés</p>
         </div>
-        <Button onClick={openAdd}><Plus size={15} /> Ajouter</Button>
+        <Button onClick={openAdd} disabled={isLoading}><Plus size={15} /> Ajouter</Button>
       </div>
 
       {/* KPIs */}
@@ -182,11 +171,11 @@ export default function RecurrencesPage() {
               <span className={cn('text-sm font-bold flex-shrink-0', r.type === 'income' ? 'text-green-600' : 'text-red-500')}>
                 {r.type === 'income' ? '+' : '-'}{r.amount.toLocaleString('fr-FR')} F
               </span>
-              <Toggle checked={r.active} onChange={() => toggle(r.id)} />
+              <Toggle checked={r.active} onChange={() => handleToggle(r.id)} />
               <button onClick={() => openEdit(r)} className="p-1.5 text-gray-400 hover:text-gold transition-colors">
                 <Edit2 size={13} />
               </button>
-              <button onClick={() => remove(r.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+              <button onClick={() => handleRemove(r.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
                 <Trash2 size={13} />
               </button>
             </div>

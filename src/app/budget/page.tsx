@@ -11,7 +11,9 @@ import { ProgressBar } from '@/components/ui/ProgressBar'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { useBudget, BudgetItem as BudgetItemDB } from '@/hooks/useBudget'
 
+// Local display type mapping budgetLimit → limit
 type BudgetItem = {
   id: string
   category: string
@@ -20,8 +22,6 @@ type BudgetItem = {
   spent: number
   color: string
 }
-
-const DEFAULT_BUDGETS: BudgetItem[] = []
 
 const CATEGORY_OPTIONS = [
   { emoji: '🍽️', label: 'Alimentation' },
@@ -43,7 +43,9 @@ const CATEGORY_OPTIONS = [
 const COLORS = ['#F59E0B','#3B82F6','#8B5CF6','#EC4899','#10B981','#6366F1','#EF4444','#14B8A6']
 
 export default function BudgetPage() {
-  const [budgets, setBudgets] = useState<BudgetItem[]>(DEFAULT_BUDGETS)
+  const { data: rawBudgets = [], isLoading, create, update, remove } = useBudget()
+  // Map DB type (budgetLimit) to local display type (limit)
+  const budgets: BudgetItem[] = rawBudgets.map(b => ({ id: b.id, category: b.category, emoji: b.emoji, limit: b.budgetLimit, spent: b.spent, color: b.color }))
   const [showModal, setShowModal] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState({ category: 'Alimentation', emoji: '🍽️', limit: '', spent: '' })
@@ -66,18 +68,16 @@ export default function BudgetPage() {
   const save = () => {
     if (!form.limit) return toast.error('Entrez un plafond')
     if (editId) {
-      setBudgets(p => p.map(b => b.id === editId ? { ...b, category: form.category, emoji: form.emoji, limit: Number(form.limit), spent: Number(form.spent || b.spent) } : b))
-      toast.success('Budget mis à jour')
+      const existing = rawBudgets.find(b => b.id === editId)
+      update.mutate({ id: editId, category: form.category, emoji: form.emoji, budgetLimit: Number(form.limit), spent: Number(form.spent || existing?.spent || 0) })
     } else {
       const colorIdx = budgets.length % COLORS.length
-      setBudgets(p => [...p, { id: `b-${Date.now()}`, category: form.category, emoji: form.emoji, limit: Number(form.limit), spent: Number(form.spent || 0), color: COLORS[colorIdx] }])
-      toast.success('Budget créé')
+      create.mutate({ category: form.category, emoji: form.emoji, budgetLimit: Number(form.limit), spent: Number(form.spent || 0), color: COLORS[colorIdx] })
     }
     setShowModal(false)
   }
-  const remove = (id: string) => {
-    setBudgets(p => p.filter(b => b.id !== id))
-    toast.success('Budget supprimé')
+  const handleRemove = (id: string) => {
+    remove.mutate(id)
   }
 
   const chartData = budgets.map(b => ({ name: b.category, plafond: b.limit, dépensé: b.spent }))
@@ -92,8 +92,9 @@ export default function BudgetPage() {
           </h1>
           <p className="text-sm text-gray-500">Définissez vos plafonds de dépenses mensuels</p>
         </div>
-        <Button onClick={openAdd}><Plus size={15} /> Nouveau budget</Button>
+        <Button onClick={openAdd} disabled={isLoading}><Plus size={15} /> Nouveau budget</Button>
       </div>
+      {isLoading && <div className="text-center py-6 text-gray-400 text-sm">Chargement...</div>}
 
       {/* Alertes */}
       {(overBudget.length > 0 || nearLimit.length > 0) && (
@@ -201,7 +202,7 @@ export default function BudgetPage() {
                   <button onClick={() => openEdit(b)} className="p-1 text-gray-400 hover:text-gold transition-colors">
                     <Edit2 size={12} />
                   </button>
-                  <button onClick={() => remove(b.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                  <button onClick={() => handleRemove(b.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
                     <Trash2 size={12} />
                   </button>
                 </div>
