@@ -24,7 +24,22 @@ export function useAuth() {
           .select('*')
           .eq('id', session.user.id)
           .single()
-        if (profile) setUser(profile)
+        if (profile) {
+          setUser(profile)
+        } else {
+          // Profil absent — on crée un utilisateur minimal pour que les hooks fonctionnent
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: '',
+            lastName: '',
+            profile: 'personal',
+            plan: 'starter',
+            currency: 'XOF',
+            lang: 'fr',
+            createdAt: session.user.created_at,
+          })
+        }
         if (event === 'SIGNED_IN') router.push('/dashboard')
       } else {
         logout()
