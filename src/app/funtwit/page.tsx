@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { useAppStore } from '@/store/useAppStore'
+import { useFuntwitPosts } from '@/hooks/useFuntwitPosts'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -1048,69 +1049,50 @@ function LiveSection({ myInitials, myColor, myName }: { myInitials: string; myCo
 // ── Main page ───────────────────────────────────────────────────────────────────
 export default function FuntwitPage() {
   const { user } = useAppStore()
-  const [posts, setPosts] = useState<Post[]>(SEED_POSTS)
+  const { posts, isLoading: postsLoading, createPost, react, addComment, sharePost } = useFuntwitPosts()
   const [activeTab, setActiveTab] = useState<'feed'|'reels'|'explorer'|'groupes'|'live'>('feed')
   const [searchQuery, setSearchQuery] = useState('')
   const [activeStory, setActiveStory] = useState<Story | null>(null)
   const [stories, setStories] = useState<Story[]>(STORIES)
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
 
   const currentUserId = user?.id || 'me'
   const currentUserName = user ? `${user.firstName} ${user.lastName}` : 'Moi'
   const currentInitials = user ? `${user.firstName?.[0] || '?'}${user.lastName?.[0] || ''}` : 'ME'
   const currentColor = '#06D6A0'
 
-  const handlePost = (text: string, badge: any, media: MediaItem[]) => {
+  const handlePost = async (text: string, badge: any, media: MediaItem[]) => {
     const hashtags = text.match(/#\w+/g) || []
-    const post: Post = {
-      id: `p-${Date.now()}`, userId: currentUserId,
-      name: currentUserName, initials: currentInitials, color: currentColor,
-      content: text, badge, media: media.length > 0 ? media : undefined,
-      hashtags, reactions: { like: [], love: [], haha: [], wow: [], fire: [] },
-      comments: [], shares: 0, saved: false, createdAt: new Date().toISOString(),
+    try {
+      await createPost.mutateAsync({ content: text, badge, media, hashtags, color: currentColor })
+      toast.success('Publication partagée sur FUNTWIT ! 🎉')
+    } catch {
+      toast.error('Erreur lors de la publication')
     }
-    setPosts(p => [post, ...p])
-    toast.success('Publication partagée sur FUNTWIT ! 🎉')
   }
 
   const handleReact = (postId: string, reaction: Reaction) => {
-    setPosts(p => p.map(post => {
-      if (post.id !== postId) return post
-      const newReactions = { ...post.reactions }
-      // Remove existing reaction
-      ;(Object.keys(newReactions) as Reaction[]).forEach(r => {
-        newReactions[r] = newReactions[r].filter(id => id !== currentUserId)
-      })
-      // Add new if different
-      const wasReacted = (Object.keys(post.reactions) as Reaction[]).some(r =>
-        r === reaction && post.reactions[r].includes(currentUserId)
-      )
-      if (!wasReacted) newReactions[reaction] = [...newReactions[reaction], currentUserId]
-      return { ...post, reactions: newReactions }
-    }))
+    react.mutate({ postId, reaction, userId: currentUserId })
   }
 
   const handleComment = (postId: string, text: string) => {
-    setPosts(p => p.map(post => {
-      if (post.id !== postId) return post
-      const comment: Comment = {
-        id: `c-${Date.now()}`, userId: currentUserId,
-        name: currentUserName, initials: currentInitials,
-        color: currentColor, text, likes: 0,
-        createdAt: new Date().toISOString(),
-      }
-      return { ...post, comments: [...post.comments, comment] }
-    }))
+    addComment.mutate({ postId, text })
   }
 
   const handleSave = (postId: string) => {
-    setPosts(p => p.map(post => post.id === postId ? { ...post, saved: !post.saved } : post))
-    toast.success('Post sauvegardé !')
+    setSavedIds(s => {
+      const next = new Set(s)
+      if (next.has(postId)) next.delete(postId)
+      else next.add(postId)
+      return next
+    })
+    toast.success(savedIds.has(postId) ? 'Post retiré des sauvegardes' : 'Post sauvegardé !')
   }
 
   const handleShare = (postId: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/funtwit#${postId}`)
     toast.success('Lien copié ! Partagez sur WhatsApp 📲')
-    setPosts(p => p.map(post => post.id === postId ? { ...post, shares: post.shares + 1 } : post))
+    sharePost.mutate(postId)
   }
 
   const handleStoryClick = (story: Story) => {
@@ -1118,9 +1100,9 @@ export default function FuntwitPage() {
     setActiveStory(story)
   }
 
-  const filteredPosts = posts.filter(p =>
-    !searchQuery || p.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.hashtags.some(h => h.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredPosts = (posts as any[]).filter(p =>
+    !searchQuery || p.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.hashtags || []).some((h: string) => h.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   const communityStats = [
@@ -1214,14 +1196,24 @@ export default function FuntwitPage() {
           {activeTab === 'feed' && (
             <>
               <ComposeBox myInitials={currentInitials} myColor={currentColor} onPost={handlePost}/>
-              {filteredPosts.length === 0 ? (
-                <div className="text-center py-16 text-gray-400">
-                  <p className="text-5xl mb-3">🔍</p>
-                  <p className="text-sm font-medium">Aucun post trouvé pour "{searchQuery}"</p>
+              {postsLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-[#fe2c55] border-t-transparent rounded-full animate-spin"/>
+                    <p className="text-[#888] text-xs">Chargement des publications...</p>
+                  </div>
+                </div>
+              ) : filteredPosts.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-5xl mb-3">{searchQuery ? '🔍' : '✨'}</p>
+                  <p className="text-sm font-medium text-white">
+                    {searchQuery ? `Aucun post pour "${searchQuery}"` : 'Soyez le premier à publier !'}
+                  </p>
+                  {!searchQuery && <p className="text-xs text-[#888] mt-1">Partagez votre expérience financière avec la communauté</p>}
                 </div>
               ) : (
                 filteredPosts.map(post => (
-                  <PostCard key={post.id} post={post}
+                  <PostCard key={post.id} post={{ ...post, saved: savedIds.has(post.id) }}
                     currentUserId={currentUserId} currentUserName={currentUserName}
                     currentInitials={currentInitials} currentColor={currentColor}
                     onReact={handleReact} onComment={handleComment}
@@ -1262,7 +1254,7 @@ export default function FuntwitPage() {
               <p className="text-sm font-bold text-white">{currentUserName}</p>
               <p className="text-xs tt-sub">{user?.profile || 'Particulier'}</p>
               <div className="flex gap-4 mt-3 text-center">
-                <div><p className="text-sm font-bold text-white">{posts.filter(p => p.userId === currentUserId).length}</p><p className="text-[10px] tt-muted">Posts</p></div>
+                <div><p className="text-sm font-bold text-white">{(posts as any[]).filter(p => p.userId === currentUserId).length}</p><p className="text-[10px] tt-muted">Posts</p></div>
                 <div><p className="text-sm font-bold text-white">0</p><p className="text-[10px] tt-muted">Abonnés</p></div>
                 <div><p className="text-sm font-bold text-white">0</p><p className="text-[10px] tt-muted">Abonnements</p></div>
               </div>
