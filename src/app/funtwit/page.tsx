@@ -170,7 +170,7 @@ function StoriesBar({ stories, myInitials, myColor, onStoryClick }: {
             <Plus size={10} className="text-white"/>
           </div>
         </div>
-        <p className="text-[10px] text-gray-500 font-medium">Ma story</p>
+        <p className="text-[10px] tt-muted font-medium">Ma story</p>
       </div>
       {/* Stories des autres */}
       {stories.map(s => (
@@ -178,12 +178,12 @@ function StoriesBar({ stories, myInitials, myColor, onStoryClick }: {
           <div className="w-16 h-16 rounded-full flex items-center justify-center text-sm font-bold text-white"
             style={{
               background: s.color,
-              boxShadow: s.seen ? '0 0 0 3px white, 0 0 0 4px #D1D5DB' : `0 0 0 3px white, 0 0 0 4px ${s.color}`,
-              opacity: s.seen ? 0.7 : 1,
+              boxShadow: s.seen ? '0 0 0 3px #161616, 0 0 0 4px #444' : `0 0 0 3px #161616, 0 0 0 4px ${s.color}`,
+              opacity: s.seen ? 0.6 : 1,
             }}>
             {s.initials}
           </div>
-          <p className="text-[10px] text-gray-500 font-medium truncate w-16 text-center">{s.name}</p>
+          <p className="text-[10px] tt-muted font-medium truncate w-16 text-center">{s.name}</p>
         </div>
       ))}
     </div>
@@ -215,22 +215,22 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
   }
 
   return (
-    <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl overflow-hidden mb-4 shadow-sm">
+    <div className="tt-card border tt-border rounded-2xl overflow-hidden mb-4">
 
       {/* Header */}
       <div className="flex items-center gap-3 p-4 pb-2">
-        <div className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ring-2 ring-white dark:ring-dark-card"
+        <div className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ring-2 ring-[#2a2a2a]"
           style={{ background: post.color }}>
           {post.initials}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-gray-800 dark:text-white">{post.name}</p>
-          <p className="text-[11px] text-gray-400 flex items-center gap-1">
+          <p className="text-sm font-bold text-white">{post.name}</p>
+          <p className="text-[11px] tt-muted flex items-center gap-1">
             {timeAgo(post.createdAt)}
             {post.location && <> · 📍 {post.location}</>}
           </p>
         </div>
-        <button className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg text-gray-400 transition-colors">
+        <button className="p-1.5 rounded-full tt-hover text-[#666] transition-colors">
           <MoreHorizontal size={16}/>
         </button>
       </div>
@@ -246,11 +246,11 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
 
       {/* Content */}
       <div className="px-4 pb-3">
-        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{post.content}</p>
+        <p className="text-sm text-[#ddd] leading-relaxed whitespace-pre-line">{post.content}</p>
         {post.hashtags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {post.hashtags.map(tag => (
-              <span key={tag} className="text-xs text-blue-500 font-medium cursor-pointer hover:underline">{tag}</span>
+              <span key={tag} className="text-xs tt-tag font-bold cursor-pointer hover:underline">{tag}</span>
             ))}
           </div>
         )}
@@ -278,7 +278,7 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
 
       {/* Reaction + comment count */}
       {(total > 0 || post.comments.length > 0 || post.shares > 0) && (
-        <div className="flex items-center justify-between px-4 py-2 text-[11px] text-gray-400 border-b border-gray-50 dark:border-dark-border">
+        <div className="flex items-center justify-between px-4 py-2 text-[11px] tt-muted border-b tt-border">
           <div className="flex items-center gap-1">
             {top.length > 0 && <span>{top.join('')}</span>}
             {total > 0 && <span>{total.toLocaleString('fr-FR')}</span>}
@@ -291,10 +291,10 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
       )}
 
       {/* Action bar */}
-      <div className="flex items-center px-2 py-1 border-b border-gray-50 dark:border-dark-border relative">
+      <div className="flex items-center px-2 py-1 border-b tt-border relative">
         {/* Reactions popup */}
         {showReactions && (
-          <div className="absolute bottom-full left-2 mb-2 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl shadow-xl p-2 flex gap-1 z-20 animate-fade-in">
+          <div className="absolute bottom-full left-2 mb-2 tt-card border tt-border rounded-2xl shadow-xl p-2 flex gap-1 z-20 animate-fade-in">
             {REACTIONS_CONFIG.map(r => (
               <button key={r.key} onClick={() => { onReact(post.id, r.key); setShowReactions(false) }}
                 className="flex flex-col items-center gap-0.5 p-1.5 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-bg transition-all hover:scale-125">
@@ -311,7 +311,7 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
           onMouseLeave={() => { clearTimeout(reactionTimer.current); setTimeout(() => setShowReactions(false), 300) }}
           onClick={() => { if (!showReactions) onReact(post.id, 'like') }}
           className={cn('flex items-center gap-2 flex-1 justify-center py-2 rounded-xl text-xs font-semibold transition-colors',
-            myReaction ? 'text-blue-500' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-dark-bg')}>
+            myReaction ? 'text-[#fe2c55]' : 'text-[#888] tt-hover')}>
           {myReaction ? (
             <span className="text-base">{REACTIONS_CONFIG.find(r => r.key === myReaction)?.emoji}</span>
           ) : (
@@ -321,17 +321,17 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
         </button>
 
         <button onClick={() => setShowComments(v => !v)}
-          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-xl text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-xl text-xs font-semibold text-[#888] tt-hover transition-colors">
           <MessageCircle size={16}/> Commenter
         </button>
 
         <button onClick={() => onShare(post.id)}
-          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-xl text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-xl text-xs font-semibold text-[#888] tt-hover transition-colors">
           <Share2 size={16}/> Partager
         </button>
 
         <button onClick={() => onSave(post.id)}
-          className={cn('p-2 rounded-xl transition-colors', post.saved ? 'text-gold' : 'text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-bg')}>
+          className={cn('p-2 rounded-xl transition-colors', post.saved ? 'text-[#fe2c55]' : 'text-[#888] tt-hover')}>
           <Bookmark size={16} fill={post.saved ? 'currentColor' : 'none'}/>
         </button>
       </div>
@@ -340,7 +340,7 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
       {showComments && (
         <div className="px-4 py-3 space-y-3">
           {post.comments.length > 2 && !showAllComments && (
-            <button onClick={() => setShowAllComments(true)} className="text-xs text-gray-500 hover:text-gray-700 font-medium">
+            <button onClick={() => setShowAllComments(true)} className="text-xs tt-muted hover:text-white font-medium">
               Voir les {post.comments.length - 2} commentaires précédents
             </button>
           )}
@@ -349,32 +349,27 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
                 style={{ background: c.color }}>{c.initials}</div>
               <div className="flex-1">
-                <div className="bg-gray-50 dark:bg-dark-bg rounded-2xl px-3 py-2">
-                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{c.name}</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{c.text}</p>
+                <div className="tt-card2 rounded-2xl px-3 py-2">
+                  <p className="text-xs font-bold text-white">{c.name}</p>
+                  <p className="text-xs text-[#bbb] mt-0.5">{c.text}</p>
                 </div>
                 <div className="flex items-center gap-3 mt-1 ml-3">
-                  <span className="text-[10px] text-gray-400">{timeAgo(c.createdAt)}</span>
-                  <button className="text-[10px] text-gray-500 font-semibold hover:text-blue-500">J'aime {c.likes > 0 && `· ${c.likes}`}</button>
-                  <button className="text-[10px] text-gray-500 font-semibold hover:text-blue-500">Répondre</button>
+                  <span className="text-[10px] tt-muted">{timeAgo(c.createdAt)}</span>
+                  <button className="text-[10px] text-[#888] font-semibold hover:text-[#fe2c55]">J'aime {c.likes > 0 && `· ${c.likes}`}</button>
+                  <button className="text-[10px] text-[#888] font-semibold hover:text-white">Répondre</button>
                 </div>
               </div>
             </div>
           ))}
-
-          {/* Write comment */}
           <div className="flex items-center gap-2 mt-2">
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
               style={{ background: currentColor }}>{currentInitials}</div>
-            <div className="flex-1 flex items-center gap-2 bg-gray-50 dark:bg-dark-bg border border-gray-100 dark:border-dark-border rounded-full px-3 py-2">
-              <input
-                value={commentText}
-                onChange={e => setCommentText(e.target.value)}
+            <div className="flex-1 flex items-center gap-2 tt-card2 border tt-border rounded-full px-3 py-2">
+              <input value={commentText} onChange={e => setCommentText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && commentText.trim()) { onComment(post.id, commentText.trim()); setCommentText('') } }}
                 placeholder="Écrire un commentaire..."
-                className="flex-1 bg-transparent text-xs text-gray-700 dark:text-gray-300 placeholder-gray-400 focus:outline-none"
-              />
-              <Smile size={14} className="text-gray-400"/>
+                className="flex-1 bg-transparent text-xs text-white placeholder-[#555] focus:outline-none"/>
+              <Smile size={14} className="text-[#555]"/>
             </div>
           </div>
         </div>
@@ -500,18 +495,18 @@ function ComposeBox({ myInitials, myColor, onPost }: {
   }
 
   return (
-    <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl mb-4 shadow-sm overflow-hidden">
+    <div className="tt-card border tt-border rounded-2xl mb-4 overflow-hidden">
       {/* Top */}
       <div className="flex items-center gap-3 p-4 pb-3">
         <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
           style={{ background: myColor }}>{myInitials}</div>
-        <button className="flex-1 text-left px-4 py-2.5 bg-gray-50 dark:bg-dark-bg rounded-full text-sm text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-border transition-colors"
+        <button className="flex-1 text-left px-4 py-2.5 tt-card2 rounded-full text-sm text-[#555] hover:bg-[#222] transition-colors"
           onClick={() => (document.getElementById('compose-textarea') as HTMLTextAreaElement)?.focus()}>
           Qu'avez-vous en tête ?
         </button>
       </div>
 
-      {/* Textarea (expands when focused) */}
+      {/* Textarea */}
       <div className="px-4 pb-3">
         <textarea
           id="compose-textarea"
@@ -519,7 +514,7 @@ function ComposeBox({ myInitials, myColor, onPost }: {
           onChange={e => setText(e.target.value)}
           placeholder="Partagez votre expérience financière, une astuce, un objectif atteint... Utilisez #hashtag pour être découvert"
           rows={text ? 4 : 2}
-          className="w-full text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 bg-transparent resize-none focus:outline-none leading-relaxed"
+          className="w-full text-sm text-white placeholder-[#555] bg-transparent resize-none focus:outline-none leading-relaxed"
         />
 
         {/* Badges */}
@@ -559,21 +554,21 @@ function ComposeBox({ myInitials, myColor, onPost }: {
       </div>
 
       {/* Action bar */}
-      <div className="flex items-center border-t border-gray-50 dark:border-dark-border px-4 py-2 gap-1">
+      <div className="flex items-center border-t tt-border px-4 py-2 gap-1">
         <input ref={fileRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleMedia}/>
         <button onClick={() => fileRef.current?.click()}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-green-400 tt-hover transition-colors">
           <Image size={15}/> Photo
         </button>
         <button onClick={() => fileRef.current?.click()}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-[#fe2c55] tt-hover transition-colors">
           <Video size={15}/> Vidéo
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
+        <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-yellow-400 tt-hover transition-colors">
           <Smile size={15}/> Feeling
         </button>
         <button onClick={submit} disabled={!text.trim() && previews.length === 0}
-          className="ml-auto px-5 py-2 bg-gold text-white text-xs font-bold rounded-xl hover:bg-gold-dark disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+          className="ml-auto px-5 py-2 bg-[#fe2c55] text-white text-xs font-bold rounded-xl hover:bg-[#e0254a] disabled:opacity-40 disabled:cursor-not-allowed transition-all">
           Publier
         </button>
       </div>
@@ -1146,21 +1141,43 @@ export default function FuntwitPage() {
       {/* Story viewer */}
       {activeStory && <StoryViewer story={activeStory} onClose={() => setActiveStory(null)}/>}
 
+      {/* ── TikTok theme override ── */}
+      <style>{`
+        .tt { color-scheme: dark; }
+        .tt-bg   { background: #000 !important; }
+        .tt-card { background: #161616 !important; border-color: #2a2a2a !important; }
+        .tt-card2{ background: #111 !important; border-color: #222 !important; }
+        .tt-input{ background: #1e1e1e !important; border-color: #333 !important; color: #fff !important; }
+        .tt-text { color: #fff !important; }
+        .tt-sub  { color: #aaa !important; }
+        .tt-muted{ color: #666 !important; }
+        .tt-btn  { background: #fff !important; color: #000 !important; }
+        .tt-btn:hover { background: #ddd !important; }
+        .tt-tag  { color: #fe2c55 !important; }
+        .tt-red  { color: #fe2c55 !important; }
+        .tt-border { border-color: #2a2a2a !important; }
+        .tt-hover:hover { background: #1e1e1e !important; }
+        .tt select, .tt input, .tt textarea { background: #1e1e1e !important; border-color: #333 !important; color: #fff !important; }
+        .tt select option { background: #1e1e1e; color: #fff; }
+      `}</style>
+
+      <div className="tt tt-bg -m-4 md:-m-5 p-4 md:p-5 min-h-screen">
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <span className="text-2xl">🌍</span> Fun<span className="text-gold">Twit</span>
+          <h1 className="text-xl font-bold tt-text flex items-center gap-2">
+            <span className="text-2xl">🌍</span> <span className="text-white">Fun</span><span className="text-[#fe2c55]">Twit</span>
           </h1>
-          <p className="text-xs text-gray-500">La communauté FUNTRACK — partagez, inspirez, progressez</p>
+          <p className="text-xs tt-sub">La communauté FUNTRACK — partagez, inspirez, progressez</p>
         </div>
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"/>
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Rechercher..."
-            className="pl-8 pr-4 py-2 text-xs border border-gray-200 dark:border-dark-border rounded-full bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold w-44"
+            className="pl-8 pr-4 py-2 text-xs border border-[#2a2a2a] rounded-full bg-[#161616] text-white placeholder-[#555] focus:outline-none focus:border-[#fe2c55] w-44"
           />
         </div>
       </div>
@@ -1172,7 +1189,7 @@ export default function FuntwitPage() {
           <StoriesBar stories={stories} myInitials={currentInitials} myColor={currentColor} onStoryClick={handleStoryClick}/>
 
           {/* Tabs */}
-          <div className="flex bg-gray-100 dark:bg-dark-bg rounded-2xl p-1 mb-4 gap-1 overflow-x-auto scrollbar-hide">
+          <div className="flex bg-[#111] rounded-2xl p-1 mb-4 gap-1 overflow-x-auto scrollbar-hide">
             {([
               { id: 'feed',     label: '🏠 Fil' },
               { id: 'reels',    label: '🎬 Reels' },
@@ -1183,8 +1200,8 @@ export default function FuntwitPage() {
               <button key={t.id} onClick={() => setActiveTab(t.id)}
                 className={cn('flex-shrink-0 px-3 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap',
                   activeTab === t.id
-                    ? 'bg-white dark:bg-dark-card text-gray-800 dark:text-white shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300')}>
+                    ? 'bg-[#fe2c55] text-white shadow-sm'
+                    : 'text-[#888] hover:text-white hover:bg-[#1e1e1e]')}>
                 {t.label}
                 {t.id === 'live' && SEED_LIVES.length > 0 && (
                   <span className="ml-1 w-1.5 h-1.5 rounded-full bg-red-500 inline-block animate-pulse"/>
@@ -1234,52 +1251,52 @@ export default function FuntwitPage() {
           )}
         </div>
 
-        {/* ── Sidebar droite ─────────────────────────────────────────────── */}
+        {/* ── Sidebar droite TikTok ──────────────────────────────────── */}
         <div className="space-y-4">
           {/* Mon profil */}
-          <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl overflow-hidden">
-            <div className="h-16 bg-gradient-to-r from-gold/40 to-blue-400/40"/>
+          <div className="tt-card border tt-border rounded-2xl overflow-hidden">
+            <div className="h-16 bg-gradient-to-r from-[#fe2c55]/40 to-[#06D6A0]/30"/>
             <div className="px-4 pb-4 -mt-8">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white border-4 border-white dark:border-dark-card mb-2"
+              <div className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white border-4 border-[#161616] mb-2"
                 style={{ background: currentColor }}>{currentInitials}</div>
-              <p className="text-sm font-bold text-gray-800 dark:text-white">{currentUserName}</p>
-              <p className="text-xs text-gray-500">{user?.profile || 'Particulier'}</p>
+              <p className="text-sm font-bold text-white">{currentUserName}</p>
+              <p className="text-xs tt-sub">{user?.profile || 'Particulier'}</p>
               <div className="flex gap-4 mt-3 text-center">
-                <div><p className="text-sm font-bold text-gray-800 dark:text-white">{posts.filter(p => p.userId === currentUserId).length}</p><p className="text-[10px] text-gray-400">Posts</p></div>
-                <div><p className="text-sm font-bold text-gray-800 dark:text-white">0</p><p className="text-[10px] text-gray-400">Abonnés</p></div>
-                <div><p className="text-sm font-bold text-gray-800 dark:text-white">0</p><p className="text-[10px] text-gray-400">Abonnements</p></div>
+                <div><p className="text-sm font-bold text-white">{posts.filter(p => p.userId === currentUserId).length}</p><p className="text-[10px] tt-muted">Posts</p></div>
+                <div><p className="text-sm font-bold text-white">0</p><p className="text-[10px] tt-muted">Abonnés</p></div>
+                <div><p className="text-sm font-bold text-white">0</p><p className="text-[10px] tt-muted">Abonnements</p></div>
               </div>
             </div>
           </div>
 
           {/* Stats communauté */}
-          <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl p-4">
-            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">📊 Communauté FUNTRACK</h3>
+          <div className="tt-card border tt-border rounded-2xl p-4">
+            <h3 className="text-sm font-bold text-white mb-3">📊 Communauté</h3>
             <div className="grid grid-cols-2 gap-2">
               {communityStats.map((s, i) => (
-                <div key={i} className="bg-gray-50 dark:bg-dark-bg rounded-xl p-2.5 text-center">
+                <div key={i} className="tt-card2 border tt-border rounded-xl p-2.5 text-center">
                   <p className="text-base mb-0.5">{s.icon}</p>
-                  <p className="text-sm font-bold text-gray-800 dark:text-white">{s.value}</p>
-                  <p className="text-[10px] text-gray-400">{s.label}</p>
+                  <p className="text-sm font-bold text-white">{s.value}</p>
+                  <p className="text-[10px] tt-muted">{s.label}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Suggestions */}
-          <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl p-4">
-            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">👥 Personnes à suivre</h3>
+          <div className="tt-card border tt-border rounded-2xl p-4">
+            <h3 className="text-sm font-bold text-white mb-3">👥 Personnes à suivre</h3>
             <div className="space-y-3">
               {suggestedMembers.map((m, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                     style={{ background: m.color }}>{m.initials}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">{m.name}</p>
-                    <p className="text-[10px] text-gray-400">{m.bio} · {m.mutual} amis communs</p>
+                    <p className="text-xs font-semibold text-white truncate">{m.name}</p>
+                    <p className="text-[10px] tt-muted">{m.bio}</p>
                   </div>
-                  <button className="px-2.5 py-1 bg-gold/10 text-gold text-[10px] font-bold rounded-full hover:bg-gold/20 transition-colors flex-shrink-0">
-                    + Suivre
+                  <button className="px-3 py-1 bg-white text-black text-[10px] font-bold rounded-full hover:bg-gray-200 transition-colors flex-shrink-0">
+                    Suivre
                   </button>
                 </div>
               ))}
@@ -1287,26 +1304,26 @@ export default function FuntwitPage() {
           </div>
 
           {/* Trending */}
-          <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl p-4">
-            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">🔥 Tendances</h3>
+          <div className="tt-card border tt-border rounded-2xl p-4">
+            <h3 className="text-sm font-bold text-white mb-3">🔥 Tendances</h3>
             <div className="space-y-1">
               {TRENDING.map((tag, i) => (
                 <button key={tag} onClick={() => { setSearchQuery(tag); setActiveTab('feed') }}
-                  className="w-full flex items-center justify-between py-1.5 hover:bg-gray-50 dark:hover:bg-dark-bg rounded-xl px-2 transition-colors">
+                  className="w-full flex items-center justify-between py-1.5 tt-hover rounded-xl px-2 transition-colors">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-gray-300 font-mono w-4">{i + 1}</span>
-                    <span className="text-xs font-medium text-blue-500">{tag}</span>
+                    <span className="text-[10px] tt-muted font-mono w-4">{i + 1}</span>
+                    <span className="text-xs font-bold tt-tag">{tag}</span>
                   </div>
-                  <span className="text-[10px] text-gray-400">{(Math.floor(Math.random() * 200) + 50)}  posts</span>
+                  <span className="text-[10px] tt-muted">{Math.floor(Math.random() * 200) + 50} posts</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Règles */}
-          <div className="bg-gold/5 border border-gold/20 rounded-2xl p-4">
-            <h3 className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">📋 Règles FUNTWIT</h3>
-            <ul className="space-y-1 text-[11px] text-gray-500">
+          <div className="tt-card border border-[#fe2c55]/20 rounded-2xl p-4">
+            <h3 className="text-xs font-bold text-white mb-2">📋 Règles FUNTWIT</h3>
+            <ul className="space-y-1 text-[11px] tt-sub">
               <li>✅ Partagez vos succès financiers</li>
               <li>✅ Donnez des conseils constructifs</li>
               <li>✅ Respectez la vie privée de chacun</li>
@@ -1316,6 +1333,8 @@ export default function FuntwitPage() {
           </div>
         </div>
       </div>
+
+      </div>{/* end tt wrapper */}
     </AppLayout>
   )
 }
