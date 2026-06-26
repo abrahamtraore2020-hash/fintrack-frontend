@@ -2,9 +2,10 @@
 import { useState, useRef } from 'react'
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal,
-  ThumbsUp, Laugh, Zap, Search, Image, Video, X, Play,
-  Plus, TrendingUp, Target, BarChart2, Users, Compass,
-  ChevronLeft, ChevronRight, Send, Smile
+  ThumbsUp, Search, Image, Video, X, Play,
+  Plus, Users, Send, Smile, Radio, Calendar, Lock, Globe,
+  Mic, MicOff, VideoOff, PhoneOff, Hand, MessageSquare,
+  Clock, Star, Crown, ChevronRight, Bell, UserPlus, Settings
 } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { useAppStore } from '@/store/useAppStore'
@@ -580,11 +581,480 @@ function ComposeBox({ myInitials, myColor, onPost }: {
   )
 }
 
+// ── Types supplémentaires ───────────────────────────────────────────────────────
+type Group = {
+  id: string; name: string; description: string; category: string
+  color: string; emoji: string; members: number; isPrivate: boolean
+  joined: boolean; posts: number; cover?: string
+}
+type Webinar = {
+  id: string; title: string; host: string; hostInitials: string; hostColor: string
+  description: string; date: string; duration: number; registered: number
+  maxSlots: number; isRegistered: boolean; isPast: boolean; tags: string[]
+}
+type LiveSession = {
+  id: string; hostName: string; hostInitials: string; hostColor: string
+  title: string; viewers: number; startedAt: string; isLive: boolean
+  chatMessages: { name: string; initials: string; color: string; text: string }[]
+}
+
+// ── Seed groupes ────────────────────────────────────────────────────────────────
+const SEED_GROUPS: Group[] = [
+  { id: 'g1', name: 'Épargne & Investissement Afrique', description: 'Partagez vos stratégies d\'épargne et d\'investissement adaptées au contexte africain', category: 'Finance', color: '#22C55E', emoji: '💰', members: 1240, isPrivate: false, joined: true, posts: 48 },
+  { id: 'g2', name: 'Freelances & Entrepreneurs CI', description: 'Réseau des freelances et entrepreneurs basés en Côte d\'Ivoire', category: 'Business', color: '#F97316', emoji: '🚀', members: 834, isPrivate: false, joined: false, posts: 31 },
+  { id: 'g3', name: 'Mobile Money Experts', description: 'Tout sur Wave, Orange Money, MTN — astuces, comparatifs, actualités', category: 'Tech', color: '#3B82F6', emoji: '📱', members: 2100, isPrivate: false, joined: true, posts: 127 },
+  { id: 'g4', name: 'Objectifs 2025 — Challenge Épargne', description: 'Groupe privé pour le challenge épargne annuel. Postez vos progrès chaque semaine !', category: 'Challenge', color: '#8B5CF6', emoji: '🎯', members: 320, isPrivate: true, joined: false, posts: 89 },
+  { id: 'g5', name: 'Femmes & Finance', description: 'Espace dédié aux femmes africaines pour parler argent, business et indépendance financière', category: 'Communauté', color: '#EC4899', emoji: '👑', members: 671, isPrivate: false, joined: false, posts: 54 },
+  { id: 'g6', name: 'Immobilier Dakar & Abidjan', description: 'Investir dans l\'immobilier en Afrique de l\'Ouest — conseils, opportunités, témoignages', category: 'Immobilier', color: '#14B8A6', emoji: '🏠', members: 445, isPrivate: false, joined: false, posts: 22 },
+]
+
+// ── Seed webinaires ─────────────────────────────────────────────────────────────
+const SEED_WEBINARS: Webinar[] = [
+  {
+    id: 'w1', title: 'Comment épargner 20% de ses revenus en Afrique de l\'Ouest',
+    host: 'Ibrahim Coulibaly', hostInitials: 'IC', hostColor: '#F97316',
+    description: 'Stratégies concrètes et adaptées au contexte africain pour construire une épargne solide même avec un revenu irrégulier.',
+    date: new Date(Date.now() + 2 * 86400000).toISOString(),
+    duration: 60, registered: 187, maxSlots: 300, isRegistered: false, isPast: false,
+    tags: ['#épargne', '#budget', '#revenus'],
+  },
+  {
+    id: 'w2', title: 'Wave vs Orange Money — Comparatif 2025 pour les entrepreneurs',
+    host: 'Aminata Diallo', hostInitials: 'AD', hostColor: '#8B5CF6',
+    description: 'Analyse complète des deux plateformes : frais, limites, outils business, et lequel choisir selon votre activité.',
+    date: new Date(Date.now() + 7 * 86400000).toISOString(),
+    duration: 45, registered: 94, maxSlots: 200, isRegistered: true, isPast: false,
+    tags: ['#wave', '#orangemoney', '#entrepreneur'],
+  },
+  {
+    id: 'w3', title: 'Investir dans l\'immobilier avec 500 000 FCFA',
+    host: 'Moussa Sankara', hostInitials: 'MS', hostColor: '#14B8A6',
+    description: 'Est-ce possible ? Quelles stratégies ? Témoignages et cas réels d\'investisseurs débutants.',
+    date: new Date(Date.now() - 5 * 86400000).toISOString(),
+    duration: 90, registered: 412, maxSlots: 400, isRegistered: true, isPast: true,
+    tags: ['#immobilier', '#investissement', '#patrimoine'],
+  },
+]
+
+// ── Seed lives ──────────────────────────────────────────────────────────────────
+const SEED_LIVES: LiveSession[] = [
+  {
+    id: 'l1', hostName: 'Fatou Traoré', hostInitials: 'FT', hostColor: '#22C55E',
+    title: '🔴 LIVE — Je révèle mon bilan financier de juin en direct',
+    viewers: 143, startedAt: new Date(Date.now() - 18 * 60000).toISOString(), isLive: true,
+    chatMessages: [
+      { name: 'Kofi', initials: 'KM', color: '#3B82F6', text: 'Waouw impressionnant ! 🔥' },
+      { name: 'Marie', initials: 'MK', color: '#EC4899', text: 'Comment tu fais pour les coffres ?' },
+      { name: 'Oumar', initials: 'OK', color: '#F97316', text: 'Merci pour les conseils Fatou 🙏' },
+    ],
+  },
+]
+
+// ── Composant GroupCard ─────────────────────────────────────────────────────────
+function GroupCard({ group, onToggleJoin }: { group: Group; onToggleJoin: (id: string) => void }) {
+  return (
+    <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+      <div className="h-16 flex items-center justify-center text-4xl relative"
+        style={{ background: group.color + '25' }}>
+        {group.emoji}
+        {group.isPrivate && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-2 py-0.5">
+            <Lock size={9} className="text-white"/><span className="text-[9px] text-white">Privé</span>
+          </div>
+        )}
+      </div>
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <p className="text-xs font-bold text-gray-800 dark:text-white leading-tight">{group.name}</p>
+        </div>
+        <p className="text-[10px] text-gray-500 line-clamp-2 mb-2">{group.description}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[10px] text-gray-400">
+            <span className="flex items-center gap-1"><Users size={10}/>{group.members.toLocaleString('fr-FR')}</span>
+            <span>·</span>
+            <span>{group.posts} posts</span>
+          </div>
+          <button onClick={() => onToggleJoin(group.id)}
+            className={cn('px-3 py-1 rounded-full text-[10px] font-bold transition-all',
+              group.joined ? 'bg-gray-100 dark:bg-dark-bg text-gray-500 hover:bg-red-50 hover:text-red-500' : 'bg-gold text-white hover:bg-gold-dark')}>
+            {group.joined ? 'Membre ✓' : group.isPrivate ? '🔒 Demander' : '+ Rejoindre'}
+          </button>
+        </div>
+        <span className="text-[9px] px-2 py-0.5 rounded-full mt-2 inline-block" style={{ background: group.color + '20', color: group.color }}>{group.category}</span>
+      </div>
+    </div>
+  )
+}
+
+// ── Section Groupes ─────────────────────────────────────────────────────────────
+function GroupsSection({ myInitials, myColor }: { myInitials: string; myColor: string }) {
+  const [groups, setGroups] = useState<Group[]>(SEED_GROUPS)
+  const [showCreate, setShowCreate] = useState(false)
+  const [newGroup, setNewGroup] = useState({ name: '', description: '', category: 'Finance', isPrivate: false, emoji: '💬' })
+  const EMOJIS = ['💬','💰','📈','🚀','🎯','👑','🏠','📱','🤝','💡','🌍','🏆']
+  const CATEGORIES = ['Finance','Business','Tech','Communauté','Challenge','Immobilier','Santé','Éducation']
+
+  const toggleJoin = (id: string) => {
+    setGroups(g => g.map(gr => gr.id === id ? { ...gr, joined: !gr.joined, members: gr.joined ? gr.members - 1 : gr.members + 1 } : gr))
+    const g = groups.find(gr => gr.id === id)
+    if (g) toast.success(g.joined ? `Vous avez quitté ${g.name}` : `Bienvenue dans ${g.name} ! 🎉`)
+  }
+
+  const createGroup = () => {
+    if (!newGroup.name.trim()) return
+    const g: Group = {
+      id: `g-${Date.now()}`, name: newGroup.name, description: newGroup.description,
+      category: newGroup.category, color: myColor, emoji: newGroup.emoji,
+      members: 1, isPrivate: newGroup.isPrivate, joined: true, posts: 0,
+    }
+    setGroups(prev => [g, ...prev])
+    setShowCreate(false)
+    setNewGroup({ name: '', description: '', category: 'Finance', isPrivate: false, emoji: '💬' })
+    toast.success(`Groupe "${g.name}" créé ! 🎉`)
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-sm font-bold text-gray-800 dark:text-white">👥 Groupes & Communautés</h2>
+          <p className="text-xs text-gray-400">Rejoignez des groupes thématiques ou créez le vôtre</p>
+        </div>
+        <button onClick={() => setShowCreate(v => !v)}
+          className="flex items-center gap-1.5 px-3 py-2 bg-gold text-white text-xs font-bold rounded-xl hover:bg-gold-dark transition-colors">
+          <Plus size={13}/> Créer un groupe
+        </button>
+      </div>
+
+      {/* Create form */}
+      {showCreate && (
+        <div className="bg-white dark:bg-dark-card border border-gold/30 rounded-2xl p-4 mb-4 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">✨ Nouveau groupe</h3>
+          <div className="mb-3">
+            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Choisissez un emoji</label>
+            <div className="flex flex-wrap gap-2">
+              {EMOJIS.map(e => (
+                <button key={e} onClick={() => setNewGroup(n => ({ ...n, emoji: e }))}
+                  className={cn('w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all',
+                    newGroup.emoji === e ? 'bg-gold/20 ring-2 ring-gold' : 'bg-gray-50 dark:bg-dark-bg hover:bg-gray-100')}>
+                  {e}
+                </button>
+              ))}
+            </div>
+          </div>
+          <input value={newGroup.name} onChange={e => setNewGroup(n => ({ ...n, name: e.target.value }))}
+            placeholder="Nom du groupe *" maxLength={60}
+            className="w-full text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2.5 mb-3 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold"/>
+          <textarea value={newGroup.description} onChange={e => setNewGroup(n => ({ ...n, description: e.target.value }))}
+            placeholder="Description du groupe..." rows={2}
+            className="w-full text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2.5 mb-3 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold resize-none"/>
+          <div className="flex gap-3 mb-3">
+            <select value={newGroup.category} onChange={e => setNewGroup(n => ({ ...n, category: e.target.value }))}
+              className="flex-1 text-xs border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold">
+              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+            <button onClick={() => setNewGroup(n => ({ ...n, isPrivate: !n.isPrivate }))}
+              className={cn('flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all',
+                newGroup.isPrivate ? 'border-gold bg-gold/10 text-gold' : 'border-gray-200 dark:border-dark-border text-gray-500')}>
+              {newGroup.isPrivate ? <Lock size={12}/> : <Globe size={12}/>}
+              {newGroup.isPrivate ? 'Privé' : 'Public'}
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setShowCreate(false)} className="flex-1 py-2 rounded-xl text-xs font-bold border border-gray-200 dark:border-dark-border text-gray-500 hover:bg-gray-50">Annuler</button>
+            <button onClick={createGroup} disabled={!newGroup.name.trim()} className="flex-1 py-2 rounded-xl text-xs font-bold bg-gold text-white hover:bg-gold-dark disabled:opacity-40">Créer le groupe</button>
+          </div>
+        </div>
+      )}
+
+      {/* Mes groupes */}
+      {groups.filter(g => g.joined).length > 0 && (
+        <div className="mb-5">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Mes groupes</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {groups.filter(g => g.joined).map(g => <GroupCard key={g.id} group={g} onToggleJoin={toggleJoin}/>)}
+          </div>
+        </div>
+      )}
+
+      {/* Suggérés */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Découvrir</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {groups.filter(g => !g.joined).map(g => <GroupCard key={g.id} group={g} onToggleJoin={toggleJoin}/>)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Section Live & Webinaires ───────────────────────────────────────────────────
+function LiveSection({ myInitials, myColor, myName }: { myInitials: string; myColor: string; myName: string }) {
+  const [webinars, setWebinars] = useState<Webinar[]>(SEED_WEBINARS)
+  const [lives, setLives] = useState<LiveSession[]>(SEED_LIVES)
+  const [activeLive, setActiveLive] = useState<LiveSession | null>(null)
+  const [liveChat, setLiveChat] = useState('')
+  const [showSchedule, setShowSchedule] = useState(false)
+  const [isGoingLive, setIsGoingLive] = useState(false)
+  const [liveTitle, setLiveTitle] = useState('')
+  const [newWebinar, setNewWebinar] = useState({ title: '', description: '', date: '', duration: '60' })
+  const [liveMuted, setLiveMuted] = useState(false)
+  const [liveCamOff, setLiveCamOff] = useState(false)
+
+  const registerWebinar = (id: string) => {
+    setWebinars(w => w.map(wb => wb.id === id ? { ...wb, isRegistered: !wb.isRegistered, registered: wb.isRegistered ? wb.registered - 1 : wb.registered + 1 } : wb))
+    const wb = webinars.find(w => w.id === id)
+    if (wb) toast.success(wb.isRegistered ? 'Inscription annulée' : `Inscrit à "${wb.title}" ! Vous recevrez un rappel 📧`)
+  }
+
+  const startLive = () => {
+    if (!liveTitle.trim()) return
+    const session: LiveSession = {
+      id: `l-${Date.now()}`, hostName: myName, hostInitials: myInitials, hostColor: myColor,
+      title: `🔴 LIVE — ${liveTitle}`, viewers: 0,
+      startedAt: new Date().toISOString(), isLive: true, chatMessages: [],
+    }
+    setLives(prev => [session, ...prev])
+    setActiveLive(session)
+    setIsGoingLive(false)
+    setLiveTitle('')
+    toast.success('Vous êtes en direct ! 🔴')
+  }
+
+  const sendLiveChat = () => {
+    if (!liveChat.trim() || !activeLive) return
+    const msg = { name: myName, initials: myInitials, color: myColor, text: liveChat }
+    setActiveLive(l => l ? { ...l, chatMessages: [...l.chatMessages, msg] } : l)
+    setLiveChat('')
+  }
+
+  const scheduleWebinar = () => {
+    if (!newWebinar.title || !newWebinar.date) return
+    const wb: Webinar = {
+      id: `w-${Date.now()}`, title: newWebinar.title,
+      host: myName, hostInitials: myInitials, hostColor: myColor,
+      description: newWebinar.description,
+      date: new Date(newWebinar.date).toISOString(),
+      duration: Number(newWebinar.duration),
+      registered: 0, maxSlots: 200, isRegistered: true, isPast: false, tags: [],
+    }
+    setWebinars(prev => [wb, ...prev])
+    setShowSchedule(false)
+    setNewWebinar({ title: '', description: '', date: '', duration: '60' })
+    toast.success(`Webinaire "${wb.title}" planifié ! 📅`)
+  }
+
+  // Viewer Live modal
+  if (activeLive) return (
+    <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-dark-border bg-gray-900">
+      {/* Live header */}
+      <div className="relative bg-gray-800 flex items-center justify-center" style={{ minHeight: 300 }}>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white ring-4 ring-red-500 animate-pulse"
+            style={{ background: activeLive.hostColor }}>{activeLive.hostInitials}</div>
+          <p className="text-white font-bold text-sm">{activeLive.hostName}</p>
+          <p className="text-white/60 text-xs px-4 text-center">{activeLive.title}</p>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full"><Radio size={10} className="animate-pulse"/> EN DIRECT</span>
+            <span className="text-white/60 text-xs">{activeLive.viewers} spectateurs</span>
+          </div>
+        </div>
+        {/* My controls if host */}
+        {activeLive.hostInitials === myInitials && (
+          <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-3">
+            <button onClick={() => setLiveMuted(v => !v)}
+              className={cn('w-11 h-11 rounded-full flex items-center justify-center transition-all', liveMuted ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30')}>
+              {liveMuted ? <MicOff size={16} className="text-white"/> : <Mic size={16} className="text-white"/>}
+            </button>
+            <button onClick={() => setLiveCamOff(v => !v)}
+              className={cn('w-11 h-11 rounded-full flex items-center justify-center transition-all', liveCamOff ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30')}>
+              {liveCamOff ? <VideoOff size={16} className="text-white"/> : <Video size={16} className="text-white"/>}
+            </button>
+            <button onClick={() => { setActiveLive(null); setLives(l => l.filter(s => s.id !== activeLive.id)); toast('Live terminé') }}
+              className="w-11 h-11 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all">
+              <PhoneOff size={16} className="text-white"/>
+            </button>
+          </div>
+        )}
+        {activeLive.hostInitials !== myInitials && (
+          <button onClick={() => setActiveLive(null)} className="absolute top-3 right-3 p-1.5 bg-black/40 rounded-full"><X size={14} className="text-white"/></button>
+        )}
+      </div>
+
+      {/* Live chat */}
+      <div className="bg-gray-900 p-3" style={{ minHeight: 180 }}>
+        <p className="text-xs font-bold text-white/60 mb-2">💬 Chat en direct</p>
+        <div className="space-y-2 mb-3 max-h-32 overflow-y-auto">
+          {activeLive.chatMessages.map((m, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0" style={{ background: m.color }}>{m.initials}</div>
+              <div><span className="text-[10px] font-bold text-white/70">{m.name} </span><span className="text-[10px] text-white/60">{m.text}</span></div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input value={liveChat} onChange={e => setLiveChat(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && sendLiveChat()}
+            placeholder="Envoyer un message..."
+            className="flex-1 bg-white/10 rounded-full px-3 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:bg-white/15"/>
+          <button onClick={sendLiveChat} className="w-8 h-8 rounded-full bg-gold flex items-center justify-center flex-shrink-0"><Send size={13} className="text-white"/></button>
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="space-y-5">
+      {/* Actions rapides */}
+      <div className="grid grid-cols-2 gap-3">
+        <button onClick={() => setIsGoingLive(v => !v)}
+          className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20 hover:border-red-400 transition-all group">
+          <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Radio size={20} className="text-white"/>
+          </div>
+          <p className="text-xs font-bold text-red-600">🔴 Démarrer un Live</p>
+          <p className="text-[10px] text-red-400 text-center">Diffusez en temps réel à votre communauté</p>
+        </button>
+        <button onClick={() => setShowSchedule(v => !v)}
+          className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-blue-200 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 transition-all group">
+          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Calendar size={20} className="text-white"/>
+          </div>
+          <p className="text-xs font-bold text-blue-600">📅 Planifier un Webinaire</p>
+          <p className="text-[10px] text-blue-400 text-center">Programmez une session interactive</p>
+        </button>
+      </div>
+
+      {/* Go Live form */}
+      {isGoingLive && (
+        <div className="bg-gray-900 rounded-2xl p-4 border border-red-500/30">
+          <p className="text-white font-bold text-sm mb-3 flex items-center gap-2"><Radio size={14} className="text-red-500 animate-pulse"/> Démarrer un Live</p>
+          <input value={liveTitle} onChange={e => setLiveTitle(e.target.value)}
+            placeholder="Titre de votre live (ex: Je partage mon bilan mensuel...)"
+            className="w-full bg-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:bg-white/15 mb-3"/>
+          <div className="flex gap-2">
+            <button onClick={() => setIsGoingLive(false)} className="flex-1 py-2 rounded-xl text-xs font-bold border border-white/20 text-white/60">Annuler</button>
+            <button onClick={startLive} disabled={!liveTitle.trim()}
+              className="flex-1 py-2 rounded-xl text-xs font-bold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 flex items-center justify-center gap-1.5">
+              <Radio size={12}/> Démarrer
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule webinar form */}
+      {showSchedule && (
+        <div className="bg-white dark:bg-dark-card border border-blue-200 dark:border-blue-900/40 rounded-2xl p-4">
+          <p className="text-sm font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2"><Calendar size={14} className="text-blue-500"/> Planifier un webinaire</p>
+          <input value={newWebinar.title} onChange={e => setNewWebinar(n => ({ ...n, title: e.target.value }))}
+            placeholder="Titre du webinaire *"
+            className="w-full text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2.5 mb-3 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold"/>
+          <textarea value={newWebinar.description} onChange={e => setNewWebinar(n => ({ ...n, description: e.target.value }))}
+            placeholder="Description — de quoi allez-vous parler ?" rows={2}
+            className="w-full text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2.5 mb-3 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold resize-none"/>
+          <div className="flex gap-3 mb-3">
+            <input type="datetime-local" value={newWebinar.date} onChange={e => setNewWebinar(n => ({ ...n, date: e.target.value }))}
+              className="flex-1 text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold"/>
+            <select value={newWebinar.duration} onChange={e => setNewWebinar(n => ({ ...n, duration: e.target.value }))}
+              className="text-sm border border-gray-200 dark:border-dark-border rounded-xl px-3 py-2 bg-white dark:bg-dark-bg text-gray-700 dark:text-gray-300 focus:outline-none focus:border-gold">
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">1h</option>
+              <option value="90">1h30</option>
+              <option value="120">2h</option>
+            </select>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setShowSchedule(false)} className="flex-1 py-2 rounded-xl text-xs font-bold border border-gray-200 dark:border-dark-border text-gray-500">Annuler</button>
+            <button onClick={scheduleWebinar} disabled={!newWebinar.title || !newWebinar.date}
+              className="flex-1 py-2 rounded-xl text-xs font-bold bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-40">Planifier</button>
+          </div>
+        </div>
+      )}
+
+      {/* Lives actifs */}
+      {lives.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block"/>En direct maintenant
+          </p>
+          <div className="space-y-3">
+            {lives.map(live => (
+              <button key={live.id} onClick={() => setActiveLive(live)}
+                className="w-full text-left bg-gray-900 rounded-2xl overflow-hidden hover:ring-2 hover:ring-red-500 transition-all">
+                <div className="flex items-center gap-3 p-4">
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-sm"
+                      style={{ background: live.hostColor }}>{live.hostInitials}</div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-white animate-pulse"/>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-xs truncate">{live.title}</p>
+                    <p className="text-white/60 text-[10px] mt-0.5 flex items-center gap-1">
+                      <Users size={9}/> {live.viewers} spectateurs · démarré il y a {Math.floor((Date.now() - new Date(live.startedAt).getTime()) / 60000)} min
+                    </p>
+                  </div>
+                  <span className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">LIVE</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Webinaires */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">📅 Webinaires</p>
+        <div className="space-y-3">
+          {webinars.map(wb => (
+            <div key={wb.id} className={cn('bg-white dark:bg-dark-card border rounded-2xl p-4', wb.isPast ? 'border-gray-100 dark:border-dark-border opacity-70' : 'border-gray-100 dark:border-dark-border')}>
+              {wb.isPast && <span className="text-[9px] font-bold text-gray-400 bg-gray-100 dark:bg-dark-bg rounded-full px-2 py-0.5 mb-2 inline-block">Terminé — Replay disponible</span>}
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xs flex-shrink-0"
+                  style={{ background: wb.hostColor }}>{wb.hostInitials}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-gray-800 dark:text-white leading-tight mb-1">{wb.title}</p>
+                  <p className="text-[10px] text-gray-500 line-clamp-2 mb-2">{wb.description}</p>
+                  <div className="flex items-center gap-3 text-[10px] text-gray-400 mb-3 flex-wrap">
+                    <span className="flex items-center gap-1"><Calendar size={10}/>{new Date(wb.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="flex items-center gap-1"><Clock size={10}/>{wb.duration} min</span>
+                    <span className="flex items-center gap-1"><Users size={10}/>{wb.registered}/{wb.maxSlots} inscrits</span>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="w-full h-1.5 bg-gray-100 dark:bg-dark-bg rounded-full mb-3">
+                    <div className="h-full rounded-full bg-gold" style={{ width: `${Math.min(100, (wb.registered / wb.maxSlots) * 100)}%` }}/>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-1">
+                      {wb.tags.map(t => <span key={t} className="text-[9px] text-blue-500">{t}</span>)}
+                    </div>
+                    <button onClick={() => registerWebinar(wb.id)}
+                      className={cn('px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all flex-shrink-0',
+                        wb.isPast ? 'bg-gray-100 dark:bg-dark-bg text-gray-500 hover:bg-blue-50 hover:text-blue-500'
+                        : wb.isRegistered ? 'bg-green-100 text-green-700 hover:bg-red-50 hover:text-red-500'
+                        : wb.registered >= wb.maxSlots ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gold text-white hover:bg-gold-dark')}>
+                      {wb.isPast ? '▶ Voir le replay' : wb.isRegistered ? '✓ Inscrit' : wb.registered >= wb.maxSlots ? 'Complet' : 'S\'inscrire'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Main page ───────────────────────────────────────────────────────────────────
 export default function FuntwitPage() {
   const { user } = useAppStore()
   const [posts, setPosts] = useState<Post[]>(SEED_POSTS)
-  const [activeTab, setActiveTab] = useState<'feed'|'reels'|'explorer'>('feed')
+  const [activeTab, setActiveTab] = useState<'feed'|'reels'|'explorer'|'groupes'|'live'>('feed')
   const [searchQuery, setSearchQuery] = useState('')
   const [activeStory, setActiveStory] = useState<Story | null>(null)
   const [stories, setStories] = useState<Story[]>(STORIES)
@@ -702,18 +1172,23 @@ export default function FuntwitPage() {
           <StoriesBar stories={stories} myInitials={currentInitials} myColor={currentColor} onStoryClick={handleStoryClick}/>
 
           {/* Tabs */}
-          <div className="flex bg-gray-100 dark:bg-dark-bg rounded-2xl p-1 mb-4 gap-1">
+          <div className="flex bg-gray-100 dark:bg-dark-bg rounded-2xl p-1 mb-4 gap-1 overflow-x-auto scrollbar-hide">
             {([
-              { id: 'feed',     label: '🏠 Fil d\'actu', icon: null },
-              { id: 'reels',    label: '🎬 Reels',        icon: null },
-              { id: 'explorer', label: '🔍 Explorer',     icon: null },
+              { id: 'feed',     label: '🏠 Fil' },
+              { id: 'reels',    label: '🎬 Reels' },
+              { id: 'groupes',  label: '👥 Groupes' },
+              { id: 'live',     label: '🔴 Live' },
+              { id: 'explorer', label: '🔍 Explorer' },
             ] as const).map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)}
-                className={cn('flex-1 py-2.5 rounded-xl text-xs font-bold transition-all',
+                className={cn('flex-shrink-0 px-3 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap',
                   activeTab === t.id
                     ? 'bg-white dark:bg-dark-card text-gray-800 dark:text-white shadow-sm'
                     : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300')}>
                 {t.label}
+                {t.id === 'live' && SEED_LIVES.length > 0 && (
+                  <span className="ml-1 w-1.5 h-1.5 rounded-full bg-red-500 inline-block animate-pulse"/>
+                )}
               </button>
             ))}
           </div>
@@ -742,6 +1217,16 @@ export default function FuntwitPage() {
 
           {/* Reels */}
           {activeTab === 'reels' && <ReelsSection/>}
+
+          {/* Groupes */}
+          {activeTab === 'groupes' && (
+            <GroupsSection myInitials={currentInitials} myColor={currentColor}/>
+          )}
+
+          {/* Live */}
+          {activeTab === 'live' && (
+            <LiveSection myInitials={currentInitials} myColor={currentColor} myName={currentUserName}/>
+          )}
 
           {/* Explorer */}
           {activeTab === 'explorer' && (
