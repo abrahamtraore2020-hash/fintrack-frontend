@@ -129,18 +129,34 @@ export function useAuth() {
     router.push('/dashboard')
   }
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string, profile: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, profile: string, referralCode?: string) => {
     if (!isSupabaseConfigured()) throw new Error('SUPABASE_NOT_CONFIGURED')
     resetUserData()
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
     if (data.user) {
+      // Résoudre le code parrain → ID du referrer
+      let referredBy: string | null = null
+      if (referralCode) {
+        const { data: referrer } = await supabase
+          .from('users')
+          .select('id')
+          .eq('referral_code', referralCode)
+          .single()
+        if (referrer) referredBy = referrer.id
+      }
+
+      // Générer un code de parrainage unique pour ce nouvel utilisateur
+      const newRefCode = firstName.slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'X') + data.user.id.slice(-5).toUpperCase()
+
       await supabase.from('users').insert({
         id: data.user.id, email,
         first_name: firstName,
         last_name: lastName,
         profile, plan: 'starter', currency: 'XOF', lang: 'fr',
         trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
+        referral_code: newRefCode,
+        referred_by: referredBy,
       })
       // Si session active (email confirmation désactivée) → rediriger direct
       if (data.session) {

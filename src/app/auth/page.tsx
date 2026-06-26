@@ -48,6 +48,7 @@ export default function AuthPage() {
   const [showLoginPwd, setShowLoginPwd] = useState(false)
   const [showRegisterPwd, setShowRegisterPwd] = useState(false)
   const [showConfirmPwd, setShowConfirmPwd] = useState(false)
+  const [refCode, setRefCode] = useState<string | null>(null)
   const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth()
   const supabaseReady = isSupabaseConfigured()
 
@@ -63,6 +64,14 @@ export default function AuthPage() {
     if (saved) {
       loginForm.setValue('email', saved)
       loginForm.setValue('remember', true)
+    }
+    // Detect referral code in URL
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref')
+    if (ref) {
+      setRefCode(ref)
+      setTab('register')
+      localStorage.setItem('funtrack_ref', ref)
     }
   }, [])
 
@@ -92,7 +101,9 @@ export default function AuthPage() {
       } else {
         localStorage.removeItem(SAVED_EMAIL_KEY)
       }
-      await signUp(data.email, data.password, data.firstName, data.lastName, data.profile)
+      const storedRef = localStorage.getItem('funtrack_ref') || refCode || undefined
+      await signUp(data.email, data.password, data.firstName, data.lastName, data.profile, storedRef)
+      if (storedRef) localStorage.removeItem('funtrack_ref')
       toast.success('Compte créé ! Bienvenue sur FinTrack 🎉')
     } catch (e: any) {
       if (e.message === 'SUPABASE_NOT_CONFIGURED') {

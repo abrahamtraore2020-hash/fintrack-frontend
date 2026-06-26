@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Bird, MessageSquare, Plug, Settings,
   Grid3X3, BarChart2, TrendingUp, Brain, PieChart, RefreshCw,
-  Bell, CreditCard, Target, Vault, X
+  Bell, CreditCard, Target, Vault, X, Gift
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
@@ -44,8 +44,9 @@ const MORE_SECTIONS = [
   {
     label: 'Compte',
     items: [
-      { href: '/notifications', icon: Bell,       label: 'Alertes',    color: 'bg-red-100 text-red-500' },
-      { href: '/pricing',       icon: CreditCard, label: 'Mon plan',   color: 'bg-gold-100 text-yellow-700' },
+      { href: '/notifications', icon: Bell,       label: 'Alertes',      color: 'bg-red-100 text-red-500' },
+      { href: '/pricing',       icon: CreditCard, label: 'Mon plan',     color: 'bg-gold-100 text-yellow-700' },
+      { href: '/affiliation',   icon: Gift,       label: 'Affiliation',  color: 'bg-green-100 text-green-600' },
     ],
   },
 ]

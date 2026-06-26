@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw } from 'lucide-react'
+import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw, Gift } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
 import { useAuth } from '@/hooks/useAuth'
@@ -22,9 +22,10 @@ const analyseLinks = [
   { href: '/recurrences', icon: RefreshCw,   label: 'Récurrences' },
 ]
 const compteLinks = [
-  { href: '/notifications', icon: Bell,     label: 'Alertes',    badge: true },
-  { href: '/pricing',       icon: Crown,    label: 'Mon plan' },
-  { href: '/parametres',    icon: Settings, label: 'Paramètres' },
+  { href: '/notifications', icon: Bell,        label: 'Alertes',      badge: true },
+  { href: '/pricing',       icon: Crown,       label: 'Mon plan' },
+  { href: '/affiliation',   icon: Gift,        label: 'Affiliation' },
+  { href: '/parametres',    icon: Settings,    label: 'Paramètres' },
 ]
 
 export function Sidebar() {
