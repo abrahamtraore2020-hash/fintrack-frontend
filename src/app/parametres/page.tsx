@@ -124,43 +124,38 @@ export default function ParametresPage() {
     if (!user?.id) return
     setSaving(true)
     try {
-      await ensureSession()
+      // Étape 1 — colonnes de base (toujours présentes)
+      const { error: e1 } = await supabase
+        .from('users')
+        .update({ first_name: profile.firstName, last_name: profile.lastName })
+        .eq('id', user.id)
 
-      if (profile.username) {
-        const clean = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
-        const { data: existing } = await supabase
-          .from('users').select('id').eq('username', clean).neq('id', user.id).maybeSingle()
-        if (existing) { toast.error('Ce nom d\'utilisateur est déjà pris'); setSaving(false); return }
-      }
-
-      const updates: any = {
-        first_name: profile.firstName,
-        last_name: profile.lastName,
-        phone: profile.phone || null,
-        bio: profile.bio || null,
-        location: profile.location || null,
-        website: profile.website || null,
-        social_links: links.filter(l => l.url),
-        notif_settings: notifs,
-      }
-      if (profile.username) updates.username = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
-
-      const { error } = await supabase.from('users').update(updates).eq('id', user.id)
-      if (error) {
-        // Message d'erreur précis
-        if (error.code === '42501' || error.message.includes('policy')) {
-          toast.error('Droits insuffisants. Exécutez le SQL ci-dessous dans Supabase.')
-          console.error('RLS policy manquante — exécuter dans Supabase SQL Editor:\nCREATE POLICY "users update own" ON users FOR UPDATE USING (id = auth.uid());')
-        } else {
-          toast.error(`Erreur : ${error.message}`)
-        }
+      if (e1) {
+        console.error('Erreur save profil:', e1)
+        toast.error(`Impossible de sauvegarder : ${e1.message}`)
+        setSaving(false)
         return
       }
 
+      // Étape 2 — colonnes optionnelles (ignorées si absentes)
+      const extras: any = {}
+      if (profile.phone !== undefined) extras.phone = profile.phone || null
+      if (profile.bio !== undefined) extras.bio = profile.bio || null
+      if (profile.location !== undefined) extras.location = profile.location || null
+      if (profile.website !== undefined) extras.website = profile.website || null
+      if (profile.username) extras.username = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
+      if (links.length >= 0) extras.social_links = links.filter(l => l.url)
+      extras.notif_settings = notifs
+
+      const { error: e2 } = await supabase.from('users').update(extras).eq('id', user.id)
+      if (e2) console.warn('Colonnes optionnelles ignorées:', e2.message)
+
+      // Mettre à jour le store
       setUser({ ...user, firstName: profile.firstName, lastName: profile.lastName, avatar: profile.avatar || user.avatar })
       toast.success('Profil enregistré !')
     } catch (err: any) {
-      toast.error(`Erreur : ${err.message || 'Impossible de sauvegarder'}`)
+      console.error('handleSave exception:', err)
+      toast.error(`Erreur inattendue : ${err?.message || String(err)}`)
     } finally {
       setSaving(false)
     }
