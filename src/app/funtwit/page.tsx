@@ -1064,10 +1064,15 @@ export default function FuntwitPage() {
   const handlePost = async (text: string, badge: any, media: MediaItem[]) => {
     const hashtags = text.match(/#\w+/g) || []
     try {
-      await createPost.mutateAsync({ content: text, badge, media, hashtags, color: currentColor })
+      await createPost.mutateAsync({
+        content: text, badge, media, hashtags, color: currentColor,
+        _tempId: `temp-${Date.now()}`,
+        _name: currentUserName,
+        _initials: currentInitials,
+      })
       toast.success('Publication partagée sur FUNTWIT ! 🎉')
-    } catch {
-      toast.error('Erreur lors de la publication')
+    } catch (err: any) {
+      toast.error(`Erreur : ${err?.message || 'Impossible de publier'}`)
     }
   }
 
