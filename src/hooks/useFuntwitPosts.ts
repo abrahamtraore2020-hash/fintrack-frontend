@@ -8,6 +8,7 @@ export interface FuntwitPost {
   name: string
   initials: string
   color: string
+  avatar?: string
   location?: string
   content: string
   badge?: { type: string; label: string; amount?: string }
@@ -49,7 +50,7 @@ async function fetchPosts(): Promise<FuntwitPost[]> {
       .from('funtwit_posts')
       .select(`
         *,
-        users:user_id (first_name, last_name),
+        users:user_id (first_name, last_name, avatar),
         funtwit_comments (
           id, user_id, content, likes, created_at,
           users:user_id (first_name, last_name)
@@ -66,6 +67,7 @@ async function fetchPosts(): Promise<FuntwitPost[]> {
       name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim() || 'Anonyme',
       initials: `${(p.users?.first_name || '?')[0]}${(p.users?.last_name || '')[0] || ''}`.toUpperCase(),
       color: p.color || '#06D6A0',
+      avatar: p.users?.avatar || undefined,
       location: p.location,
       content: p.content,
       badge: p.badge,

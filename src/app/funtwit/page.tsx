@@ -20,7 +20,7 @@ type Badge = { type: 'milestone'|'objectif'|'epargne'|'conseil'; label: string; 
 type Story = { id: string; userId: string; name: string; initials: string; color: string; seen: boolean; content: string }
 type Comment = { id: string; userId: string; name: string; initials: string; color: string; text: string; likes: number; createdAt: string }
 type Post = {
-  id: string; userId: string; name: string; initials: string; color: string
+  id: string; userId: string; name: string; initials: string; color: string; avatar?: string
   location?: string; content: string; media?: MediaItem[]; badge?: Badge
   hashtags: string[]; reactions: Record<Reaction, string[]>
   comments: Comment[]; shares: number; saved: boolean; createdAt: string
@@ -220,9 +220,12 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
 
       {/* Header */}
       <div className="flex items-center gap-3 p-4 pb-2">
-        <div className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ring-2 ring-[#2a2a2a]"
+        <div className="w-11 h-11 rounded-full flex-shrink-0 ring-2 ring-[#2a2a2a] overflow-hidden"
           style={{ background: post.color }}>
-          {post.initials}
+          {post.avatar
+            ? <img src={post.avatar} alt={post.name} className="w-full h-full object-cover"/>
+            : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{post.initials}</span>
+          }
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-white">{post.name}</p>
@@ -457,8 +460,8 @@ function ExploreSection({ onHashtagClick }: { onHashtagClick: (tag: string) => v
 }
 
 // ── Compose Box ─────────────────────────────────────────────────────────────────
-function ComposeBox({ myInitials, myColor, onPost }: {
-  myInitials: string; myColor: string
+function ComposeBox({ myInitials, myColor, myAvatar, onPost }: {
+  myInitials: string; myColor: string; myAvatar?: string
   onPost: (text: string, badge: any, media: MediaItem[]) => void
 }) {
   const [text, setText] = useState('')
@@ -499,8 +502,12 @@ function ComposeBox({ myInitials, myColor, onPost }: {
     <div className="tt-card border tt-border rounded-2xl mb-4 overflow-hidden">
       {/* Top */}
       <div className="flex items-center gap-3 p-4 pb-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-          style={{ background: myColor }}>{myInitials}</div>
+        <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden ring-2 ring-[#2a2a2a]" style={{ background: myColor }}>
+          {myAvatar
+            ? <img src={myAvatar} alt="" className="w-full h-full object-cover"/>
+            : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{myInitials}</span>
+          }
+        </div>
         <button className="flex-1 text-left px-4 py-2.5 tt-card2 rounded-full text-sm text-[#555] hover:bg-[#222] transition-colors"
           onClick={() => (document.getElementById('compose-textarea') as HTMLTextAreaElement)?.focus()}>
           Qu'avez-vous en tête ?
@@ -1060,6 +1067,7 @@ export default function FuntwitPage() {
   const currentUserName = user ? `${user.firstName} ${user.lastName}` : 'Moi'
   const currentInitials = user ? `${user.firstName?.[0] || '?'}${user.lastName?.[0] || ''}` : 'ME'
   const currentColor = '#06D6A0'
+  const currentAvatar = user?.avatar
 
   const handlePost = async (text: string, badge: any, media: MediaItem[]) => {
     const hashtags = text.match(/#\w+/g) || []
@@ -1124,9 +1132,11 @@ export default function FuntwitPage() {
       {/* Story viewer */}
       {activeStory && <StoryViewer story={activeStory} onClose={() => setActiveStory(null)}/>}
 
-      {/* ── TikTok theme override ── */}
+      {/* ── Theme override ── */}
       <style>{`
-        .tt { color-scheme: dark; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+        .tt { color-scheme: dark; font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important; }
+        .tt * { font-family: inherit !important; }
         .tt-bg   { background: #000 !important; }
         .tt-card { background: #161616 !important; border-color: #2a2a2a !important; }
         .tt-card2{ background: #111 !important; border-color: #222 !important; }
@@ -1196,7 +1206,7 @@ export default function FuntwitPage() {
           {/* Feed */}
           {activeTab === 'feed' && (
             <>
-              <ComposeBox myInitials={currentInitials} myColor={currentColor} onPost={handlePost}/>
+              <ComposeBox myInitials={currentInitials} myColor={currentColor} myAvatar={currentAvatar} onPost={handlePost}/>
               {postsLoading ? (
                 <div className="flex items-center justify-center py-16">
                   <div className="flex flex-col items-center gap-3">

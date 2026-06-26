@@ -128,12 +128,11 @@ export function useInbox() {
   const startConversation = useMutation({
     mutationFn: async ({ participantId, firstMessage }: { participantId: string; firstMessage: string }) => {
       const uid = await ensureSession()
-      // Check if conversation already exists
       const { data: existing } = await supabase
         .from('conversations')
         .select('id')
         .or(`and(user1_id.eq.${uid},user2_id.eq.${participantId}),and(user1_id.eq.${participantId},user2_id.eq.${uid})`)
-        .single()
+        .maybeSingle()
 
       let convId = existing?.id
       if (!convId) {
@@ -146,12 +145,14 @@ export function useInbox() {
         convId = newConv.id
       }
 
-      await supabase.from('messages').insert({
-        conversation_id: convId,
-        sender_id: uid,
-        content: firstMessage,
-        read: false,
-      })
+      if (firstMessage.trim()) {
+        await supabase.from('messages').insert({
+          conversation_id: convId,
+          sender_id: uid,
+          content: firstMessage,
+          read: false,
+        })
+      }
 
       return convId
     },

@@ -1,9 +1,10 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
-import { Send, Image, Video, X, Search, Phone, Video as VideoIcon, MoreVertical, ArrowLeft, Smile, Paperclip, Check, CheckCheck, Loader2, MessageSquarePlus } from 'lucide-react'
+import { Send, Video, X, Search, Phone, Video as VideoIcon, MoreVertical, ArrowLeft, Paperclip, Check, CheckCheck, Loader2, Plus, UserCircle } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { useAppStore } from '@/store/useAppStore'
 import { useInbox } from '@/hooks/useInbox'
+import { useUsers } from '@/hooks/useUsers'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -22,13 +23,16 @@ function timeAgo(date: string) {
 
 export default function InboxPage() {
   const { user } = useAppStore()
-  const { conversations, isLoading, sendMessage, markRead } = useInbox()
+  const { conversations, isLoading, sendMessage, markRead, startConversation } = useInbox()
+  const { data: allUsers = [], isLoading: usersLoading } = useUsers(user?.id || '')
   const [activeConvId, setActiveConvId] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [mediaPreviews, setMediaPreviews] = useState<MediaItem[]>([])
   const [search, setSearch] = useState('')
   const [showMobileChat, setShowMobileChat] = useState(false)
   const [sending, setSending] = useState(false)
+  const [showNewConv, setShowNewConv] = useState(false)
+  const [userSearch, setUserSearch] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -83,6 +87,25 @@ export default function InboxPage() {
     c.participantName.toLowerCase().includes(search.toLowerCase())
   )
 
+  const filteredUsers = allUsers.filter(u => {
+    const name = `${u.firstName} ${u.lastName}`.toLowerCase()
+    return name.includes(userSearch.toLowerCase()) &&
+      !conversations.some(c => c.participantId === u.id)
+  })
+
+  const handleStartConv = async (participantId: string, name: string) => {
+    setShowNewConv(false)
+    setUserSearch('')
+    try {
+      const convId = await startConversation.mutateAsync({ participantId, firstMessage: '' })
+      if (convId) { setActiveConvId(convId); setShowMobileChat(true) }
+    } catch {
+      // Si conversation déjà existante, chercher parmi les conversations chargées
+      const existing = conversations.find(c => c.participantId === participantId)
+      if (existing) { setActiveConvId(existing.id); setShowMobileChat(true) }
+    }
+  }
+
   return (
     <AppLayout>
       <div className="h-[calc(100vh-7rem)] flex gap-4 overflow-hidden">
@@ -101,11 +124,15 @@ export default function InboxPage() {
                   <span className="bg-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{unreadTotal}</span>
                 )}
               </h2>
+              <button onClick={() => setShowNewConv(true)}
+                className="p-2 bg-gold text-white rounded-xl hover:opacity-90 transition-opacity" title="Nouveau message">
+                <Plus size={15}/>
+              </button>
             </div>
             <div className="relative">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
               <input value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Rechercher..."
+                placeholder="Rechercher une conversation..."
                 className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 dark:bg-dark-bg border border-gray-100 dark:border-dark-border rounded-xl focus:outline-none focus:border-gold text-gray-700 dark:text-gray-300"/>
             </div>
           </div>
@@ -287,6 +314,102 @@ export default function InboxPage() {
           )}
         </div>
       </div>
+      {/* ── Modal Nouveau message ────────────────────────────────── */}
+      {showNewConv && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-dark-border">
+              <h3 className="font-bold text-gray-800 dark:text-white text-sm">Nouveau message</h3>
+              <button onClick={() => { setShowNewConv(false); setUserSearch('') }}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg text-gray-400">
+                <X size={16}/>
+              </button>
+            </div>
+
+            {/* Search */}
+            <div className="p-3 border-b border-gray-50 dark:border-dark-border/50">
+              <div className="relative">
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+                <input value={userSearch} onChange={e => setUserSearch(e.target.value)}
+                  placeholder="Rechercher un utilisateur..."
+                  autoFocus
+                  className="w-full pl-8 pr-3 py-2.5 text-sm bg-gray-50 dark:bg-dark-bg border border-gray-100 dark:border-dark-border rounded-xl focus:outline-none focus:border-gold text-gray-700 dark:text-gray-300"/>
+              </div>
+            </div>
+
+            {/* Liste utilisateurs */}
+            <div className="overflow-y-auto max-h-96">
+              {/* Conversations existantes */}
+              {conversations.length > 0 && !userSearch && (
+                <>
+                  <p className="px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Conversations existantes</p>
+                  {conversations.map(conv => (
+                    <button key={conv.id} onClick={() => { setShowNewConv(false); setActiveConvId(conv.id); setShowMobileChat(true) }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors text-left">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                        style={{ background: conv.participantColor }}>
+                        {conv.participantInitials}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800 dark:text-white">{conv.participantName}</p>
+                        <p className="text-xs text-gray-400">{conv.messages.length} message{conv.messages.length > 1 ? 's' : ''}</p>
+                      </div>
+                    </button>
+                  ))}
+                </>
+              )}
+
+              {/* Autres utilisateurs */}
+              {usersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 size={18} className="animate-spin text-gold"/>
+                </div>
+              ) : (
+                <>
+                  {!userSearch && allUsers.length > 0 && (
+                    <p className="px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Tous les utilisateurs</p>
+                  )}
+                  {(userSearch ? filteredUsers : allUsers).map(u => {
+                    const name = `${u.firstName} ${u.lastName}`.trim() || 'Utilisateur'
+                    const initials = `${u.firstName?.[0] || '?'}${u.lastName?.[0] || ''}`.toUpperCase()
+                    const existingConv = conversations.find(c => c.participantId === u.id)
+                    return (
+                      <button key={u.id}
+                        onClick={() => existingConv
+                          ? (setShowNewConv(false), setActiveConvId(existingConv.id), setShowMobileChat(true))
+                          : handleStartConv(u.id, name)
+                        }
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors text-left">
+                        <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden" style={{ background: u.color }}>
+                          {u.avatar
+                            ? <img src={u.avatar} alt={name} className="w-full h-full object-cover"/>
+                            : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{initials}</span>
+                          }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{name}</p>
+                          <p className="text-xs text-gray-400">{u.plan === 'starter' ? 'Membre' : u.plan}</p>
+                        </div>
+                        {existingConv
+                          ? <span className="text-[10px] text-gold font-medium">Existante</span>
+                          : <span className="text-[10px] text-gray-400">Écrire</span>
+                        }
+                      </button>
+                    )
+                  })}
+                  {!usersLoading && (userSearch ? filteredUsers : allUsers).length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      <UserCircle size={32} className="text-gray-300 mb-2"/>
+                      <p className="text-sm text-gray-400">Aucun utilisateur trouvé</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   )
 }
