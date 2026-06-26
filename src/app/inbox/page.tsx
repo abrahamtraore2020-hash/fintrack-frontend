@@ -89,7 +89,9 @@ export default function InboxPage() {
 
   const filteredUsers = allUsers.filter(u => {
     const name = `${u.firstName} ${u.lastName}`.toLowerCase()
-    return name.includes(userSearch.toLowerCase()) &&
+    const uname = (u.username || '').toLowerCase()
+    const q = userSearch.toLowerCase().replace('@', '')
+    return (name.includes(q) || uname.includes(q)) &&
       !conversations.some(c => c.participantId === u.id)
   })
 
@@ -389,7 +391,7 @@ export default function InboxPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{name}</p>
-                          <p className="text-xs text-gray-400">{u.plan === 'starter' ? 'Membre' : u.plan}</p>
+                          <p className="text-xs text-gray-400">{u.username ? `@${u.username}` : (u.plan === 'starter' ? 'Membre' : u.plan)}</p>
                         </div>
                         {existingConv
                           ? <span className="text-[10px] text-gold font-medium">Existante</span>

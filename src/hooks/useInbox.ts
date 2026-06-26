@@ -1,5 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ensureSession } from '@/lib/supabase'
 
@@ -92,9 +93,28 @@ export function useInbox() {
       if (!uid) return []
       return fetchConversations(uid)
     },
-    staleTime: 10000,
-    refetchInterval: 15000,
+    staleTime: 5000,
+    refetchInterval: 8000,
   })
+
+  // Realtime — synchro instantanée sur tous les appareils
+  useEffect(() => {
+    const channel = supabase
+      .channel('inbox_realtime')
+      .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'messages',
+      }, () => {
+        qc.invalidateQueries({ queryKey: ['inbox'] })
+      })
+      .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'conversations',
+      }, () => {
+        qc.invalidateQueries({ queryKey: ['inbox'] })
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [qc])
 
   const sendMessage = useMutation({
     mutationFn: async ({ conversationId, content, media }: {

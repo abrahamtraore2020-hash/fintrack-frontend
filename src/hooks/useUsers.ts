@@ -6,6 +6,7 @@ export interface AppUser {
   id: string
   firstName: string
   lastName: string
+  username?: string
   avatar?: string
   plan: string
   color: string
@@ -24,7 +25,7 @@ export function useUsers(currentUserId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('id, first_name, last_name, avatar, plan')
+        .select('id, first_name, last_name, username, avatar, plan')
         .neq('id', currentUserId || 'none')
         .order('first_name')
         .limit(100)
@@ -35,6 +36,7 @@ export function useUsers(currentUserId: string) {
         id: u.id,
         firstName: u.first_name || '',
         lastName: u.last_name || '',
+        username: u.username || '',
         avatar: u.avatar,
         plan: u.plan || 'starter',
         color: stringToColor(u.id),

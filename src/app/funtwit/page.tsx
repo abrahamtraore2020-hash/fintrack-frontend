@@ -5,11 +5,12 @@ import {
   ThumbsUp, Search, Image, Video, X, Play,
   Plus, Users, Send, Smile, Radio, Calendar, Lock, Globe,
   Mic, MicOff, VideoOff, PhoneOff, Hand, MessageSquare,
-  Clock, Star, Crown, ChevronRight, Bell, UserPlus, Settings
+  Clock, Star, Crown, ChevronRight, Bell, UserPlus, Settings, Loader2
 } from 'lucide-react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { useAppStore } from '@/store/useAppStore'
 import { useFuntwitPosts } from '@/hooks/useFuntwitPosts'
+import { useFuntwitStories, type RealStory } from '@/hooks/useFuntwitStories'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -122,30 +123,43 @@ function topReactions(reactions: Record<Reaction, string[]>) {
 }
 
 // ── Story viewer ────────────────────────────────────────────────────────────────
-function StoryViewer({ story, onClose }: { story: Story; onClose: () => void }) {
+function StoryViewer({ story, onClose }: { story: RealStory; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" onClick={onClose}>
-      <div className="relative w-full max-w-sm h-screen flex flex-col items-center justify-center"
-        onClick={e => e.stopPropagation()}>
-        <div className="w-full h-2 bg-white/20 rounded-full mb-4 mx-6" style={{ width: 'calc(100% - 3rem)' }}>
-          <div className="h-full bg-white rounded-full" style={{ width: '60%', transition: 'width 5s linear' }}/>
+      <div className="relative w-full max-w-sm h-screen flex flex-col" onClick={e => e.stopPropagation()}>
+        {/* Progress bar */}
+        <div className="absolute top-4 left-4 right-4 h-1 bg-white/20 rounded-full z-10">
+          <div className="h-full bg-white rounded-full animate-[grow_5s_linear_forwards]" style={{ width: '100%', animation: 'grow 5s linear forwards', transformOrigin: 'left' }}/>
         </div>
-        <div className="flex items-center gap-3 mb-auto px-4 w-full">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-            style={{ background: story.color }}>{story.initials}</div>
+        {/* Header */}
+        <div className="flex items-center gap-3 pt-10 px-4 z-10">
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ background: story.color }}>
+            {story.avatar
+              ? <img src={story.avatar} className="w-full h-full object-cover" alt=""/>
+              : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{story.initials}</span>
+            }
+          </div>
           <div>
             <p className="text-white font-semibold text-sm">{story.name}</p>
-            <p className="text-white/60 text-xs">À l'instant</p>
+            <p className="text-white/60 text-xs">{timeAgo(story.createdAt)}</p>
           </div>
-          <button onClick={onClose} className="ml-auto text-white"><X size={20}/></button>
+          <button onClick={onClose} className="ml-auto text-white p-2"><X size={20}/></button>
         </div>
-        <div className="flex-1 flex items-center justify-center w-full px-6">
-          <div className="w-full aspect-[9/16] max-h-[70vh] rounded-2xl flex items-center justify-center text-6xl"
-            style={{ background: story.color + '30', border: `2px solid ${story.color}40` }}>
-            {story.content}
-          </div>
+        {/* Content */}
+        <div className="flex-1 flex items-center justify-center px-4">
+          {story.mediaUrl ? (
+            story.mediaType === 'video'
+              ? <video src={story.mediaUrl} autoPlay loop className="w-full rounded-2xl max-h-[70vh] object-cover"/>
+              : <img src={story.mediaUrl} className="w-full rounded-2xl max-h-[70vh] object-cover" alt=""/>
+          ) : (
+            <div className="w-full aspect-[9/16] max-h-[70vh] rounded-2xl flex items-center justify-center p-8 text-center"
+              style={{ background: story.color + '25', border: `2px solid ${story.color}40` }}>
+              <p className="text-white text-xl font-bold leading-relaxed">{story.content}</p>
+            </div>
+          )}
         </div>
-        <div className="mt-auto pb-8 px-4 w-full">
+        {/* Reply */}
+        <div className="pb-8 px-4">
           <div className="flex items-center gap-3 bg-white/10 rounded-full px-4 py-2.5">
             <input placeholder="Répondre..." className="flex-1 bg-transparent text-white text-sm placeholder-white/50 focus:outline-none"/>
             <Send size={16} className="text-white/60"/>
@@ -156,18 +170,86 @@ function StoryViewer({ story, onClose }: { story: Story; onClose: () => void }) 
   )
 }
 
+// ── Create Story modal ───────────────────────────────────────────────────────────
+function CreateStoryModal({ myInitials, myColor, myAvatar, onClose, onCreate }: {
+  myInitials: string; myColor: string; myAvatar?: string
+  onClose: () => void
+  onCreate: (content: string, file?: File) => Promise<void>
+}) {
+  const [content, setContent] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setFile(f)
+    setPreview(URL.createObjectURL(f))
+  }
+
+  const handleSubmit = async () => {
+    if (!content.trim() && !file) return
+    setLoading(true)
+    try { await onCreate(content, file || undefined) } finally { setLoading(false) }
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-end md:items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-[#111] rounded-2xl w-full max-w-sm p-4" onClick={e => e.stopPropagation()}>
+        <h3 className="text-white font-bold mb-3 text-sm">Créer une story</h3>
+        <textarea value={content} onChange={e => setContent(e.target.value)}
+          placeholder="Partagez quelque chose pour 24h... 💡"
+          rows={3}
+          className="w-full bg-[#1e1e1e] text-white text-sm rounded-xl px-3 py-2.5 placeholder-[#555] focus:outline-none resize-none mb-3"/>
+        {preview && (
+          <div className="relative mb-3 rounded-xl overflow-hidden">
+            {file?.type.startsWith('video')
+              ? <video src={preview} className="w-full rounded-xl max-h-40 object-cover"/>
+              : <img src={preview} className="w-full rounded-xl max-h-40 object-cover" alt=""/>
+            }
+            <button onClick={() => { setFile(null); setPreview(null) }}
+              className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center">
+              <X size={11} className="text-white"/>
+            </button>
+          </div>
+        )}
+        <input ref={fileRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFile}/>
+        <div className="flex gap-2">
+          <button onClick={() => fileRef.current?.click()}
+            className="flex-1 py-2.5 bg-[#1e1e1e] text-[#aaa] text-xs rounded-xl flex items-center justify-center gap-1.5">
+            <Image size={13}/> Photo / Vidéo
+          </button>
+          <button onClick={handleSubmit} disabled={(!content.trim() && !file) || loading}
+            className="flex-1 py-2.5 bg-[#fe2c55] text-white text-xs font-bold rounded-xl disabled:opacity-40 flex items-center justify-center gap-1.5">
+            {loading ? <Loader2 size={13} className="animate-spin"/> : <Send size={13}/>}
+            Publier
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Stories bar ─────────────────────────────────────────────────────────────────
-function StoriesBar({ stories, myInitials, myColor, onStoryClick }: {
-  stories: Story[]; myInitials: string; myColor: string; onStoryClick: (s: Story) => void
+function StoriesBar({ stories, myInitials, myColor, myAvatar, onStoryClick, onCreateClick }: {
+  stories: RealStory[]; myInitials: string; myColor: string; myAvatar?: string
+  onStoryClick: (s: RealStory) => void
+  onCreateClick: () => void
 }) {
   return (
     <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide mb-4">
       {/* Ma story */}
-      <div className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer group">
-        <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-sm font-bold text-white"
-          style={{ background: myColor, boxShadow: '0 0 0 3px white, 0 0 0 4px #E5E7EB' }}>
-          {myInitials}
-          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-gold rounded-full flex items-center justify-center border-2 border-white">
+      <div className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer" onClick={onCreateClick}>
+        <div className="relative w-16 h-16 rounded-full overflow-hidden"
+          style={{ background: myColor, boxShadow: '0 0 0 2px #161616, 0 0 0 4px #fe2c55' }}>
+          {myAvatar
+            ? <img src={myAvatar} className="w-full h-full object-cover" alt=""/>
+            : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{myInitials}</span>
+          }
+          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#fe2c55] rounded-full flex items-center justify-center border-2 border-[#161616]">
             <Plus size={10} className="text-white"/>
           </div>
         </div>
@@ -176,17 +258,23 @@ function StoriesBar({ stories, myInitials, myColor, onStoryClick }: {
       {/* Stories des autres */}
       {stories.map(s => (
         <div key={s.id} className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer" onClick={() => onStoryClick(s)}>
-          <div className="w-16 h-16 rounded-full flex items-center justify-center text-sm font-bold text-white"
+          <div className="w-16 h-16 rounded-full overflow-hidden"
             style={{
               background: s.color,
-              boxShadow: s.seen ? '0 0 0 3px #161616, 0 0 0 4px #444' : `0 0 0 3px #161616, 0 0 0 4px ${s.color}`,
+              boxShadow: s.seen ? '0 0 0 2px #161616, 0 0 0 4px #444' : `0 0 0 2px #161616, 0 0 0 4px ${s.color}`,
               opacity: s.seen ? 0.6 : 1,
             }}>
-            {s.initials}
+            {s.avatar
+              ? <img src={s.avatar} className="w-full h-full object-cover" alt={s.name}/>
+              : <span className="w-full h-full flex items-center justify-center text-sm font-bold text-white">{s.initials}</span>
+            }
           </div>
-          <p className="text-[10px] tt-muted font-medium truncate w-16 text-center">{s.name}</p>
+          <p className="text-[10px] tt-muted font-medium truncate w-16 text-center">{s.name.split(' ')[0]}</p>
         </div>
       ))}
+      {stories.length === 0 && (
+        <p className="text-xs tt-muted self-center ml-2">Personne n'a encore posté de story. Soyez le premier !</p>
+      )}
     </div>
   )
 }
@@ -1057,10 +1145,11 @@ function LiveSection({ myInitials, myColor, myName }: { myInitials: string; myCo
 export default function FuntwitPage() {
   const { user } = useAppStore()
   const { posts, isLoading: postsLoading, createPost, react, addComment, sharePost } = useFuntwitPosts()
+  const { stories, createStory, markSeen } = useFuntwitStories()
   const [activeTab, setActiveTab] = useState<'feed'|'reels'|'explorer'|'groupes'|'live'>('feed')
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeStory, setActiveStory] = useState<Story | null>(null)
-  const [stories, setStories] = useState<Story[]>(STORIES)
+  const [activeStory, setActiveStory] = useState<RealStory | null>(null)
+  const [showCreateStory, setShowCreateStory] = useState(false)
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
 
   const currentUserId = user?.id || 'me'
@@ -1104,8 +1193,8 @@ export default function FuntwitPage() {
     sharePost.mutate(postId)
   }
 
-  const handleStoryClick = (story: Story) => {
-    setStories(s => s.map(st => st.id === story.id ? { ...st, seen: true } : st))
+  const handleStoryClick = (story: RealStory) => {
+    markSeen(story.id, currentUserId)
     setActiveStory(story)
   }
 
@@ -1131,6 +1220,17 @@ export default function FuntwitPage() {
     <AppLayout>
       {/* Story viewer */}
       {activeStory && <StoryViewer story={activeStory} onClose={() => setActiveStory(null)}/>}
+      {/* Create story modal */}
+      {showCreateStory && (
+        <CreateStoryModal
+          myInitials={currentInitials} myColor={currentColor} myAvatar={currentAvatar}
+          onClose={() => setShowCreateStory(false)}
+          onCreate={async (content, file) => {
+            await createStory.mutateAsync({ content, mediaFile: file })
+            toast.success('Story publiée pour 24h ! ✨')
+          }}
+        />
+      )}
 
       {/* ── Theme override ── */}
       <style>{`
@@ -1179,7 +1279,8 @@ export default function FuntwitPage() {
         {/* ── Centre ─────────────────────────────────────────────────────── */}
         <div className="lg:col-span-2">
           {/* Stories */}
-          <StoriesBar stories={stories} myInitials={currentInitials} myColor={currentColor} onStoryClick={handleStoryClick}/>
+          <StoriesBar stories={stories} myInitials={currentInitials} myColor={currentColor} myAvatar={currentAvatar}
+            onStoryClick={handleStoryClick} onCreateClick={() => setShowCreateStory(true)}/>
 
           {/* Tabs */}
           <div className="flex bg-[#111] rounded-2xl p-1 mb-4 gap-1 overflow-x-auto scrollbar-hide">
