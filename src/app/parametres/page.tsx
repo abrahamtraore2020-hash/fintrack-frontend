@@ -108,13 +108,13 @@ export default function ParametresPage() {
     setAvatarUploading(true)
     try {
       const base64 = await resizeImageToBase64(file, 256)
-      const { error } = await supabase.from('users').update({ avatar: base64 }).eq('id', user.id)
+      const { error } = await supabase.rpc('update_user_profile', { p_avatar: base64 })
       if (error) throw error
       setProfile(p => ({ ...p, avatar: base64 }))
       setUser({ ...user, avatar: base64 })
       toast.success('Photo de profil mise à jour !')
     } catch (err: any) {
-      toast.error(`Erreur upload : ${err.message || 'Vérifiez les droits Supabase'}`)
+      toast.error(`Erreur photo : ${err.message || 'Vérifiez les droits Supabase'}`)
     } finally {
       setAvatarUploading(false)
     }
@@ -124,38 +124,30 @@ export default function ParametresPage() {
     if (!user?.id) return
     setSaving(true)
     try {
-      // Étape 1 — colonnes de base (toujours présentes)
-      const { error: e1 } = await supabase
-        .from('users')
-        .update({ first_name: profile.firstName, last_name: profile.lastName })
-        .eq('id', user.id)
+      const { error } = await supabase.rpc('update_user_profile', {
+        p_first_name: profile.firstName || null,
+        p_last_name: profile.lastName || null,
+        p_phone: profile.phone || null,
+        p_bio: profile.bio || null,
+        p_location: profile.location || null,
+        p_website: profile.website || null,
+        p_username: profile.username ? profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '') : null,
+        p_social_links: links.filter(l => l.url).length > 0 ? links.filter(l => l.url) : null,
+        p_notif_settings: notifs,
+      })
 
-      if (e1) {
-        console.error('Erreur save profil:', e1)
-        toast.error(`Impossible de sauvegarder : ${e1.message}`)
+      if (error) {
+        console.error('handleSave rpc error:', error)
+        toast.error(`Erreur : ${error.message}`)
         setSaving(false)
         return
       }
 
-      // Étape 2 — colonnes optionnelles (ignorées si absentes)
-      const extras: any = {}
-      if (profile.phone !== undefined) extras.phone = profile.phone || null
-      if (profile.bio !== undefined) extras.bio = profile.bio || null
-      if (profile.location !== undefined) extras.location = profile.location || null
-      if (profile.website !== undefined) extras.website = profile.website || null
-      if (profile.username) extras.username = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
-      if (links.length >= 0) extras.social_links = links.filter(l => l.url)
-      extras.notif_settings = notifs
-
-      const { error: e2 } = await supabase.from('users').update(extras).eq('id', user.id)
-      if (e2) console.warn('Colonnes optionnelles ignorées:', e2.message)
-
-      // Mettre à jour le store
       setUser({ ...user, firstName: profile.firstName, lastName: profile.lastName, avatar: profile.avatar || user.avatar })
       toast.success('Profil enregistré !')
     } catch (err: any) {
       console.error('handleSave exception:', err)
-      toast.error(`Erreur inattendue : ${err?.message || String(err)}`)
+      toast.error(`Erreur : ${err?.message || String(err)}`)
     } finally {
       setSaving(false)
     }
