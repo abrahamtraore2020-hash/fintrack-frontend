@@ -83,22 +83,38 @@ export default function ParametresPage() {
   const updateLink = (id: string, field: string, val: string) =>
     setLinks(p => p.map(l => l.id === id ? { ...l, [field]: val } : l))
 
+  // Redimensionne l'image et la convertit en base64 (stockage direct, pas de bucket)
+  const resizeImageToBase64 = (file: File, maxSize = 256): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ratio = Math.min(maxSize / img.width, maxSize / img.height)
+        canvas.width = Math.round(img.width * ratio)
+        canvas.height = Math.round(img.height * ratio)
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.85))
+      }
+      img.onerror = reject
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user?.id) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image trop grande (max 5 Mo)'); return }
     setAvatarUploading(true)
     try {
-      const ext = file.name.split('.').pop()
-      const path = `avatars/${user.id}.${ext}`
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-      if (uploadError) throw uploadError
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-      await supabase.from('users').update({ avatar: publicUrl }).eq('id', user.id)
-      setProfile(p => ({ ...p, avatar: publicUrl }))
-      setUser({ ...user, avatar: publicUrl })
+      const base64 = await resizeImageToBase64(file, 256)
+      const { error } = await supabase.from('users').update({ avatar: base64 }).eq('id', user.id)
+      if (error) throw error
+      setProfile(p => ({ ...p, avatar: base64 }))
+      setUser({ ...user, avatar: base64 })
       toast.success('Photo de profil mise à jour !')
-    } catch {
-      toast.error('Erreur lors de l\'upload')
+    } catch (err: any) {
+      toast.error(`Erreur upload : ${err.message || 'Vérifiez les droits Supabase'}`)
     } finally {
       setAvatarUploading(false)
     }
@@ -110,19 +126,11 @@ export default function ParametresPage() {
     try {
       await ensureSession()
 
-      // Vérifier username unique si rempli
       if (profile.username) {
+        const clean = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
         const { data: existing } = await supabase
-          .from('users')
-          .select('id')
-          .eq('username', profile.username.toLowerCase().replace(/[^a-z0-9_]/g, ''))
-          .neq('id', user.id)
-          .maybeSingle()
-        if (existing) {
-          toast.error('Ce nom d\'utilisateur est déjà pris')
-          setSaving(false)
-          return
-        }
+          .from('users').select('id').eq('username', clean).neq('id', user.id).maybeSingle()
+        if (existing) { toast.error('Ce nom d\'utilisateur est déjà pris'); setSaving(false); return }
       }
 
       const updates: any = {
@@ -135,21 +143,21 @@ export default function ParametresPage() {
         social_links: links.filter(l => l.url),
         notif_settings: notifs,
       }
-      if (profile.username) {
-        updates.username = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
-      }
+      if (profile.username) updates.username = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
 
       const { error } = await supabase.from('users').update(updates).eq('id', user.id)
-      if (error) throw error
+      if (error) {
+        // Message d'erreur précis
+        if (error.code === '42501' || error.message.includes('policy')) {
+          toast.error('Droits insuffisants. Exécutez le SQL ci-dessous dans Supabase.')
+          console.error('RLS policy manquante — exécuter dans Supabase SQL Editor:\nCREATE POLICY "users update own" ON users FOR UPDATE USING (id = auth.uid());')
+        } else {
+          toast.error(`Erreur : ${error.message}`)
+        }
+        return
+      }
 
-      // Mettre à jour le store
-      setUser({
-        ...user,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        avatar: profile.avatar || user.avatar,
-      })
-
+      setUser({ ...user, firstName: profile.firstName, lastName: profile.lastName, avatar: profile.avatar || user.avatar })
       toast.success('Profil enregistré !')
     } catch (err: any) {
       toast.error(`Erreur : ${err.message || 'Impossible de sauvegarder'}`)
