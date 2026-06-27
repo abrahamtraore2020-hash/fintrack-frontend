@@ -11,6 +11,7 @@ import { AppLayout } from '@/components/layout/AppLayout'
 import { useAppStore } from '@/store/useAppStore'
 import { useFuntwitPosts } from '@/hooks/useFuntwitPosts'
 import { useFuntwitStories, type RealStory } from '@/hooks/useFuntwitStories'
+import { useUsers } from '@/hooks/useUsers'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -1146,6 +1147,7 @@ export default function FuntwitPage() {
   const { user } = useAppStore()
   const { posts, isLoading: postsLoading, createPost, react, addComment, sharePost } = useFuntwitPosts()
   const { stories, createStory, markSeen } = useFuntwitStories()
+  const { data: allUsers = [] } = useUsers(user?.id || '')
   const [activeTab, setActiveTab] = useState<'feed'|'reels'|'explorer'|'groupes'|'live'>('feed')
   const [searchQuery, setSearchQuery] = useState('')
   const [activeStory, setActiveStory] = useState<RealStory | null>(null)
@@ -1211,11 +1213,15 @@ export default function FuntwitPage() {
     { label: 'Épargne collective', value: '128M F', icon: '💰' },
   ]
 
-  const suggestedMembers = [
-    { name: 'Mariam Balde', initials: 'MB', color: '#EC4899', bio: 'Freelance · Conakry', mutual: 3 },
-    { name: 'Oumar Kone', initials: 'OK', color: '#3B82F6', bio: 'Business · Dakar', mutual: 5 },
-    { name: 'Aïcha Touré', initials: 'AT', color: '#14B8A6', bio: 'Entrepreneur · Lomé', mutual: 2 },
-  ]
+  const [profileSearch, setProfileSearch] = useState('')
+  const suggestedMembers = allUsers
+    .filter(u => {
+      if (!profileSearch) return true
+      const q = profileSearch.toLowerCase()
+      return `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+        (u.username || '').toLowerCase().includes(q)
+    })
+    .slice(0, 5)
 
   return (
     <AppLayout>
@@ -1391,20 +1397,40 @@ export default function FuntwitPage() {
           {/* Suggestions */}
           <div className="tt-card border tt-border rounded-2xl p-4">
             <h3 className="text-sm font-bold text-white mb-3">👥 Personnes à suivre</h3>
+            <div className="relative mb-3">
+              <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#666]"/>
+              <input
+                value={profileSearch}
+                onChange={e => setProfileSearch(e.target.value)}
+                placeholder="Rechercher un profil..."
+                className="w-full bg-[#1a1a1a] text-white text-xs rounded-xl pl-7 pr-3 py-2 border border-[#333] focus:outline-none focus:border-[#fe2c55] placeholder-[#555]"
+              />
+            </div>
             <div className="space-y-3">
-              {suggestedMembers.map((m, i) => (
-                <div key={i} className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                    style={{ background: m.color }}>{m.initials}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{m.name}</p>
-                    <p className="text-[10px] tt-muted">{m.bio}</p>
+              {suggestedMembers.length === 0 && (
+                <p className="text-[11px] tt-muted text-center py-2">Aucun profil trouvé</p>
+              )}
+              {suggestedMembers.map(u => {
+                const name = `${u.firstName} ${u.lastName}`.trim() || 'Utilisateur'
+                const initials = `${(u.firstName || '?')[0]}${(u.lastName || '')[0] || ''}`.toUpperCase()
+                return (
+                  <div key={u.id} className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center text-xs font-bold text-white"
+                      style={{ background: u.color }}>
+                      {u.avatar
+                        ? <img src={u.avatar} alt={name} className="w-full h-full object-cover"/>
+                        : initials}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-white truncate">{name}</p>
+                      <p className="text-[10px] tt-muted truncate">{u.username ? `@${u.username}` : u.plan}</p>
+                    </div>
+                    <button className="px-3 py-1 bg-white text-black text-[10px] font-bold rounded-full hover:bg-gray-200 transition-colors flex-shrink-0">
+                      Suivre
+                    </button>
                   </div>
-                  <button className="px-3 py-1 bg-white text-black text-[10px] font-bold rounded-full hover:bg-gray-200 transition-colors flex-shrink-0">
-                    Suivre
-                  </button>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
