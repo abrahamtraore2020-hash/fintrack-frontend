@@ -109,7 +109,7 @@ export function useFuntwitPosts() {
     mutationFn: async (input: {
       content: string; badge?: any; media?: any[]
       hashtags: string[]; color: string; location?: string
-      _tempId?: string; _name?: string; _initials?: string
+      _tempId?: string; _name?: string; _initials?: string; _avatar?: string
     }) => {
       const uid = await ensureSession()
       const { error } = await supabase.from('funtwit_posts').insert({
@@ -138,6 +138,7 @@ export function useFuntwitPosts() {
         name: input._name || 'Moi',
         initials: input._initials || 'ME',
         color: input.color,
+        avatar: input._avatar,
         content: input.content,
         badge: input.badge,
         media: input.media,

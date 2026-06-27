@@ -1165,6 +1165,7 @@ export default function FuntwitPage() {
       _tempId: `temp-${Date.now()}`,
       _name: currentUserName,
       _initials: currentInitials,
+      _avatar: currentAvatar,
     })
     toast.success('Publication partagée sur FUNTWIT ! 🎉')
   }
