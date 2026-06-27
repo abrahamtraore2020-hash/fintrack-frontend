@@ -46,8 +46,8 @@ export function useAuth() {
         if (profile) {
           setUser({
             id: profile.id, email: profile.email,
-            firstName: profile.first_name || '',
-            lastName: profile.last_name || '',
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
             avatar: profile.avatar,
             profile: profile.profile || 'personal',
             plan: profile.plan || 'starter',
@@ -61,8 +61,8 @@ export function useAuth() {
           await supabase.from('users').insert({
             id: session.user.id,
             email: session.user.email || '',
-            first_name: '',
-            last_name: '',
+            firstName: '',
+            lastName: '',
             profile: 'personal',
             plan: 'starter',
             currency: 'XOF',
@@ -113,8 +113,8 @@ export function useAuth() {
       if (profile) {
         setUser({
           id: profile.id, email: profile.email,
-          firstName: profile.first_name || '',
-          lastName: profile.last_name || '',
+          firstName: profile.firstName || '',
+          lastName: profile.lastName || '',
           profile: profile.profile || 'personal',
           plan: profile.plan || 'starter',
           currency: profile.currency || 'XOF',
@@ -151,8 +151,8 @@ export function useAuth() {
 
       await supabase.from('users').insert({
         id: data.user.id, email,
-        first_name: firstName,
-        last_name: lastName,
+        firstName: firstName,
+        lastName: lastName,
         profile, plan: 'starter', currency: 'XOF', lang: 'fr',
         trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
         referral_code: newRefCode,

@@ -25,17 +25,17 @@ export function useUsers(currentUserId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('id, first_name, last_name, username, avatar, plan')
+        .select('id, firstName, lastName, username, avatar, plan')
         .neq('id', currentUserId || 'none')
-        .order('first_name')
+        .order('firstName')
         .limit(100)
 
       if (error || !data) return []
 
       return data.map((u: any): AppUser => ({
         id: u.id,
-        firstName: u.first_name || '',
-        lastName: u.last_name || '',
+        firstName: u.firstName || '',
+        lastName: u.lastName || '',
         username: u.username || '',
         avatar: u.avatar,
         plan: u.plan || 'starter',

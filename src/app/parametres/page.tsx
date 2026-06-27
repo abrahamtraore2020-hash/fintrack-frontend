@@ -61,8 +61,8 @@ export default function ParametresPage() {
     supabase.from('users').select('*').eq('id', user.id).single().then(({ data }) => {
       if (data) {
         setProfile({
-          firstName: data.first_name || '',
-          lastName: data.last_name || '',
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
           email: data.email || user.email || '',
           username: data.username || '',
           phone: data.phone || '',

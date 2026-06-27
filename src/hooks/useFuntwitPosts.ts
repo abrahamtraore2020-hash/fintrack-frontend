@@ -50,10 +50,10 @@ async function fetchPosts(): Promise<FuntwitPost[]> {
       .from('funtwit_posts')
       .select(`
         *,
-        users:user_id (first_name, last_name, avatar),
+        users:user_id (firstName, lastName, avatar),
         funtwit_comments (
           id, user_id, content, likes, created_at,
-          users:user_id (first_name, last_name)
+          users:user_id (firstName, lastName)
         )
       `)
       .order('created_at', { ascending: false })
@@ -64,8 +64,8 @@ async function fetchPosts(): Promise<FuntwitPost[]> {
     const remote = (data || []).map((p: any) => ({
       id: p.id,
       userId: p.user_id,
-      name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim() || 'Anonyme',
-      initials: `${(p.users?.first_name || '?')[0]}${(p.users?.last_name || '')[0] || ''}`.toUpperCase(),
+      name: `${p.users?.firstName || ''} ${p.users?.lastName || ''}`.trim() || 'Anonyme',
+      initials: `${(p.users?.firstName || '?')[0]}${(p.users?.lastName || '')[0] || ''}`.toUpperCase(),
       color: p.color || '#06D6A0',
       avatar: p.users?.avatar || undefined,
       location: p.location,
@@ -78,8 +78,8 @@ async function fetchPosts(): Promise<FuntwitPost[]> {
         .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
         .map((c: any) => ({
           id: c.id, userId: c.user_id,
-          name: `${c.users?.first_name || ''} ${c.users?.last_name || ''}`.trim() || 'Anonyme',
-          initials: `${(c.users?.first_name || '?')[0]}${(c.users?.last_name || '')[0] || ''}`.toUpperCase(),
+          name: `${c.users?.firstName || ''} ${c.users?.lastName || ''}`.trim() || 'Anonyme',
+          initials: `${(c.users?.firstName || '?')[0]}${(c.users?.lastName || '')[0] || ''}`.toUpperCase(),
           color: '#06D6A0', text: c.content, likes: c.likes || 0, createdAt: c.created_at,
         })),
       shares: p.shares || 0, saved: false, createdAt: p.created_at,

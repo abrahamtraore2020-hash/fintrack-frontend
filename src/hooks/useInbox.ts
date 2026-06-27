@@ -33,8 +33,8 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
       messages (
         id, sender_id, content, media, read, created_at
       ),
-      u1:users!conversations_user1_id_fkey (id, first_name, last_name, plan),
-      u2:users!conversations_user2_id_fkey (id, first_name, last_name, plan)
+      u1:users!conversations_user1_id_fkey (id, firstName, lastName, plan),
+      u2:users!conversations_user2_id_fkey (id, firstName, lastName, plan)
     `)
     .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
     .order('created_at', { ascending: false, foreignTable: 'messages' })
@@ -44,8 +44,8 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
   return data.map((conv: any) => {
     const isUser1 = conv.user1_id === userId
     const participant = isUser1 ? conv.u2 : conv.u1
-    const name = `${participant?.first_name || ''} ${participant?.last_name || ''}`.trim() || 'Utilisateur'
-    const initials = `${(participant?.first_name || '?')[0]}${(participant?.last_name || '')[0] || ''}`.toUpperCase()
+    const name = `${participant?.firstName || ''} ${participant?.lastName || ''}`.trim() || 'Utilisateur'
+    const initials = `${(participant?.firstName || '?')[0]}${(participant?.lastName || '')[0] || ''}`.toUpperCase()
 
     const messages: InboxMessage[] = (conv.messages || [])
       .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())

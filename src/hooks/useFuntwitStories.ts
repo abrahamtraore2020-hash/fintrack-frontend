@@ -28,7 +28,7 @@ async function fetchStories(currentUserId: string): Promise<RealStory[]> {
   try {
     const { data, error } = await supabase
       .from('funtwit_stories')
-      .select(`*, users:user_id (first_name, last_name, avatar)`)
+      .select(`*, users:user_id (firstName, lastName, avatar)`)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(30)
@@ -40,8 +40,8 @@ async function fetchStories(currentUserId: string): Promise<RealStory[]> {
     return (data || []).map((s: any) => ({
       id: s.id,
       userId: s.user_id,
-      name: `${s.users?.first_name || ''} ${s.users?.last_name || ''}`.trim() || 'Anonyme',
-      initials: `${(s.users?.first_name || '?')[0]}${(s.users?.last_name || '')[0] || ''}`.toUpperCase(),
+      name: `${s.users?.firstName || ''} ${s.users?.lastName || ''}`.trim() || 'Anonyme',
+      initials: `${(s.users?.firstName || '?')[0]}${(s.users?.lastName || '')[0] || ''}`.toUpperCase(),
       color: stringToColor(s.user_id),
       avatar: s.users?.avatar,
       content: s.content || '',
