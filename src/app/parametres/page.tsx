@@ -108,7 +108,7 @@ export default function ParametresPage() {
     setAvatarUploading(true)
     try {
       const base64 = await resizeImageToBase64(file, 256)
-      const { error } = await supabase.rpc('update_user_profile', { p_avatar: base64 })
+      const { error } = await supabase.from('users').update({ avatar: base64 }).eq('id', user.id)
       if (error) throw error
       setProfile(p => ({ ...p, avatar: base64 }))
       setUser({ ...user, avatar: base64 })
@@ -124,17 +124,17 @@ export default function ParametresPage() {
     if (!user?.id) return
     setSaving(true)
     try {
-      const { error } = await supabase.rpc('update_user_profile', {
-        p_first_name: profile.firstName || null,
-        p_last_name: profile.lastName || null,
-        p_phone: profile.phone || null,
-        p_bio: profile.bio || null,
-        p_location: profile.location || null,
-        p_website: profile.website || null,
-        p_username: profile.username ? profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '') : null,
-        p_social_links: links.filter(l => l.url).length > 0 ? links.filter(l => l.url) : null,
-        p_notif_settings: notifs,
-      })
+      const { error } = await supabase.from('users').update({
+        firstName: profile.firstName || null,
+        lastName: profile.lastName || null,
+        phone: profile.phone || null,
+        bio: profile.bio || null,
+        location: profile.location || null,
+        website: profile.website || null,
+        username: profile.username ? profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '') : null,
+        social_links: links.filter(l => l.url).length > 0 ? links.filter(l => l.url) : null,
+        notif_settings: notifs,
+      }).eq('id', user.id)
 
       if (error) {
         console.error('handleSave rpc error:', error)
