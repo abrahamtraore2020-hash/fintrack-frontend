@@ -1206,11 +1206,14 @@ export default function FuntwitPage() {
     (p.hashtags || []).some((h: string) => h.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
+  const totalMembers = allUsers.length + 1 // +1 pour l'utilisateur courant
+  const totalPosts = (posts as any[]).length
+  const myPosts = (posts as any[]).filter(p => p.userId === currentUserId).length
   const communityStats = [
-    { label: 'Membres', value: '1.2k', icon: '👥' },
-    { label: 'Posts ce mois', value: '486', icon: '📝' },
-    { label: 'Objectifs partagés', value: '342', icon: '🎯' },
-    { label: 'Épargne collective', value: '128M F', icon: '💰' },
+    { label: 'Membres', value: totalMembers > 0 ? String(totalMembers) : '—', icon: '👥' },
+    { label: 'Publications', value: totalPosts > 0 ? String(totalPosts) : '—', icon: '📝' },
+    { label: 'Mes posts', value: String(myPosts), icon: '✍️' },
+    { label: 'Actifs', value: totalMembers > 0 ? String(totalMembers) : '—', icon: '🟢' },
   ]
 
   const [profileSearch, setProfileSearch] = useState('')
