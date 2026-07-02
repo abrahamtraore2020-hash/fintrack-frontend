@@ -472,41 +472,48 @@ function PostCard({ post, currentUserId, currentUserName, currentInitials, curre
 }
 
 // ── Reels Tab (TikTok style) ─────────────────────────────────────────────────────
-const REELS = [
-  { id: 'r1', name: 'Aminata', initials: 'AD', color: '#8B5CF6', caption: '🎯 Comment j\'ai économisé 200 000 F en 6 mois #épargne', likes: 1420, comments: 89 },
-  { id: 'r2', name: 'Ibrahim', initials: 'IC', color: '#F97316', caption: '💡 La règle des 10% expliquée en 60s #astuce #wave', likes: 2800, comments: 134 },
-  { id: 'r3', name: 'Fatou',   initials: 'FT', color: '#22C55E', caption: '📈 Mon bilan financier de juin — live de mon dashboard', likes: 980, comments: 62 },
-]
-
-function ReelsSection() {
-  const [activeReel, setActiveReel] = useState(0)
+function ReelsSection({ posts }: { posts: any[] }) {
+  const videoPosts = posts.filter(p => p.media?.some((m: any) => m.type === 'video'))
 
   return (
     <div className="space-y-4">
+      {videoPosts.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-4xl mb-3">🎬</p>
+          <p className="text-sm font-bold text-gray-700 dark:text-white">Aucun Reel pour l'instant</p>
+          <p className="text-xs text-gray-400 mt-1">Publiez une vidéo dans le fil pour qu'elle apparaisse ici</p>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {REELS.map((r, i) => (
-          <div key={r.id} className="relative rounded-2xl overflow-hidden cursor-pointer group"
-            style={{ aspectRatio: '9/16', maxHeight: 400, background: `linear-gradient(135deg, ${r.color}40, ${r.color}80)` }}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                style={{ background: r.color }}>
-                {r.initials}
-              </div>
-            </div>
+        {videoPosts.map(p => {
+          const video = p.media.find((m: any) => m.type === 'video')
+          const totalReacts = Object.values(p.reactions || {}).reduce((a: number, b: any) => a + (b?.length || 0), 0)
+          return (
+          <div key={p.id} className="relative rounded-2xl overflow-hidden cursor-pointer group"
+            style={{ aspectRatio: '9/16', maxHeight: 400, background: `linear-gradient(135deg, ${p.color}40, ${p.color}80)` }}>
+            {video?.url && <video src={video.url} className="absolute inset-0 w-full h-full object-cover" muted loop/>}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"/>
             <div className="absolute bottom-0 left-0 right-0 p-3">
-              <p className="text-white text-xs font-medium leading-tight mb-2">{r.caption}</p>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden flex-shrink-0" style={{ background: p.color }}>
+                  {p.avatar ? <img src={p.avatar} className="w-full h-full object-cover" alt=""/> : p.initials}
+                </div>
+                <span className="text-white text-xs font-semibold">{p.name}</span>
+              </div>
+              <p className="text-white text-xs font-medium leading-tight mb-2 line-clamp-2">{p.content}</p>
               <div className="flex items-center gap-3">
-                <span className="text-white/80 text-xs flex items-center gap-1"><Heart size={12}/> {r.likes.toLocaleString('fr-FR')}</span>
-                <span className="text-white/80 text-xs flex items-center gap-1"><MessageCircle size={12}/> {r.comments}</span>
+                <span className="text-white/80 text-xs flex items-center gap-1"><Heart size={12}/> {totalReacts}</span>
+                <span className="text-white/80 text-xs flex items-center gap-1"><MessageCircle size={12}/> {p.comments?.length || 0}</span>
               </div>
             </div>
             <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Play size={14} className="text-white ml-0.5"/>
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
+      )}
       <div className="bg-gradient-to-br from-gold/10 to-blue-50 dark:from-gold/10 dark:to-blue-900/20 rounded-2xl p-4 text-center border border-gold/20">
         <p className="text-2xl mb-2">🎬</p>
         <p className="text-sm font-bold text-gray-800 dark:text-white">Publiez votre Reel financier</p>
@@ -519,28 +526,32 @@ function ReelsSection() {
   )
 }
 
-// ── Explorer Tab (Instagram grid) ───────────────────────────────────────────────
-const EXPLORE_POSTS = [
-  { id: 'e1', emoji: '💰', color: '#22C55E', label: '#épargne', count: '284 posts' },
-  { id: 'e2', emoji: '📈', color: '#3B82F6', label: '#revenus', count: '156 posts' },
-  { id: 'e3', emoji: '🎯', color: '#8B5CF6', label: '#objectif', count: '203 posts' },
-  { id: 'e4', emoji: '💡', color: '#F97316', label: '#astuce', count: '118 posts' },
-  { id: 'e5', emoji: '🏦', color: '#14B8A6', label: '#investissement', count: '92 posts' },
-  { id: 'e6', emoji: '📱', color: '#EC4899', label: '#mobilemoney', count: '341 posts' },
+// ── Explorer Tab ────────────────────────────────────────────────────────────────
+const EXPLORE_TAGS = [
+  { emoji: '💰', color: '#22C55E', label: '#épargne' },
+  { emoji: '📈', color: '#3B82F6', label: '#revenus' },
+  { emoji: '🎯', color: '#8B5CF6', label: '#objectif' },
+  { emoji: '💡', color: '#F97316', label: '#astuce' },
+  { emoji: '🏦', color: '#14B8A6', label: '#investissement' },
+  { emoji: '📱', color: '#EC4899', label: '#mobilemoney' },
 ]
 
-function ExploreSection({ onHashtagClick }: { onHashtagClick: (tag: string) => void }) {
+function ExploreSection({ onHashtagClick, posts }: { onHashtagClick: (tag: string) => void; posts: any[] }) {
+  const tagCounts = EXPLORE_TAGS.map(t => {
+    const count = posts.filter(p => (p.hashtags || []).some((h: string) => h.toLowerCase() === t.label.toLowerCase()) || p.content?.toLowerCase().includes(t.label.toLowerCase())).length
+    return { ...t, count }
+  })
   return (
     <div>
       <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">🔥 Sujets tendance</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {EXPLORE_POSTS.map(e => (
-          <button key={e.id} onClick={() => onHashtagClick(e.label)}
+        {tagCounts.map(e => (
+          <button key={e.label} onClick={() => onHashtagClick(e.label)}
             className="rounded-2xl p-5 flex flex-col items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             style={{ background: e.color + '20', border: `1px solid ${e.color}30` }}>
             <span className="text-3xl">{e.emoji}</span>
             <p className="text-sm font-bold" style={{ color: e.color }}>{e.label}</p>
-            <p className="text-[10px] text-gray-500">{e.count}</p>
+            <p className="text-[10px] text-gray-500">{e.count > 0 ? `${e.count} post${e.count > 1 ? 's' : ''}` : 'Aucun post'}</p>
           </button>
         ))}
       </div>
@@ -692,55 +703,16 @@ type LiveSession = {
 
 // ── Seed groupes ────────────────────────────────────────────────────────────────
 const SEED_GROUPS: Group[] = [
-  { id: 'g1', name: 'Épargne & Investissement Afrique', description: 'Partagez vos stratégies d\'épargne et d\'investissement adaptées au contexte africain', category: 'Finance', color: '#22C55E', emoji: '💰', members: 1240, isPrivate: false, joined: true, posts: 48 },
-  { id: 'g2', name: 'Freelances & Entrepreneurs CI', description: 'Réseau des freelances et entrepreneurs basés en Côte d\'Ivoire', category: 'Business', color: '#F97316', emoji: '🚀', members: 834, isPrivate: false, joined: false, posts: 31 },
-  { id: 'g3', name: 'Mobile Money Experts', description: 'Tout sur Wave, Orange Money, MTN — astuces, comparatifs, actualités', category: 'Tech', color: '#3B82F6', emoji: '📱', members: 2100, isPrivate: false, joined: true, posts: 127 },
-  { id: 'g4', name: 'Objectifs 2025 — Challenge Épargne', description: 'Groupe privé pour le challenge épargne annuel. Postez vos progrès chaque semaine !', category: 'Challenge', color: '#8B5CF6', emoji: '🎯', members: 320, isPrivate: true, joined: false, posts: 89 },
-  { id: 'g5', name: 'Femmes & Finance', description: 'Espace dédié aux femmes africaines pour parler argent, business et indépendance financière', category: 'Communauté', color: '#EC4899', emoji: '👑', members: 671, isPrivate: false, joined: false, posts: 54 },
-  { id: 'g6', name: 'Immobilier Dakar & Abidjan', description: 'Investir dans l\'immobilier en Afrique de l\'Ouest — conseils, opportunités, témoignages', category: 'Immobilier', color: '#14B8A6', emoji: '🏠', members: 445, isPrivate: false, joined: false, posts: 22 },
+  { id: 'g1', name: 'Épargne & Investissement Afrique', description: 'Partagez vos stratégies d\'épargne et d\'investissement adaptées au contexte africain', category: 'Finance', color: '#22C55E', emoji: '💰', members: 0, isPrivate: false, joined: false, posts: 0 },
+  { id: 'g2', name: 'Freelances & Entrepreneurs CI', description: 'Réseau des freelances et entrepreneurs basés en Côte d\'Ivoire', category: 'Business', color: '#F97316', emoji: '🚀', members: 0, isPrivate: false, joined: false, posts: 0 },
+  { id: 'g3', name: 'Mobile Money Experts', description: 'Tout sur Wave, Orange Money, MTN — astuces, comparatifs, actualités', category: 'Tech', color: '#3B82F6', emoji: '📱', members: 0, isPrivate: false, joined: false, posts: 0 },
+  { id: 'g4', name: 'Objectifs 2025 — Challenge Épargne', description: 'Groupe privé pour le challenge épargne annuel. Postez vos progrès chaque semaine !', category: 'Challenge', color: '#8B5CF6', emoji: '🎯', members: 0, isPrivate: true, joined: false, posts: 0 },
+  { id: 'g5', name: 'Femmes & Finance', description: 'Espace dédié aux femmes africaines pour parler argent, business et indépendance financière', category: 'Communauté', color: '#EC4899', emoji: '👑', members: 0, isPrivate: false, joined: false, posts: 0 },
+  { id: 'g6', name: 'Immobilier Dakar & Abidjan', description: 'Investir dans l\'immobilier en Afrique de l\'Ouest — conseils, opportunités, témoignages', category: 'Immobilier', color: '#14B8A6', emoji: '🏠', members: 0, isPrivate: false, joined: false, posts: 0 },
 ]
 
-// ── Seed webinaires ─────────────────────────────────────────────────────────────
-const SEED_WEBINARS: Webinar[] = [
-  {
-    id: 'w1', title: 'Comment épargner 20% de ses revenus en Afrique de l\'Ouest',
-    host: 'Ibrahim Coulibaly', hostInitials: 'IC', hostColor: '#F97316',
-    description: 'Stratégies concrètes et adaptées au contexte africain pour construire une épargne solide même avec un revenu irrégulier.',
-    date: new Date(Date.now() + 2 * 86400000).toISOString(),
-    duration: 60, registered: 187, maxSlots: 300, isRegistered: false, isPast: false,
-    tags: ['#épargne', '#budget', '#revenus'],
-  },
-  {
-    id: 'w2', title: 'Wave vs Orange Money — Comparatif 2025 pour les entrepreneurs',
-    host: 'Aminata Diallo', hostInitials: 'AD', hostColor: '#8B5CF6',
-    description: 'Analyse complète des deux plateformes : frais, limites, outils business, et lequel choisir selon votre activité.',
-    date: new Date(Date.now() + 7 * 86400000).toISOString(),
-    duration: 45, registered: 94, maxSlots: 200, isRegistered: true, isPast: false,
-    tags: ['#wave', '#orangemoney', '#entrepreneur'],
-  },
-  {
-    id: 'w3', title: 'Investir dans l\'immobilier avec 500 000 FCFA',
-    host: 'Moussa Sankara', hostInitials: 'MS', hostColor: '#14B8A6',
-    description: 'Est-ce possible ? Quelles stratégies ? Témoignages et cas réels d\'investisseurs débutants.',
-    date: new Date(Date.now() - 5 * 86400000).toISOString(),
-    duration: 90, registered: 412, maxSlots: 400, isRegistered: true, isPast: true,
-    tags: ['#immobilier', '#investissement', '#patrimoine'],
-  },
-]
-
-// ── Seed lives ──────────────────────────────────────────────────────────────────
-const SEED_LIVES: LiveSession[] = [
-  {
-    id: 'l1', hostName: 'Fatou Traoré', hostInitials: 'FT', hostColor: '#22C55E',
-    title: '🔴 LIVE — Je révèle mon bilan financier de juin en direct',
-    viewers: 143, startedAt: new Date(Date.now() - 18 * 60000).toISOString(), isLive: true,
-    chatMessages: [
-      { name: 'Kofi', initials: 'KM', color: '#3B82F6', text: 'Waouw impressionnant ! 🔥' },
-      { name: 'Marie', initials: 'MK', color: '#EC4899', text: 'Comment tu fais pour les coffres ?' },
-      { name: 'Oumar', initials: 'OK', color: '#F97316', text: 'Merci pour les conseils Fatou 🙏' },
-    ],
-  },
-]
+const SEED_WEBINARS: Webinar[] = []
+const SEED_LIVES: LiveSession[] = []
 
 // ── Composant GroupCard ─────────────────────────────────────────────────────────
 function GroupCard({ group, onToggleJoin }: { group: Group; onToggleJoin: (id: string) => void }) {
@@ -1347,7 +1319,7 @@ export default function FuntwitPage() {
           )}
 
           {/* Reels */}
-          {activeTab === 'reels' && <ReelsSection/>}
+          {activeTab === 'reels' && <ReelsSection posts={posts as any[]}/>}
 
           {/* Groupes */}
           {activeTab === 'groupes' && (
@@ -1361,7 +1333,7 @@ export default function FuntwitPage() {
 
           {/* Explorer */}
           {activeTab === 'explorer' && (
-            <ExploreSection onHashtagClick={tag => { setSearchQuery(tag); setActiveTab('feed') }}/>
+            <ExploreSection onHashtagClick={tag => { setSearchQuery(tag); setActiveTab('feed') }} posts={posts as any[]}/>
           )}
         </div>
 
@@ -1441,16 +1413,22 @@ export default function FuntwitPage() {
           <div className="tt-card border tt-border rounded-2xl p-4">
             <h3 className="text-sm font-bold text-white mb-3">🔥 Tendances</h3>
             <div className="space-y-1">
-              {TRENDING.map((tag, i) => (
+              {TRENDING.map((tag, i) => {
+                const count = (posts as any[]).filter(p =>
+                  (p.hashtags || []).some((h: string) => h.toLowerCase() === tag.toLowerCase()) ||
+                  p.content?.toLowerCase().includes(tag.toLowerCase())
+                ).length
+                return (
                 <button key={tag} onClick={() => { setSearchQuery(tag); setActiveTab('feed') }}
                   className="w-full flex items-center justify-between py-1.5 tt-hover rounded-xl px-2 transition-colors">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] tt-muted font-mono w-4">{i + 1}</span>
                     <span className="text-xs font-bold tt-tag">{tag}</span>
                   </div>
-                  <span className="text-[10px] tt-muted">{Math.floor(Math.random() * 200) + 50} posts</span>
+                  <span className="text-[10px] tt-muted">{count > 0 ? `${count} post${count > 1 ? 's' : ''}` : '—'}</span>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
 

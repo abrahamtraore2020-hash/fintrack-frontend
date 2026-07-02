@@ -429,27 +429,31 @@ export default function IntegrationsPage() {
       const res = await fetch('/api/integrations/chariow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: chariowKey.trim() }),
+        body: JSON.stringify({ apiKey: chariowKey.trim(), userId: user?.id }),
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error || 'Clé API invalide'); return }
 
-      // Sauvegarder le compte dans Supabase
+      // Créer le compte avec le solde réel disponible après frais Chariow
       const acc = await createAccount.mutateAsync({
         type: 'platform', provider: 'custom' as any,
         name: 'Chariow',
-        balance: data.revenue || 0,
-        currency: 'XOF', isConnected: true,
+        balance: data.balance || 0,
+        currency: (data.currency || 'XOF') as any,
+        isConnected: true,
         lastSync: new Date().toISOString(),
         apiKey: chariowKey.trim(),
       })
 
-      // Sauvegarder les transactions
+      // Importer seulement les virements nets reçus (pas les ventes individuelles)
       for (const tx of data.transactions || []) {
         await create.mutateAsync({ ...tx, accountId: acc.id })
       }
 
-      toast.success(`Chariow connecté ! ${data.total} commandes importées`)
+      const msg = data.total_payouts > 0
+        ? `Chariow connecté ! Solde : ${data.balance?.toLocaleString()} ${data.currency} · ${data.total_payouts} virement(s) importé(s)`
+        : `Chariow connecté ! Solde disponible : ${data.balance?.toLocaleString()} ${data.currency}`
+      toast.success(msg)
       setModal(null)
       setChariowKey('')
     } catch (e: any) {

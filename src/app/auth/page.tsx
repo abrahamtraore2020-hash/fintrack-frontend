@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Wallet, Check, Eye, EyeOff } from 'lucide-react'
+import { Check, Eye, EyeOff } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -13,15 +13,15 @@ import { MaskBaoule, MaskDogon, MaskDan, CoinFCFA, BilletAfrica } from '@/compon
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
-  password: z.string().min(6, 'Minimum 6 caractères'),
+  password: z.string().min(6, 'Minimum 6 caracteres'),
   remember: z.boolean().optional(),
 })
 
 const registerSchema = z.object({
-  firstName: z.string().min(2, 'Minimum 2 caractères'),
-  lastName: z.string().min(2, 'Minimum 2 caractères'),
+  firstName: z.string().min(2, 'Minimum 2 caracteres'),
+  lastName: z.string().min(2, 'Minimum 2 caracteres'),
   email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Minimum 8 caractères'),
+  password: z.string().min(8, 'Minimum 8 caracteres'),
   confirmPassword: z.string(),
   profile: z.enum(['personal', 'freelance', 'business', 'enterprise']),
   remember: z.boolean().optional(),
@@ -35,9 +35,9 @@ type RegisterForm = z.infer<typeof registerSchema>
 
 const FEATURES = [
   'Connectez Wave, Orange Money, banques et plus',
-  "Coffres virtuels & objectifs d'épargne",
+  "Coffres virtuels & objectifs d'epargne",
   'Rapports analytiques & conseils IA',
-  'Alertes intelligentes personnalisées',
+  'Alertes intelligentes personnalisees',
   "14 jours d'essai gratuit inclus",
 ]
 
@@ -50,7 +50,6 @@ export default function AuthPage() {
   const [showConfirmPwd, setShowConfirmPwd] = useState(false)
   const [refCode, setRefCode] = useState<string | null>(null)
   const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth()
-  const supabaseReady = isSupabaseConfigured()
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -65,7 +64,6 @@ export default function AuthPage() {
       loginForm.setValue('email', saved)
       loginForm.setValue('remember', true)
     }
-    // Detect referral code in URL
     const params = new URLSearchParams(window.location.search)
     const ref = params.get('ref')
     if (ref) {
@@ -85,9 +83,9 @@ export default function AuthPage() {
       await signIn(data.email, data.password)
     } catch (e: any) {
       if (e.message === 'SUPABASE_NOT_CONFIGURED') {
-        toast.error('Base de données non configurée.', { duration: 4000 })
+        toast.error('Base de donnees non configuree.', { duration: 4000 })
       } else if (e.message === 'EMAIL_NOT_CONFIRMED') {
-        toast.error('Confirmez votre email avant de vous connecter. Vérifiez votre boîte mail.', { duration: 6000 })
+        toast.error('Confirmez votre email avant de vous connecter.', { duration: 6000 })
       } else {
         toast.error('Email ou mot de passe incorrect')
       }
@@ -104,12 +102,12 @@ export default function AuthPage() {
       const storedRef = localStorage.getItem('funtrack_ref') || refCode || undefined
       await signUp(data.email, data.password, data.firstName, data.lastName, data.profile, storedRef)
       if (storedRef) localStorage.removeItem('funtrack_ref')
-      toast.success('Compte créé ! Bienvenue sur FinTrack 🎉')
+      toast.success('Compte cree ! Bienvenue sur FinTrack')
     } catch (e: any) {
       if (e.message === 'SUPABASE_NOT_CONFIGURED') {
-        toast.error('Base de données non configurée.', { duration: 4000 })
+        toast.error('Base de donnees non configuree.', { duration: 4000 })
       } else if (e.message === 'CHECK_EMAIL') {
-        toast.success('Compte créé ! Vérifiez votre boîte mail pour confirmer votre email.', { duration: 8000 })
+        toast.success('Compte cree ! Verifiez votre boite mail.', { duration: 8000 })
       } else {
         toast.error(e.message || "Erreur lors de l'inscription")
       }
@@ -122,20 +120,18 @@ export default function AuthPage() {
       else await signInWithApple()
     } catch (e: any) {
       if (e.message === 'SUPABASE_NOT_CONFIGURED') {
-        toast.error('Connexion via ' + (provider === 'google' ? 'Google' : 'Apple') + ' non disponible pour le moment.', { duration: 4000 })
+        toast.error('Connexion non disponible pour le moment.', { duration: 4000 })
       } else {
-        toast.error(`Erreur avec ${provider === 'google' ? 'Google' : 'Apple'}`)
+        toast.error('Erreur de connexion')
       }
     }
   }
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel */}
       <div className="hidden lg:flex w-5/12 bg-gradient-dark flex-col justify-between p-10 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gold/5" />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-blue-500/10" />
-        {/* Illustrations africaines — blanc translucide */}
         <MaskBaoule  size={180} opacity={0.08} className="absolute -top-4 -right-6 rotate-6 pointer-events-none" />
         <MaskDogon   size={140} opacity={0.07} className="absolute bottom-24 -left-8 -rotate-3 pointer-events-none" />
         <MaskDan     size={110} opacity={0.07} className="absolute top-1/3 right-2 rotate-2 pointer-events-none" />
@@ -151,10 +147,10 @@ export default function AuthPage() {
         </div>
         <div className="relative z-10">
           <h2 className="text-white text-3xl font-bold leading-tight mb-3 text-glow-blue">
-            Contrôlez vos <span className="text-gold">finances</span> avec intelligence
+            Controlez vos <span className="text-gold">finances</span> avec intelligence
           </h2>
           <p className="text-white/60 text-sm leading-relaxed mb-8">
-            La plateforme de gestion financière conçue pour l'Afrique francophone et le monde.
+            La plateforme de gestion financiere concue pour l&apos;Afrique francophone et le monde.
           </p>
           <div className="space-y-3">
             {FEATURES.map((f, i) => (
@@ -167,14 +163,11 @@ export default function AuthPage() {
             ))}
           </div>
         </div>
-        <p className="text-white/30 text-xs relative z-10">© 2025 FinTrack. Tous droits réservés.</p>
+        <p className="text-white/30 text-xs relative z-10">&copy; 2025 FinTrack. Tous droits reserves.</p>
       </div>
 
-      {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-6 bg-white dark:bg-[#0F1117] overflow-y-auto">
         <div className="w-full max-w-md py-6">
-
-          {/* Tabs */}
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1 mb-6">
             {(['login', 'register'] as const).map(t => (
               <button
@@ -193,158 +186,101 @@ export default function AuthPage() {
 
           {tab === 'login' ? (
             <div>
-              <h1 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Bon retour 👋</h1>
+              <h1 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Bon retour</h1>
               <p className="text-sm text-gray-500 mb-5">
                 Heureux de vous revoir sur{' '}
                 <span className="text-blue-500 font-medium">FinTrack</span>
               </p>
-
               <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
-                <Input
-                  label="Email"
-                  type="email"
-                  placeholder="vous@exemple.com"
-                  {...loginForm.register('email')}
-                  error={loginForm.formState.errors.email?.message}
-                />
+                <Input label="Email" type="email" placeholder="vous@exemple.com"
+                  {...loginForm.register('email')} error={loginForm.formState.errors.email?.message}/>
                 <div className="relative">
-                  <Input
-                    label="Mot de passe"
-                    type={showLoginPwd ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    {...loginForm.register('password')}
-                    error={loginForm.formState.errors.password?.message}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowLoginPwd(v => !v)}
-                    className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    {showLoginPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <Input label="Mot de passe" type={showLoginPwd ? 'text' : 'password'} placeholder="••••••••"
+                    {...loginForm.register('password')} error={loginForm.formState.errors.password?.message}/>
+                  <button type="button" onClick={() => setShowLoginPwd(v => !v)}
+                    className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    {showLoginPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
                   </button>
                 </div>
-
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      {...loginForm.register('remember')}
-                      className="w-4 h-4 rounded border-gray-300 accent-[#FFD700] cursor-pointer"
-                    />
+                    <input type="checkbox" {...loginForm.register('remember')}
+                      className="w-4 h-4 rounded border-gray-300 accent-[#FFD700] cursor-pointer"/>
                     <span className="text-xs text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
                   </label>
-                  <span className="text-xs text-blue-500 cursor-pointer hover:underline">
-                    Mot de passe oublié ?
-                  </span>
+                  <span className="text-xs text-blue-500 cursor-pointer hover:underline">Mot de passe oublie ?</span>
                 </div>
-
                 <Button type="submit" className="w-full" size="lg" loading={loginForm.formState.isSubmitting}>
                   Se connecter
                 </Button>
               </form>
-
               <div className="flex items-center gap-3 my-4 text-xs text-gray-400">
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"/>
                 ou continuer avec
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"/>
               </div>
-
               <div className="grid grid-cols-2 gap-3">
-                <OAuthButton provider="google" onClick={() => handleOAuth('google')} />
-                <OAuthButton provider="apple" onClick={() => handleOAuth('apple')} />
+                <OAuthButton provider="google" onClick={() => handleOAuth('google')}/>
+                <OAuthButton provider="apple" onClick={() => handleOAuth('apple')}/>
               </div>
             </div>
           ) : (
             <div>
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/40 rounded-xl px-4 py-3 text-center text-xs text-yellow-800 dark:text-yellow-300 mb-4">
-                🎁 <strong>14 jours gratuits</strong> — Aucune carte bancaire requise
+                14 jours gratuits — Aucune carte bancaire requise
               </div>
-              <h1 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Créer un compte</h1>
+              <h1 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Creer un compte</h1>
               <p className="text-sm text-gray-500 mb-4">
-                Rejoignez <span className="text-blue-500 font-medium">FinTrack</span> et prenez le contrôle
+                Rejoignez <span className="text-blue-500 font-medium">FinTrack</span> et prenez le controle
               </p>
-
               <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-3.5">
                 <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    label="Prénom"
-                    placeholder="Kofi"
-                    {...registerForm.register('firstName')}
-                    error={registerForm.formState.errors.firstName?.message}
-                  />
-                  <Input
-                    label="Nom"
-                    placeholder="Asante"
-                    {...registerForm.register('lastName')}
-                    error={registerForm.formState.errors.lastName?.message}
-                  />
+                  <Input label="Prenom" placeholder="Kofi" {...registerForm.register('firstName')}
+                    error={registerForm.formState.errors.firstName?.message}/>
+                  <Input label="Nom" placeholder="Asante" {...registerForm.register('lastName')}
+                    error={registerForm.formState.errors.lastName?.message}/>
                 </div>
-                <Input
-                  label="Email"
-                  type="email"
-                  placeholder="vous@exemple.com"
-                  {...registerForm.register('email')}
-                  error={registerForm.formState.errors.email?.message}
-                />
+                <Input label="Email" type="email" placeholder="vous@exemple.com"
+                  {...registerForm.register('email')} error={registerForm.formState.errors.email?.message}/>
                 <div className="relative">
-                  <Input
-                    label="Mot de passe"
-                    type={showRegisterPwd ? 'text' : 'password'}
-                    placeholder="8 caractères minimum"
-                    {...registerForm.register('password')}
-                    error={registerForm.formState.errors.password?.message}
-                  />
+                  <Input label="Mot de passe" type={showRegisterPwd ? 'text' : 'password'} placeholder="8 caracteres minimum"
+                    {...registerForm.register('password')} error={registerForm.formState.errors.password?.message}/>
                   <button type="button" onClick={() => setShowRegisterPwd(v => !v)}
                     className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    {showRegisterPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showRegisterPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
                   </button>
                 </div>
                 <div className="relative">
-                  <Input
-                    label="Confirmer le mot de passe"
-                    type={showConfirmPwd ? 'text' : 'password'}
-                    placeholder="Répétez votre mot de passe"
-                    {...registerForm.register('confirmPassword')}
-                    error={registerForm.formState.errors.confirmPassword?.message}
-                  />
+                  <Input label="Confirmer le mot de passe" type={showConfirmPwd ? 'text' : 'password'} placeholder="Repetez votre mot de passe"
+                    {...registerForm.register('confirmPassword')} error={registerForm.formState.errors.confirmPassword?.message}/>
                   <button type="button" onClick={() => setShowConfirmPwd(v => !v)}
                     className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    {showConfirmPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showConfirmPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
                   </button>
                 </div>
-                <Select
-                  label="Profil"
-                  {...registerForm.register('profile')}
-                  options={[
-                    { value: 'personal', label: 'Particulier' },
-                    { value: 'freelance', label: 'Freelance / Entrepreneur' },
-                    { value: 'business', label: 'PME' },
-                    { value: 'enterprise', label: 'Grande entreprise' },
-                  ]}
-                />
+                <Select label="Profil" {...registerForm.register('profile')} options={[
+                  { value: 'personal', label: 'Particulier' },
+                  { value: 'freelance', label: 'Freelance / Entrepreneur' },
+                  { value: 'business', label: 'PME' },
+                  { value: 'enterprise', label: 'Grande entreprise' },
+                ]}/>
                 <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    {...registerForm.register('remember')}
-                    className="w-4 h-4 rounded border-gray-300 accent-[#FFD700] cursor-pointer"
-                  />
+                  <input type="checkbox" {...registerForm.register('remember')}
+                    className="w-4 h-4 rounded border-gray-300 accent-[#FFD700] cursor-pointer"/>
                   <span className="text-xs text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
                 </label>
-
                 <Button type="submit" className="w-full" size="lg" loading={registerForm.formState.isSubmitting}>
-                  Créer mon compte gratuit
+                  Creer mon compte gratuit
                 </Button>
               </form>
-
               <div className="flex items-center gap-3 my-4 text-xs text-gray-400">
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                ou s'inscrire avec
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"/>
+                ou inscrire avec
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"/>
               </div>
-
               <div className="grid grid-cols-2 gap-3">
-                <OAuthButton provider="google" onClick={() => handleOAuth('google')} />
-                <OAuthButton provider="apple" onClick={() => handleOAuth('apple')} />
+                <OAuthButton provider="google" onClick={() => handleOAuth('google')}/>
+                <OAuthButton provider="apple" onClick={() => handleOAuth('apple')}/>
               </div>
             </div>
           )}
@@ -356,10 +292,8 @@ export default function AuthPage() {
 
 function OAuthButton({ provider, onClick }: { provider: 'google' | 'apple'; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:border-[#FFD700] hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300"
-    >
+    <button onClick={onClick}
+      className="py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:border-[#FFD700] hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300">
       {provider === 'google' ? (
         <>
           <svg width="18" height="18" viewBox="0 0 24 24">

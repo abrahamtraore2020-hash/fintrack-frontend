@@ -103,11 +103,10 @@ export function useAuth() {
     resetUserData()
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      if (error.message.includes('Email not confirmed')) {
-        throw new Error('EMAIL_NOT_CONFIRMED')
-      }
+      if (error.message.includes('Email not confirmed')) throw new Error('EMAIL_NOT_CONFIRMED')
       throw error
     }
+
     if (data.user) {
       const { data: profile } = await supabase.from('users').select('*').eq('id', data.user.id).single()
       if (profile) {
@@ -128,6 +127,7 @@ export function useAuth() {
     }
     router.push('/dashboard')
   }
+
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string, profile: string, referralCode?: string) => {
     if (!isSupabaseConfigured()) throw new Error('SUPABASE_NOT_CONFIGURED')

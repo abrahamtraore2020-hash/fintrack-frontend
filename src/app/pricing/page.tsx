@@ -7,17 +7,16 @@ import { PLANS } from '@/lib/constants'
 import { Currency, BillingPeriod } from '@/types'
 import { cn } from '@/lib/utils'
 
-const CURRENCY_SYMBOLS: Record<Currency, string> = { XOF: 'FCFA', USD: '$', EUR: '€' }
+const CURRENCY_SYMBOLS: Partial<Record<Currency, string>> = { XOF: 'FCFA', USD: '$', EUR: '€' }
 
 export default function PricingPage() {
   const [period, setPeriod] = useState<BillingPeriod>('monthly')
   const [currency, setCurrency] = useState<Currency>('XOF')
 
   const formatPrice = (plan: typeof PLANS[0]) => {
-    const price = plan.prices[period][currency]
-    if (price === null) return 'Sur devis'
-    const sym = CURRENCY_SYMBOLS[currency]
-    const perLabel = { monthly: '/ mois', yearly: '/ an', lifetime: 'à vie' }[period]
+    const price = plan.prices[period][currency] ?? plan.prices[period]['USD']
+    if (price === null || price === undefined) return 'Sur devis'
+    const sym = CURRENCY_SYMBOLS[currency] ?? currency
     return currency === 'XOF' ? `${price.toLocaleString('fr-FR')} ${sym}` : `${sym}${price}`
   }
 

@@ -1,7 +1,33 @@
-export type Currency = 'XOF' | 'USD' | 'EUR'
+export type Currency =
+  // Afrique
+  | 'XOF' | 'XAF' | 'GHS' | 'NGN' | 'KES' | 'ZAR' | 'EGP' | 'MAD' | 'TND' | 'DZD'
+  | 'ETB' | 'TZS' | 'UGX' | 'RWF' | 'MZN' | 'ZMW' | 'BWP' | 'MUR' | 'SCR' | 'CVE'
+  | 'GMD' | 'SLL' | 'GNF' | 'BIF' | 'CDF' | 'AOA' | 'NAD' | 'SZL' | 'LSL' | 'MWK'
+  | 'ZWL' | 'SDG' | 'SSP' | 'LYD' | 'DJF' | 'ERN' | 'SOS' | 'KMF' | 'MGA' | 'STN'
+  // Amériques
+  | 'USD' | 'CAD' | 'MXN' | 'BRL' | 'ARS' | 'COP' | 'CLP' | 'PEN' | 'VES' | 'BOB'
+  | 'PYG' | 'UYU' | 'GTQ' | 'HNL' | 'NIO' | 'CRC' | 'PAB' | 'DOP' | 'CUP' | 'HTG'
+  | 'JMD' | 'TTD' | 'BBD' | 'GYD' | 'SRD' | 'BZD' | 'XCD'
+  // Europe
+  | 'EUR' | 'GBP' | 'CHF' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON'
+  | 'TRY' | 'RUB' | 'UAH' | 'BGN' | 'HRK' | 'RSD' | 'ISK' | 'MKD' | 'ALL' | 'BAM'
+  | 'MDL' | 'GEL' | 'AMD' | 'AZN' | 'BYN' | 'KZT' | 'GBP'
+  // Asie
+  | 'CNY' | 'JPY' | 'KRW' | 'INR' | 'IDR' | 'SGD' | 'HKD' | 'TWD' | 'THB' | 'MYR'
+  | 'PHP' | 'VND' | 'PKR' | 'BDT' | 'LKR' | 'NPR' | 'MMK' | 'KHR' | 'LAK' | 'MNT'
+  | 'KGS' | 'TJS' | 'UZS' | 'TMT' | 'AFN' | 'MVR' | 'BTN'
+  // Moyen-Orient
+  | 'AED' | 'SAR' | 'QAR' | 'KWD' | 'BHD' | 'OMR' | 'JOD' | 'IQD' | 'IRR' | 'ILS' | 'LBP' | 'SYP' | 'YER'
+  // Océanie
+  | 'AUD' | 'NZD' | 'FJD' | 'PGK' | 'SBD' | 'VUV' | 'WST' | 'TOP'
 export type BillingPeriod = 'monthly' | 'yearly' | 'lifetime'
 export type UserProfile = 'personal' | 'freelance' | 'business' | 'enterprise'
-export type Lang = 'fr' | 'en'
+export type Lang =
+  | 'fr' | 'en' | 'ar' | 'es' | 'pt' | 'de' | 'it' | 'nl' | 'ru' | 'zh' | 'ja' | 'ko'
+  | 'hi' | 'tr' | 'pl' | 'uk' | 'ro' | 'hu' | 'cs' | 'sv' | 'no' | 'da' | 'fi' | 'el'
+  | 'he' | 'fa' | 'ur' | 'bn' | 'vi' | 'th' | 'id' | 'ms' | 'tl' | 'sw' | 'ha' | 'yo'
+  | 'ig' | 'am' | 'so' | 'mg' | 'wo' | 'bm' | 'ff' | 'ln' | 'lg' | 'rw' | 'ny' | 'sn'
+  | 'xh' | 'zu' | 'st' | 'tn' | 'ss' | 'ts' | 've' | 'nr' | 'nd'
 export type PlanName = 'starter' | 'pro' | 'business' | 'enterprise'
 export type TransactionType = 'income' | 'expense' | 'transfer'
 export type TransactionCategory = 'food'|'transport'|'housing'|'health'|'entertainment'|'salary'|'freelance'|'investment'|'shopping'|'utilities'|'education'|'other'
@@ -69,7 +95,7 @@ export interface ApiResponse<T> { success: boolean; data: T; message?: string; e
 export interface PaginatedResponse<T> { data: T[]; total: number; page: number; limit: number; hasMore: boolean }
 export interface Plan {
   id: PlanName; name: string; description: string; color: string; highlighted: boolean
-  prices: { monthly: Record<Currency,number|null>; yearly: Record<Currency,number|null>; lifetime: Record<Currency,number|null> }
+  prices: { monthly: Partial<Record<Currency,number|null>>; yearly: Partial<Record<Currency,number|null>>; lifetime: Partial<Record<Currency,number|null>> }
   limits: { accounts: number|'unlimited'; integrations: number|'unlimited'; transactions: number|'unlimited'; coffres: number|'unlimited'; alarms: number|'unlimited'; users: number|'unlimited' }
   features: string[]; missingFeatures: string[]
 }

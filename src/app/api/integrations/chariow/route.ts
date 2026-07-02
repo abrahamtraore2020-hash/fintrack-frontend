@@ -1,89 +1,152 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 const CHARIOW_BASE = 'https://api.chariow.com/v1'
 
-export async function POST(req: NextRequest) {
-  try {
-    const { apiKey } = await req.json()
-    if (!apiKey) return NextResponse.json({ error: 'Clé API manquante' }, { status: 400 })
+function getSupabaseAdmin() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey)
+}
 
-    // Récupérer toutes les commandes via pagination curseur
-    const headers = {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    }
+// Tente plusieurs endpoints pour trouver le solde du compte
+async function fetchBalance(headers: HeadersInit): Promise<{ balance: number; currency: string; raw: any }> {
+  // Endpoints possibles pour le solde/wallet
+  const balanceEndpoints = [
+    '/store',
+    '/wallet',
+    '/balance',
+    '/account',
+    '/seller',
+    '/earnings',
+  ]
 
-    // Vérifier d'abord que la clé est valide via /store
-    const storeRes = await fetch(`${CHARIOW_BASE}/store`, { headers })
-    if (!storeRes.ok) {
-      return NextResponse.json({ error: 'Clé API invalide. Vérifiez votre clé dans Chariow → Développeurs → API' }, { status: 401 })
-    }
+  for (const ep of balanceEndpoints) {
+    try {
+      const res = await fetch(`${CHARIOW_BASE}${ep}`, { headers })
+      if (!res.ok) continue
+      const data = await res.json()
+      const d = data.data || data
 
-    // Essayer plusieurs endpoints pour les ventes/commandes
-    const SALES_ENDPOINTS = ['/sales', '/orders', '/purchases', '/transactions']
-    let allOrders: any[] = []
-    let foundEndpoint = ''
-
-    for (const endpoint of SALES_ENDPOINTS) {
-      const testRes = await fetch(`${CHARIOW_BASE}${endpoint}?per_page=50`, { headers })
-      if (testRes.ok) {
-        const testData = await testRes.json()
-        const items = testData.data?.data || testData.data || testData.orders || testData.sales || []
-        if (Array.isArray(items)) {
-          allOrders = items
-          foundEndpoint = endpoint
-          // Paginer si nécessaire
-          let cursor: string | null = testData.data?.pagination?.next_cursor || null
-          let hasMore: boolean = testData.data?.pagination?.has_more === true
-          while (hasMore && allOrders.length < 1000) {
-            const nextUrl: string = `${CHARIOW_BASE}${endpoint}?cursor=${cursor}&per_page=50`
-            const nextRes = await fetch(nextUrl, { headers })
-            if (!nextRes.ok) break
-            const nextData = await nextRes.json()
-            const nextItems = nextData.data?.data || nextData.data || []
-            allOrders = [...allOrders, ...(Array.isArray(nextItems) ? nextItems : [])]
-            cursor = nextData.data?.pagination?.next_cursor || null
-            hasMore = nextData.data?.pagination?.has_more === true
-          }
-          break
+      // Chercher le solde dans plusieurs champs possibles
+      const candidates = [
+        d.balance?.value, d.available_balance?.value, d.wallet?.balance?.value,
+        d.earnings?.available?.value, d.net_balance?.value, d.store?.balance?.value,
+        d.balance, d.available_balance,
+      ]
+      for (const v of candidates) {
+        const n = Number(v)
+        if (!isNaN(n) && n >= 0) {
+          const currency = (
+            d.balance?.currency || d.available_balance?.currency ||
+            d.currency || d.store?.currency || 'XOF'
+          ).toUpperCase()
+          return { balance: n, currency, raw: d }
         }
       }
+    } catch { continue }
+  }
+
+  return { balance: 0, currency: 'XOF', raw: null }
+}
+
+// Tente plusieurs endpoints pour trouver les virements (payouts)
+async function fetchPayouts(headers: HeadersInit): Promise<any[]> {
+  const payoutEndpoints = ['/payouts', '/withdrawals', '/settlements', '/transfers', '/disbursements']
+
+  for (const ep of payoutEndpoints) {
+    try {
+      const res = await fetch(`${CHARIOW_BASE}${ep}?per_page=50&status=completed`, { headers })
+      if (!res.ok) continue
+      const data = await res.json()
+      const items = data.data?.data || data.data || data.payouts || data.withdrawals || data.items || []
+      if (Array.isArray(items) && items.length >= 0) return items
+    } catch { continue }
+  }
+
+  return []
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { apiKey, userId } = body
+
+    if (!apiKey) return NextResponse.json({ error: 'Clé API manquante' }, { status: 400 })
+
+    const headers: HeadersInit = {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     }
 
-    const orders = allOrders
+    // 1. Valider la clé via /store
+    const storeRes = await fetch(`${CHARIOW_BASE}/store`, { headers })
+    if (!storeRes.ok) {
+      return NextResponse.json({
+        error: 'Clé API invalide ou expirée. Vérifiez dans Chariow → Développeurs → API',
+      }, { status: 401 })
+    }
+    const storeData = await storeRes.json()
+    const store = storeData.data || storeData
 
-    // Debug : retourner le premier ordre brut pour identifier les champs
-    const rawSample = orders.length > 0 ? orders[0] : null
+    // 2. Récupérer le solde disponible (argent après frais Chariow)
+    const { balance, currency, raw: balanceRaw } = await fetchBalance(headers)
 
-    // Convertir les commandes Chariow en transactions FinTrack
-    const transactions = orders.map((order: any) => {
-      // Chariow: montants sont des objets { value, formatted, currency }
-      const amount = Math.max(0,
-        Number(order.amount?.value ?? order.settlement?.amount?.value ?? order.payment?.amount?.value ?? 0)
-      )
-      const currency = (order.amount?.currency || order.settlement?.amount?.currency || 'XOF').toUpperCase()
-      const productName = order.product?.name || order.product_name || order.title || ('Commande #' + order.id)
-      const date = (order.completed_at || order.created_at || new Date().toISOString()).split('T')[0]
+    // 3. Récupérer les virements reçus (argent net réellement versé)
+    const payouts = await fetchPayouts(headers)
 
+    // Construire les transactions à partir des virements uniquement (argent net reçu)
+    const transactions = payouts.map((p: any) => {
+      const amount = Math.max(0, Number(
+        p.net_amount?.value ?? p.amount?.value ?? p.net_amount ?? p.amount ?? 0
+      ))
+      const cur = (p.net_amount?.currency || p.amount?.currency || p.currency || currency).toUpperCase()
+      const date = (p.paid_at || p.completed_at || p.created_at || new Date().toISOString()).split('T')[0]
       return {
         type: 'income' as const,
         amount,
-        currency: (currency === 'XOF' || currency === 'USD' || currency === 'EUR') ? currency as 'XOF' | 'USD' | 'EUR' : 'XOF' as const,
+        currency: (['XOF','EUR','USD','GBP','CAD','MAD','TND','NGN','KES','GHS','XAF'].includes(cur) ? cur : 'XOF') as any,
         category: 'freelance' as const,
-        description: `Chariow – ${productName}`,
+        description: `Chariow — Virement net reçu`,
         date,
-        accountId: '',
         isRecurring: false,
-        coffreId: undefined,
       }
-    })
+    }).filter((t: any) => t.amount > 0)
+
+    // 4. Si userId fourni, mettre à jour le solde du compte Chariow en base
+    if (userId) {
+      const supabase = getSupabaseAdmin()
+      const { data: account } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('name', 'Chariow')
+        .single()
+
+      if (account) {
+        await supabase.from('accounts').update({
+          balance,
+          last_sync: new Date().toISOString(),
+        }).eq('id', account.id)
+      }
+    }
 
     return NextResponse.json({
       success: true,
+      // Solde actuel du compte Chariow (après frais)
+      balance,
+      currency,
+      store_name: store.name || store.store_name || 'Ma boutique Chariow',
+      // Virements reçus = transactions à importer dans FunTrack
       transactions,
-      total: transactions.length,
-      revenue: transactions.reduce((s: number, t: any) => s + t.amount, 0),
-      _debug_first_order: rawSample,
+      total_payouts: transactions.length,
+      total_net_received: transactions.reduce((s: number, t: any) => s + t.amount, 0),
+      // Debug pour identifier la structure exacte
+      _debug: {
+        balance_raw: balanceRaw ? JSON.stringify(balanceRaw).slice(0, 300) : null,
+        payout_count: payouts.length,
+        first_payout: payouts[0] ? JSON.stringify(payouts[0]).slice(0, 300) : null,
+      },
     })
   } catch (e: any) {
     return NextResponse.json({ error: e.message || 'Erreur serveur' }, { status: 500 })

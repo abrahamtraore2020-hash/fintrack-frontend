@@ -4,6 +4,7 @@ import { ThemeProvider } from 'next-themes'
 import { useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { PWARegister } from './PWARegister'
+import { LangSync } from './LangSync'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -22,6 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <PWARegister />
+        <LangSync />
         {children}
         <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       </ThemeProvider>

@@ -8,17 +8,28 @@ export function cn(...inputs: ClassValue[]) {
 
 // Formater les montants selon la devise
 export function formatAmount(amount: number, currency: Currency): string {
-  const formatters: Record<Currency, Intl.NumberFormat> = {
-    XOF: new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }),
-    USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
-    EUR: new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }),
+  try {
+    const locale = currency === 'XOF' || currency === 'XAF' ? 'fr-FR' : 'en-US'
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: ['XOF','XAF','JPY','KRW','VND','IDR','GNF','BIF','DJF','KMF','MGA','RWF','UGX','PYG'].includes(currency) ? 0 : 2,
+      maximumFractionDigits: ['XOF','XAF','JPY','KRW','VND','IDR','GNF','BIF','DJF','KMF','MGA','RWF','UGX','PYG'].includes(currency) ? 0 : 2,
+    }).format(amount)
+  } catch {
+    return `${amount.toLocaleString()} ${currency}`
   }
-  return formatters[currency].format(amount)
 }
 
 // Symbole de la devise
 export function getCurrencySymbol(currency: Currency): string {
-  return { XOF: 'FCFA', USD: '$', EUR: '€' }[currency]
+  const symbols: Partial<Record<Currency, string>> = {
+    XOF: 'FCFA', XAF: 'FCFA', USD: '$', EUR: '€', GBP: '£', JPY: '¥', CNY: '¥',
+    INR: '₹', KRW: '₩', BRL: 'R$', RUB: '₽', TRY: '₺', ZAR: 'R', NGN: '₦',
+    GHS: '₵', EGP: '£', SAR: '﷼', AED: 'د.إ', ILS: '₪', UAH: '₴', PKR: '₨',
+    IDR: 'Rp', THB: '฿', VND: '₫', PHP: '₱', BDT: '৳', KZT: '₸',
+  }
+  return symbols[currency] ?? currency
 }
 
 // Calcul progression coffre
