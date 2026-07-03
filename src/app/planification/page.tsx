@@ -89,11 +89,35 @@ export default function PlanificationPage() {
   const handleSaveIncome = async () => {
     setSavingIncome(true)
     try {
-      const planId = await ensurePlan(parseFloat(incomeGoal) || 0)
-      const { error } = await supabase.from('monthly_plans').update({ income_goal: parseFloat(incomeGoal) || 0 }).eq('id', planId)
+      const goal = parseFloat(incomeGoal) || 0
+      const uid    = await ensureSession()
+      const planId = await ensurePlan(goal)
+
+      // 1. Sauvegarder l'objectif mensuel
+      const { error } = await supabase.from('monthly_plans').update({ income_goal: goal }).eq('id', planId)
       if (error) throw error
+
+      // 2. Répartir automatiquement sur les semaines (proportionnel au nb de jours)
+      if (goal > 0) {
+        const totalDays = weeks.reduce((s, w) => s + w.days.length, 0)
+        await Promise.all(
+          weeks.map(async (w, i) => {
+            const wn     = i + 1
+            const target = Math.round((goal * w.days.length) / totalDays)
+            const existing = weeklyGoals.find(g => g.weekNumber === wn)
+            if (existing?.id) {
+              // Mettre à jour uniquement l'objectif, sans toucher au réalisé
+              await supabase.from('plan_weekly_goals').update({ target_amount: target }).eq('id', existing.id)
+            } else {
+              await supabase.from('plan_weekly_goals').insert({ plan_id: planId, user_id: uid, week_number: wn, target_amount: target, realized_amount: null, is_achieved: false })
+            }
+          })
+        )
+      }
+
       qc.invalidateQueries({ queryKey: ['monthly_plan'] })
-      toast.success('Objectif mensuel enregistré')
+      qc.invalidateQueries({ queryKey: ['plan_weekly_goals', planId] })
+      toast.success('Objectif enregistré — semaines calculées automatiquement ✓')
     } catch (e: any) { toast.error(e.message) }
     finally { setSavingIncome(false) }
   }
