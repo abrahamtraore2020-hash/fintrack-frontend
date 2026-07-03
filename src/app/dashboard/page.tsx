@@ -1,12 +1,14 @@
 'use client'
-import { useMemo } from 'react'
-import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight, Plus, Plug } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight, Plus, Minus, Plug, Loader2 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, CardTitle } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
+import { Input } from '@/components/ui/Input'
 import { useAppStore } from '@/store/useAppStore'
 import { useCoffres } from '@/hooks/useCoffres'
 import { useObjectifs } from '@/hooks/useObjectifs'
@@ -14,12 +16,79 @@ import { useTransactions } from '@/hooks/useTransactions'
 import { formatAmount, CATEGORY_COLORS, CATEGORY_LABELS_FR, timeAgo } from '@/lib/utils'
 import { CurrencyBanner } from '@/components/ui/AfricanCurrencies'
 import { BackgroundDecor } from '@/components/ui/AfricanIllustrations'
+import { supabase, ensureSession } from '@/lib/supabase'
+import toast from 'react-hot-toast'
+
+const INCOME_CATS = [
+  { value: 'salary',     label: '💼 Salaire / Revenu mensuel' },
+  { value: 'freelance',  label: '💻 Freelance / Client' },
+  { value: 'investment', label: '📈 Investissement / Dividende' },
+  { value: 'other',      label: '💰 Autre revenu' },
+]
+const EXPENSE_CATS = [
+  { value: 'food',          label: '🍔 Alimentation' },
+  { value: 'transport',     label: '🚗 Transport' },
+  { value: 'housing',       label: '🏠 Logement / Loyer' },
+  { value: 'health',        label: '💊 Santé' },
+  { value: 'entertainment', label: '🎬 Loisirs / Détente' },
+  { value: 'shopping',      label: '🛍 Shopping' },
+  { value: 'utilities',     label: '⚡ Factures / Services' },
+  { value: 'education',     label: '📚 Éducation / Formation' },
+  { value: 'other',         label: '📌 Autre dépense' },
+]
 
 export default function DashboardPage() {
   const { user } = useAppStore()
   const { data: coffres = [] } = useCoffres()
   const { data: objectifs = [] } = useObjectifs()
-  const { data: transactions = [] } = useTransactions(200)
+  const { data: transactions = [], create } = useTransactions(200)
+
+  const [modal, setModal] = useState<'income' | 'expense' | null>(null)
+  const [form, setForm]   = useState({ amount: '', description: '', category: 'salary', date: new Date().toISOString().slice(0, 10) })
+  const [saving, setSaving] = useState(false)
+
+  const openModal = (type: 'income' | 'expense') => {
+    setForm({ amount: '', description: '', category: type === 'income' ? 'salary' : 'food', date: new Date().toISOString().slice(0, 10) })
+    setModal(type)
+  }
+  const closeModal = () => setModal(null)
+
+  const getOrCreateManualAccountId = async (): Promise<string> => {
+    const uid = await ensureSession()
+    const { data: existing } = await supabase
+      .from('accounts').select('id')
+      .eq('user_id', uid).eq('name', 'Saisie manuelle').maybeSingle()
+    if (existing) return (existing as Record<string, unknown>).id as string
+    const { data: created, error } = await supabase
+      .from('accounts')
+      .insert({ user_id: uid, type: 'custom', provider: 'custom', name: 'Saisie manuelle', balance: 0, currency: user?.currency || 'XOF', is_connected: true })
+      .select('id').single()
+    if (error) throw error
+    return (created as Record<string, unknown>).id as string
+  }
+
+  const handleSave = async () => {
+    if (!form.amount || !form.description.trim()) return toast.error('Remplissez le montant et la description')
+    setSaving(true)
+    try {
+      const accountId = await getOrCreateManualAccountId()
+      await create.mutateAsync({
+        type: modal!,
+        amount: parseFloat(form.amount.replace(/\s/g, '').replace(',', '.')),
+        currency: user?.currency || 'XOF',
+        category: form.category as any,
+        description: form.description.trim(),
+        date: new Date(form.date).toISOString(),
+        accountId,
+        isRecurring: false,
+      })
+      closeModal()
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur lors de l\'enregistrement')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   // Calculs réels basés sur les vraies transactions
   const now = new Date()
@@ -108,8 +177,45 @@ export default function DashboardPage() {
 
       {/* Stats réelles */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard label="Revenus du mois" value={`${revenus.toLocaleString('fr-FR')} FCFA`} change={revenus > 0 ? 'Ce mois-ci' : 'Aucun revenu'} changeType={revenus > 0 ? 'up' : 'neutral'} icon={TrendingUp} iconColor="text-green-600" iconBg="bg-green-50" valueColor="text-green-600" />
-        <StatCard label="Dépenses du mois" value={`${depenses.toLocaleString('fr-FR')} FCFA`} change={depenses > 0 ? 'Ce mois-ci' : 'Aucune dépense'} changeType={depenses > 0 ? 'down' : 'neutral'} icon={TrendingDown} iconColor="text-red-500" iconBg="bg-red-50" valueColor="text-red-500" />
+
+        {/* Revenus — avec bouton + */}
+        <Card>
+          <div className="flex items-start justify-between mb-3">
+            <p className="text-xs text-gray-500 font-medium">Revenus du mois</p>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => openModal('income')}
+                className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 flex items-center justify-center hover:bg-green-200 dark:hover:bg-green-800/60 transition-colors"
+                title="Ajouter un revenu">
+                <Plus size={14} />
+              </button>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-50 dark:bg-green-900/30">
+                <TrendingUp size={16} className="text-green-600" />
+              </div>
+            </div>
+          </div>
+          <p className="text-xl font-bold text-green-600">{revenus.toLocaleString('fr-FR')} FCFA</p>
+          <p className="text-xs mt-1 text-green-600">↑ {revenus > 0 ? 'Ce mois-ci' : 'Aucun revenu'}</p>
+        </Card>
+
+        {/* Dépenses — avec bouton - */}
+        <Card>
+          <div className="flex items-start justify-between mb-3">
+            <p className="text-xs text-gray-500 font-medium">Dépenses du mois</p>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => openModal('expense')}
+                className="w-7 h-7 rounded-full bg-red-100 dark:bg-red-900/40 text-red-500 flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800/60 transition-colors"
+                title="Ajouter une dépense">
+                <Minus size={14} />
+              </button>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 dark:bg-red-900/30">
+                <TrendingDown size={16} className="text-red-500" />
+              </div>
+            </div>
+          </div>
+          <p className="text-xl font-bold text-red-500">{depenses.toLocaleString('fr-FR')} FCFA</p>
+          <p className="text-xs mt-1 text-red-500">↓ {depenses > 0 ? 'Ce mois-ci' : 'Aucune dépense'}</p>
+        </Card>
+
         <StatCard label="Solde net" value={`${solde.toLocaleString('fr-FR')} FCFA`} change={solde >= 0 ? 'Bonne trajectoire' : 'Déficit ce mois'} changeType={solde >= 0 ? 'up' : 'down'} icon={Wallet} iconColor="text-yellow-600" iconBg="bg-yellow-50" valueColor="text-yellow-600" />
         <StatCard label="Total coffres" value={`${totalCoffres.toLocaleString('fr-FR')} FCFA`} change={`${coffres.length} coffre${coffres.length !== 1 ? 's' : ''}`} changeType="neutral" icon={Vault} iconColor="text-blue-500" iconBg="bg-blue-50" valueColor="text-glow-blue" />
       </div>
@@ -249,6 +355,59 @@ export default function DashboardPage() {
           )}
         </Card>
       </div>
+      {/* Modale ajout revenu / dépense */}
+      {modal && (
+        <Modal open onClose={closeModal} title={modal === 'income' ? '💰 Ajouter un revenu' : '💸 Ajouter une dépense'}>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Montant (FCFA) *</label>
+              <Input
+                type="number"
+                placeholder="Ex : 150000"
+                value={form.amount}
+                onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">À quoi ça a servi *</label>
+              <Input
+                placeholder={modal === 'income' ? 'Ex : Salaire juillet, Vente client…' : 'Ex : Courses, Loyer, Carburant…'}
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Catégorie</label>
+              <select
+                value={form.category}
+                onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-dark-border rounded-lg text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-dark-card focus:outline-none focus:border-gold transition-colors">
+                {(modal === 'income' ? INCOME_CATS : EXPENSE_CATS).map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Date de la transaction</label>
+              <Input
+                type="date"
+                value={form.date}
+                onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" className="flex-1" onClick={closeModal} disabled={saving}>Annuler</Button>
+              <Button
+                className={`flex-1 ${modal === 'income' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}
+                onClick={handleSave}
+                disabled={saving || !form.amount || !form.description.trim()}>
+                {saving ? <Loader2 size={14} className="animate-spin" /> : modal === 'income' ? '+ Enregistrer' : '- Enregistrer'}
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </AppLayout>
   )
 }
