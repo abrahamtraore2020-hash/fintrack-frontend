@@ -100,7 +100,14 @@ export interface PlanBudgetLine {
 }
 export interface PlanTodo {
   id: string; planId: string; userId: string; title: string
-  amount?: number; isDone: boolean; createdAt: string
+  amount?: number; dateLabel?: string; isDone: boolean; createdAt: string
+}
+export interface PlanWeeklyGoal {
+  id?: string; planId: string; userId: string
+  weekNumber: number; targetAmount: number; realizedAmount?: number; isAchieved: boolean
+}
+export interface PlanRoutineTask {
+  id: string; planId: string; userId: string; label: string; position: number; createdAt: string
 }
 
 export interface ApiResponse<T> { success: boolean; data: T; message?: string; error?: string }
