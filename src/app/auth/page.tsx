@@ -129,6 +129,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex">
+      {/* ── PANNEAU GAUCHE — desktop uniquement ── */}
       <div className="hidden lg:flex w-5/12 bg-gradient-dark flex-col justify-between p-10 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gold/5" />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-blue-500/10" />
@@ -166,8 +167,67 @@ export default function AuthPage() {
         <p className="text-white/30 text-xs relative z-10">&copy; 2025 FinTrack. Tous droits reserves.</p>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6 bg-white dark:bg-[#0F1117] overflow-y-auto">
-        <div className="w-full max-w-md py-6">
+      {/* ── PANNEAU DROIT — formulaire ── */}
+      <div className="flex-1 flex flex-col bg-white dark:bg-[#0F1117] overflow-y-auto">
+
+        {/* ── HERO MOBILE — visible uniquement sur mobile/tablette ── */}
+        <div className="lg:hidden relative bg-gradient-dark overflow-hidden px-6 pt-10 pb-8">
+          {/* Décorations de fond */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gold/10" />
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-blue-500/10" />
+          <MaskBaoule size={120} opacity={0.07} className="absolute -top-2 right-0 rotate-6 pointer-events-none" />
+          <MaskDogon  size={90}  opacity={0.06} className="absolute bottom-0 left-0 -rotate-3 pointer-events-none" />
+          <CoinFCFA   size={55}  opacity={0.08} className="absolute top-8 left-6 -rotate-6 pointer-events-none" />
+
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 relative z-10 mb-6">
+            <img src="/logo.svg" alt="FUNTRACK" className="w-9 h-9 rounded-xl" />
+            <div>
+              <span className="text-white font-bold text-base tracking-widest">FUNTRACK</span>
+              <p className="text-white/40 text-[9px] tracking-widest uppercase">Track. Analyze. Improve.</p>
+            </div>
+          </div>
+
+          {/* Accroche */}
+          <div className="relative z-10 mb-5">
+            <h1 className="text-white text-2xl font-bold leading-tight mb-2">
+              Controlez vos <span className="text-gold">finances</span>{'\n'}avec intelligence
+            </h1>
+            <p className="text-white/55 text-xs leading-relaxed">
+              La solution financiere concue pour l&apos;Afrique et le monde.
+            </p>
+          </div>
+
+          {/* Features en grid 2 colonnes */}
+          <div className="relative z-10 grid grid-cols-2 gap-2">
+            {[
+              { emoji: '💳', text: 'Wave & Orange Money' },
+              { emoji: '🏦', text: 'Toutes vos banques' },
+              { emoji: '🔐', text: "Coffres d'epargne" },
+              { emoji: '🤖', text: 'Conseils IA' },
+              { emoji: '📊', text: 'Rapports & analyses' },
+              { emoji: '🎯', text: '14 jours gratuits' },
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                style={{ background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span className="text-lg">{f.emoji}</span>
+                <span className="text-white/85 text-[11px] font-medium leading-tight">{f.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Badge essai gratuit */}
+          <div className="relative z-10 mt-4 flex justify-center">
+            <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/30 rounded-full px-4 py-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+              <span className="text-gold text-[11px] font-semibold">14 jours gratuits — sans carte bancaire</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── FORMULAIRE ── */}
+        <div className="flex-1 flex items-start lg:items-center justify-center p-6">
+        <div className="w-full max-w-md py-4 lg:py-6">
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1 mb-6">
             {(['login', 'register'] as const).map(t => (
               <button
@@ -284,6 +344,7 @@ export default function AuthPage() {
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
