@@ -1,6 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react'
-import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight, Plus, Minus, Plug, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet, Vault, Brain, ArrowRight, Plus, Minus, Plug, Loader2, X } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/AppLayout'
@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const { user } = useAppStore()
   const { data: coffres = [] } = useCoffres()
   const { data: objectifs = [] } = useObjectifs()
-  const { data: transactions = [], create } = useTransactions(200)
+  const { data: transactions = [], create, remove } = useTransactions(200)
 
   const [modal, setModal] = useState<'income' | 'expense' | null>(null)
   const [form, setForm]   = useState({ amount: '', description: '', category: 'salary', date: new Date().toISOString().slice(0, 10) })
@@ -306,7 +306,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {recentTx.map(tx => (
-                <div key={tx.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-gray-50 dark:bg-dark-bg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
+                <div key={tx.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-gray-50 dark:bg-dark-bg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors group">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: (CATEGORY_COLORS[tx.category as keyof typeof CATEGORY_COLORS] || '#9CA3AF') + '20' }}>
                     <span className="text-sm">{tx.type === 'income' ? '💰' : '💸'}</span>
                   </div>
@@ -317,6 +317,11 @@ export default function DashboardPage() {
                   <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
                     {tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString('fr-FR')} F
                   </span>
+                  <button
+                    onClick={() => remove.mutate(tx.id)}
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100">
+                    <X size={13} />
+                  </button>
                 </div>
               ))}
             </div>
