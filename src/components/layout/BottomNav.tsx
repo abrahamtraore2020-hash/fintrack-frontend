@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Bird, MessageSquare, Plug, Settings,
   Grid3X3, BarChart2, TrendingUp, Brain, PieChart, RefreshCw,
-  Bell, CreditCard, Target, Vault, X, Gift
+  Bell, CreditCard, Target, Vault, X, Gift, CalendarDays
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
@@ -29,6 +29,7 @@ const MORE_SECTIONS = [
   {
     label: 'Analyse',
     items: [
+      { href: '/planification', icon: CalendarDays, label: 'Planification', color: 'bg-yellow-100 text-yellow-700' },
       { href: '/rapports',    icon: BarChart2,  label: 'Rapports',   color: 'bg-green-100 text-green-600' },
       { href: '/previsions',  icon: TrendingUp, label: 'Prévisions', color: 'bg-cyan-100 text-cyan-600' },
       { href: '/conseils-ia', icon: Brain,      label: 'Conseils IA',color: 'bg-indigo-100 text-indigo-600' },

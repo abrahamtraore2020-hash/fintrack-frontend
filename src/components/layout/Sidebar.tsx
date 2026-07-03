@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw, Gift } from 'lucide-react'
+import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw, Gift, CalendarDays } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
 import { useAuth } from '@/hooks/useAuth'
@@ -22,6 +22,7 @@ export function Sidebar() {
     { href: '/inbox',        icon: MessageSquare,   label: t('nav_inbox') },
   ]
   const analyseLinks = [
+    { href: '/planification', icon: CalendarDays, label: t('nav_planification') },
     { href: '/rapports',    icon: BarChart2,   label: t('nav_rapports') },
     { href: '/previsions',  icon: TrendingUp,  label: 'Prévisions' },
     { href: '/conseils-ia', icon: Brain,       label: t('nav_conseils') },

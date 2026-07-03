@@ -16,6 +16,7 @@ export const FR = {
   nav_funtwit: 'FunTwit',
   nav_affiliation: 'Affiliation',
   nav_pricing: 'Tarifs',
+  nav_planification: 'Planification',
 
   // Common
   save: 'Enregistrer',
@@ -120,6 +121,7 @@ export const EN: Record<TranslationKey, string> = {
   nav_funtwit: 'FunTwit',
   nav_affiliation: 'Referral',
   nav_pricing: 'Pricing',
+  nav_planification: 'Planning',
 
   // Common
   save: 'Save',

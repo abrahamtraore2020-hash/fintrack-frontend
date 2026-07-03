@@ -91,6 +91,18 @@ export interface Subscription {
   currency: Currency; amount: number; status: PaymentStatus; provider: PaymentProvider
   currentPeriodStart: string; currentPeriodEnd: string; cancelAtPeriodEnd: boolean; createdAt: string
 }
+export interface MonthlyPlan {
+  id: string; userId: string; month: number; year: number
+  incomeGoal: number; notes?: string; createdAt: string
+}
+export interface PlanBudgetLine {
+  id: string; planId: string; userId: string; category: string; amount: number; createdAt: string
+}
+export interface PlanTodo {
+  id: string; planId: string; userId: string; title: string
+  amount?: number; isDone: boolean; createdAt: string
+}
+
 export interface ApiResponse<T> { success: boolean; data: T; message?: string; error?: string }
 export interface PaginatedResponse<T> { data: T[]; total: number; page: number; limit: number; hasMore: boolean }
 export interface Plan {
