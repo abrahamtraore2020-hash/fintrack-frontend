@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { useAppStore } from '@/store/useAppStore'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useTransactions } from '@/hooks/useTransactions'
@@ -163,15 +164,21 @@ function AccountCard({ account, allTx, onDelete, onToggleVisible, onToggleExpand
           <p className="text-[10px] text-gray-400">Sync : {account.lastSync ? new Date(account.lastSync).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—'}</p>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <button onClick={onToggleVisible} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors" title={account.visible ? 'Masquer' : 'Afficher'}>
-            {account.visible ? <Eye size={14}/> : <EyeOff size={14}/>}
-          </button>
-          <button onClick={onToggleExpand} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors">
-            {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
-          </button>
-          <button onClick={onDelete} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-            <Trash2 size={13}/>
-          </button>
+          <Tooltip content={account.visible ? 'Masquer le solde et les transactions' : 'Afficher le solde et les transactions'} position="top">
+            <button onClick={onToggleVisible} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors">
+              {account.visible ? <Eye size={14}/> : <EyeOff size={14}/>}
+            </button>
+          </Tooltip>
+          <Tooltip content={expanded ? 'Réduire les détails du compte' : 'Voir les transactions et le solde estimé'} position="top">
+            <button onClick={onToggleExpand} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors">
+              {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
+            </button>
+          </Tooltip>
+          <Tooltip content="Supprimer ce compte de vos intégrations" position="top">
+            <button onClick={onDelete} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+              <Trash2 size={13}/>
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -545,9 +552,19 @@ export default function IntegrationsPage() {
 
   return (
     <AppLayout>
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className="text-lg font-bold text-gray-800 dark:text-white">Mes <span className="text-glow-blue">Intégrations</span></h1>
         <p className="text-sm text-gray-500">Connectez vos comptes pour tracker automatiquement tout votre flux financier</p>
+      </div>
+
+      {/* Bientôt banner */}
+      <div className="mb-5 flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800/50">
+        <span className="text-xl flex-shrink-0">⚡</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-blue-800 dark:text-blue-300">Synchronisation automatique en temps réel</p>
+          <p className="text-xs text-blue-600/70 dark:text-blue-400/80 mt-0.5">Connexion directe aux APIs Wave, Orange Money, MTN, banques africaines et bien plus</p>
+        </div>
+        <Badge variant="blue" className="flex-shrink-0 text-[10px] font-bold">⏳ Bientôt</Badge>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -556,7 +573,9 @@ export default function IntegrationsPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2">📱 Mobile Money & Wallets</h2>
-            <Button size="sm" variant="outline" onClick={() => openModal('mobile')}><Plus size={12}/> Ajouter</Button>
+            <Tooltip content="Ajouter un compte Wave, Orange Money, MTN ou Moov Money" position="left">
+              <Button size="sm" variant="outline" onClick={() => openModal('mobile')}><Plus size={12}/> Ajouter</Button>
+            </Tooltip>
           </div>
 
           {mobileAccounts.length === 0 && (
@@ -610,7 +629,9 @@ export default function IntegrationsPage() {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2">🏦 Banques africaines</h2>
-            <Button size="sm" variant="outline" onClick={() => setBankModal(true)}><Plus size={12}/> Ajouter ma banque</Button>
+            <Tooltip content="Connecter votre banque et importer vos relevés de compte" position="left">
+              <Button size="sm" variant="outline" onClick={() => setBankModal(true)}><Plus size={12}/> Ajouter ma banque</Button>
+            </Tooltip>
           </div>
 
           {bankAccounts.length === 0 ? (
@@ -668,7 +689,9 @@ export default function IntegrationsPage() {
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Plateformes internationales</p>
-              <Button size="sm" variant="outline" onClick={() => openModal('platform')}><Plus size={12}/> Ajouter</Button>
+              <Tooltip content="Connecter Stripe, PayPal ou Shopify à votre compte" position="left">
+                <Button size="sm" variant="outline" onClick={() => openModal('platform')}><Plus size={12}/> Ajouter</Button>
+              </Tooltip>
             </div>
 
             {platformAccounts.filter(a => a.type === 'platform').length === 0 && (
@@ -811,7 +834,9 @@ export default function IntegrationsPage() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5"><Link2 size={12}/> Intégrations par URL (Chariow, Maketou, Shopify, etc.)</p>
-              <Button size="sm" variant="outline" onClick={() => openModal('url')}><Plus size={12}/> Ajouter URL</Button>
+              <Tooltip content="Connecter n'importe quelle boutique via URL webhook" position="left">
+                <Button size="sm" variant="outline" onClick={() => openModal('url')}><Plus size={12}/> Ajouter URL</Button>
+              </Tooltip>
             </div>
 
             {platformAccounts.filter(a => a.type === 'custom').length === 0 && (
