@@ -171,18 +171,15 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured()) throw new Error('SUPABASE_NOT_CONFIGURED')
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/api/auth/callback` },
     })
+    if (error) throw error
   }
 
   const signInWithApple = async () => {
-    if (!isSupabaseConfigured()) throw new Error('SUPABASE_NOT_CONFIGURED')
-    await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
-    })
+    throw new Error('PROVIDER_NOT_AVAILABLE')
   }
 
   const signOut = async () => {
