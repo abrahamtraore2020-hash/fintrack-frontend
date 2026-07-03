@@ -296,7 +296,7 @@ export default function DashboardPage() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <CardTitle className="mb-0"><ArrowRight size={16} className="text-gold" /> Transactions récentes</CardTitle>
-            <Link href="/rapports" className="text-xs text-blue-500 hover:underline">Voir tout</Link>
+            <Link href="/transactions" className="text-xs text-blue-500 hover:underline">Voir tout</Link>
           </div>
           {recentTx.length === 0 ? (
             <div className="text-center py-6 text-gray-400">
