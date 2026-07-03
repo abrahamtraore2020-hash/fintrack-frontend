@@ -43,9 +43,9 @@ const SEED_POSTS: Post[] = [
   {
     id: 'p1', userId: 'u1', name: 'Aminata Diallo', initials: 'AD', color: '#8B5CF6',
     location: 'Dakar, Sénégal',
-    content: "J'ai enfin atteint mon objectif d'épargne vacances 🎉🎉🎉\n\n6 mois de discipline et ça paye ! FUNTRACK m'a vraiment aidé à visualiser mes progrès. Si vous n'avez pas encore créé votre coffre automatique, c'est le moment !\n\nQue vous inspire cette victoire ? 👇",
+    content: "J'ai enfin atteint mon objectif d'épargne vacances 🎉🎉🎉\n\n6 mois de discipline et ça paye ! FINTRACK m'a vraiment aidé à visualiser mes progrès. Si vous n'avez pas encore créé votre coffre automatique, c'est le moment !\n\nQue vous inspire cette victoire ? 👇",
     badge: { type: 'objectif', label: '🎯 Objectif atteint', amount: '200 000 F' },
-    hashtags: ['#épargne', '#objectif', '#motivation', '#FUNTRACK'],
+    hashtags: ['#épargne', '#objectif', '#motivation', '#FINTRACK'],
     reactions: { like: ['u2','u3'], love: ['u4','u5','u6'], haha: [], wow: ['u7'], fire: ['u8','u9'] },
     comments: [
       { id: 'c1', userId: 'u2', name: 'Kofi Mensah', initials: 'KM', color: '#3B82F6', text: 'Félicitations ! Tu es une source d\'inspiration 🔥 Continue comme ça !', likes: 4, createdAt: '2025-06-23T10:30:00Z' },
@@ -57,7 +57,7 @@ const SEED_POSTS: Post[] = [
   {
     id: 'p2', userId: 'u2', name: 'Ibrahim Coulibaly', initials: 'IC', color: '#F97316',
     location: 'Abidjan, Côte d\'Ivoire',
-    content: "💡 ASTUCE DU JOUR — La règle des 10%\n\nChaque fois que vous recevez de l'argent sur Wave ou Orange Money, mettez automatiquement 10% dans un coffre FUNTRACK.\n\nEn 3 mois j'ai économisé 87 000 F sans même m'en rendre compte. C'est la magie de l'épargne automatique ! 🤑\n\nVous testez ça ?",
+    content: "💡 ASTUCE DU JOUR — La règle des 10%\n\nChaque fois que vous recevez de l'argent sur Wave ou Orange Money, mettez automatiquement 10% dans un coffre FINTRACK.\n\nEn 3 mois j'ai économisé 87 000 F sans même m'en rendre compte. C'est la magie de l'épargne automatique ! 🤑\n\nVous testez ça ?",
     badge: { type: 'conseil', label: '💡 Conseil Pro' },
     hashtags: ['#wave', '#astuce', '#épargneauto', '#10pourcent'],
     reactions: { like: ['u1','u3','u4'], love: ['u5'], haha: [], wow: ['u6','u7'], fire: ['u8'] },
@@ -70,7 +70,7 @@ const SEED_POSTS: Post[] = [
   {
     id: 'p3', userId: 'u3', name: 'Fatou Traoré', initials: 'FT', color: '#22C55E',
     location: 'Bamako, Mali',
-    content: "Juin vs Mai — mes finances ce mois :\n\n📈 Revenus : +15% (485 000 F)\n📉 Dépenses : -8% (grâce au budget)\n💰 Épargne : 97 000 F mis de côté\n\nLe dashboard FUNTRACK me montre exactement où va chaque franc. Vraiment utile pour tracker ses progrès !\n\nPartagez vos chiffres du mois ! 👇",
+    content: "Juin vs Mai — mes finances ce mois :\n\n📈 Revenus : +15% (485 000 F)\n📉 Dépenses : -8% (grâce au budget)\n💰 Épargne : 97 000 F mis de côté\n\nLe dashboard FINTRACK me montre exactement où va chaque franc. Vraiment utile pour tracker ses progrès !\n\nPartagez vos chiffres du mois ! 👇",
     badge: { type: 'milestone', label: '📈 Revenus +15%', amount: '485 000 F' },
     hashtags: ['#freelance', '#revenus', '#croissance', '#bilan'],
     reactions: { like: ['u1','u2','u4'], love: ['u5','u6'], haha: [], wow: ['u7','u8'], fire: ['u9'] },
@@ -99,7 +99,7 @@ const REACTIONS_CONFIG: { key: Reaction; emoji: string; label: string; color: st
 ]
 
 const BADGE_COLORS = { milestone: '#FFD700', objectif: '#22C55E', epargne: '#3B82F6', conseil: '#8B5CF6' }
-const TRENDING = ['#épargne', '#wave', '#freelance', '#objectif', '#mobilemoney', '#revenus', '#conseil', '#FUNTRACK']
+const TRENDING = ['#épargne', '#wave', '#freelance', '#objectif', '#mobilemoney', '#revenus', '#conseil', '#FINTRACK']
 
 function timeAgo(date: string) {
   const diff = Date.now() - new Date(date).getTime()
@@ -1244,7 +1244,7 @@ export default function FuntwitPage() {
           <h1 className="text-xl font-bold tt-text flex items-center gap-2">
             <span className="text-2xl">🌍</span> <span className="text-white">Fun</span><span className="text-[#fe2c55]">Twit</span>
           </h1>
-          <p className="text-xs tt-sub">La communauté FUNTRACK — partagez, inspirez, progressez</p>
+          <p className="text-xs tt-sub">La communauté FINTRACK — partagez, inspirez, progressez</p>
         </div>
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]"/>

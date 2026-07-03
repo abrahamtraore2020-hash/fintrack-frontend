@@ -133,7 +133,7 @@ export default function AffiliationPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
           {[
             { step: '1', icon: '🔗', title: 'Partagez votre lien', desc: 'Envoyez votre lien unique à vos contacts' },
-            { step: '2', icon: '👤', title: 'Ils s\'inscrivent', desc: 'Vos filleuls créent leur compte FUNTRACK' },
+            { step: '2', icon: '👤', title: 'Ils s\'inscrivent', desc: 'Vos filleuls créent leur compte FINTRACK' },
             { step: '3', icon: '💰', title: 'Vous gagnez 15%', desc: 'Chaque mois qu\'ils sont abonnés, vous recevez 15%' },
           ].map(s => (
             <div key={s.step} className="flex items-start gap-3">
@@ -164,8 +164,8 @@ export default function AffiliationPage() {
             <div className="flex gap-2 mt-3 flex-wrap">
               <Button size="sm" onClick={copyLink}>{copied ? <Check size={12}/> : <Copy size={12}/>} Copier le lien</Button>
               <Button size="sm" variant="outline" onClick={() => {
-                const msg = `Rejoins FUNTRACK — l'appli de gestion financière pour l'Afrique 🌍\nInscris-toi gratuitement avec mon lien : ${refLink}`
-                if (navigator.share) navigator.share({ title: 'FUNTRACK', text: msg, url: refLink })
+                const msg = `Rejoins FINTRACK — l'appli de gestion financière pour l'Afrique 🌍\nInscris-toi gratuitement avec mon lien : ${refLink}`
+                if (navigator.share) navigator.share({ title: 'FINTRACK', text: msg, url: refLink })
                 else window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
               }}>
                 📲 Partager sur WhatsApp

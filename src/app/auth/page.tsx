@@ -140,9 +140,9 @@ export default function AuthPage() {
         <BilletAfrica width={130} opacity={0.07} className="absolute bottom-40 left-8 -rotate-8 pointer-events-none" />
         <CoinFCFA    size={50}  opacity={0.06} className="absolute top-20 left-12 -rotate-6 pointer-events-none" />
         <div className="flex items-center gap-2.5 relative z-10">
-          <img src="/logo.svg" alt="FUNTRACK" className="w-10 h-10 rounded-xl" />
+          <img src="/logo.svg" alt="FINTRACK" className="w-10 h-10 rounded-xl" />
           <div>
-            <span className="text-white font-bold text-lg tracking-widest">FUNTRACK</span>
+            <span className="text-white font-bold text-lg tracking-widest">FINTRACK</span>
             <p className="text-white/40 text-[9px] tracking-widest uppercase">Track. Analyze. Improve.</p>
           </div>
         </div>
@@ -181,9 +181,9 @@ export default function AuthPage() {
 
           {/* Logo */}
           <div className="flex items-center gap-2.5 relative z-10 mb-6">
-            <img src="/logo.svg" alt="FUNTRACK" className="w-9 h-9 rounded-xl" />
+            <img src="/logo.svg" alt="FINTRACK" className="w-9 h-9 rounded-xl" />
             <div>
-              <span className="text-white font-bold text-base tracking-widest">FUNTRACK</span>
+              <span className="text-white font-bold text-base tracking-widest">FINTRACK</span>
               <p className="text-white/40 text-[9px] tracking-widest uppercase">Track. Analyze. Improve.</p>
             </div>
           </div>

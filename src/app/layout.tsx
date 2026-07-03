@@ -3,10 +3,10 @@ import { Providers } from '@/components/layout/Providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'FUNTRACK — Track. Analyze. Improve.',
+  title: 'FINTRACK — Track. Analyze. Improve.',
   description: 'Gérez vos finances, connectez vos comptes Wave, banques et plateformes. La solution financière de l\'Afrique.',
   manifest: '/manifest.json',
-  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'FUNTRACK' },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'FINTRACK' },
   other: { 'mobile-web-app-capable': 'yes' },
 }
 
