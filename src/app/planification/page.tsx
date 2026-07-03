@@ -126,7 +126,7 @@ export default function PlanificationPage() {
           {(['objectifs','routine','taches'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${tab === t ? 'bg-white dark:bg-dark-card text-gray-800 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>
-              {t === 'objectifs' ? '💰 Objectifs' : t === 'routine' ? '📋 Routine' : '📌 Tâches'}
+              {t === 'objectifs' ? '💰 Objectifs' : t === 'routine' ? '📋 To Do List' : '📌 Tâches'}
             </button>
           ))}
         </div>
