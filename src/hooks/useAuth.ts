@@ -55,6 +55,7 @@ export function useAuth() {
             currency: profile.currency || 'XOF',
             lang: profile.lang || 'fr',
             createdAt: profile.created_at,
+            role: profile.role || null,
           })
         } else {
           // Profil absent dans public.users — on le crée maintenant
@@ -120,6 +121,7 @@ export function useAuth() {
           lang: profile.lang || 'fr',
           trialEndsAt: profile.trial_ends_at,
           createdAt: profile.created_at,
+          role: profile.role || null,
         })
       } else {
         setUser({ id: data.user.id, email, firstName: '', lastName: '', profile: 'personal', plan: 'starter', currency: 'XOF', lang: 'fr', createdAt: new Date().toISOString() })

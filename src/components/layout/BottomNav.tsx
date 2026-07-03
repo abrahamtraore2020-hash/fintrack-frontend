@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Bird, MessageSquare, Plug, Settings,
   Grid3X3, BarChart2, TrendingUp, Brain, PieChart, RefreshCw,
-  Bell, CreditCard, Target, Vault, X, Gift, CalendarDays
+  Bell, CreditCard, Target, Vault, X, Gift, CalendarDays, Shield
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
@@ -55,8 +55,16 @@ const MORE_SECTIONS = [
 
 export function BottomNav() {
   const pathname = usePathname()
-  const { unreadCount } = useAppStore()
+  const { unreadCount, user } = useAppStore()
   const [showMore, setShowMore] = useState(false)
+
+  const sections = [
+    ...MORE_SECTIONS,
+    ...(user?.role ? [{
+      label: 'Équipe',
+      items: [{ href: '/admin', icon: Shield, label: 'Admin', color: 'bg-red-100 text-red-600', tooltip: 'Gérer les utilisateurs et l\'équipe' }],
+    }] : []),
+  ]
 
   return (
     <>
@@ -75,7 +83,7 @@ export function BottomNav() {
               </button>
             </div>
             <div className="space-y-4">
-              {MORE_SECTIONS.map(section => (
+              {sections.map(section => (
                 <div key={section.label}>
                   <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{section.label}</p>
                   <div className="grid grid-cols-4 gap-2">

@@ -45,6 +45,7 @@ export interface User {
   id: string; email: string; firstName: string; lastName: string
   avatar?: string; profile: UserProfile; plan: PlanName
   trialEndsAt?: string; currency: Currency; lang: Lang; createdAt: string
+  role?: 'admin' | 'moderator' | 'support' | null
 }
 export interface Transaction {
   id: string; userId: string; type: TransactionType; amount: number

@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw, Gift, CalendarDays } from 'lucide-react'
+import { LayoutDashboard, Vault, Target, Plug, Bell, Crown, BarChart2, TrendingUp, Brain, Settings, LogOut, Bird, MessageSquare, PieChart, RefreshCw, Gift, CalendarDays, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store/useAppStore'
 import { useAuth } from '@/hooks/useAuth'
@@ -10,7 +10,7 @@ import { Tooltip } from '@/components/ui/Tooltip'
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { sidebarOpen, unreadCount } = useAppStore()
+  const { sidebarOpen, unreadCount, user } = useAppStore()
   const { signOut } = useAuth()
   const t = useT()
 
@@ -36,6 +36,9 @@ export function Sidebar() {
     { href: '/affiliation',   icon: Gift,     label: t('nav_affiliation'),          tooltip: 'Parrainez vos proches et gagnez des récompenses' },
     { href: '/parametres',    icon: Settings, label: t('nav_parametres'),           tooltip: 'Profil, sécurité et préférences d\'affichage' },
   ]
+  const adminLinks = user?.role ? [
+    { href: '/admin', icon: Shield, label: 'Administration', tooltip: 'Gérer les utilisateurs et l\'équipe FINTRACK' },
+  ] : []
 
   if (!sidebarOpen) return null
 
@@ -48,6 +51,9 @@ export function Sidebar() {
       <SidebarSection label="Principal"  links={mainLinks}    pathname={pathname ?? ''} />
       <SidebarSection label="Analyse"    links={analyseLinks} pathname={pathname ?? ''} />
       <SidebarSection label="Compte"     links={compteLinks}  pathname={pathname ?? ''} unreadCount={unreadCount} />
+      {adminLinks.length > 0 && (
+        <SidebarSection label="Équipe" links={adminLinks} pathname={pathname ?? ''} />
+      )}
       <div className="mt-auto">
         <Tooltip content="Se déconnecter de votre compte FINTRACK" position="right" className="block">
           <button onClick={signOut}
