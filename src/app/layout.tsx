@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     description: 'La solution financière africaine. Wave, Orange Money, MTN, banques — tout au même endroit.',
     images: ['/opengraph-image'],
   },
+  verification: {
+    google: 'e7E8Op0tiuGT-nDzOgeq07tr8FqqwnA08ccPaW4Mn2g',
+  },
   robots: {
     index: true,
     follow: true,
