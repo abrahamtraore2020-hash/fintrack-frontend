@@ -357,7 +357,7 @@ export default function DashboardPage() {
       </div>
       {/* Modale ajout revenu / dépense */}
       {modal && (
-        <Modal open onClose={closeModal} title={modal === 'income' ? '💰 Ajouter un revenu' : '💸 Ajouter une dépense'}>
+        <Modal isOpen onClose={closeModal} title={modal === 'income' ? '💰 Ajouter un revenu' : '💸 Ajouter une dépense'}>
           <div className="space-y-4 mt-2">
             <div>
               <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Montant (FCFA) *</label>
