@@ -526,7 +526,8 @@
     .stat span { font-size: 10px; letter-spacing: 1px; }
     .compassion-box { padding: 38px 20px; }
     .offer-card { padding: 42px 18px 30px; }
-    .countdown div { min-width: 64px; }
+    .countdown { gap: 8px; }
+    .countdown div { min-width: 62px; }
     .countdown b { font-size: 26px; }
     .guarantee { grid-template-columns: 1fr; text-align: center; }
     .seal { margin: 0 auto; }
@@ -541,7 +542,7 @@
 </head>
 <body>
 
-<div class="topbar">68% OFF launch price — ends in <b data-timer-inline>48:00:00</b> · Reserved for the first 10 buyers</div>
+<div class="topbar">68% OFF launch price — ends in <b data-timer-inline>2 days 00:00:00</b> · Reserved for the first 10 buyers</div>
 
 <!-- ===================== HOOK / HERO ===================== -->
 <header class="hero">
@@ -559,7 +560,7 @@
         <s>$25</s><strong class="gold">$8</strong><span class="fcfa">≈ 5000 FCFA</span><span class="off">-68%</span>
       </div>
       <a href="#offer" class="btn">Get Instant Access</a>
-      <p class="hero-timer">Launch price ends in <b data-timer-inline>48:00:00</b></p>
+      <p class="hero-timer">Launch price ends in <b data-timer-inline>2 days 00:00:00</b></p>
       <div class="trust-row">
         <span>258 pages</span><span>+ 365 Positions bonus</span><span>Instant download</span><span>100% private</span>
       </div>
@@ -874,7 +875,8 @@
       <div class="big-fcfa">≈ 5000 FCFA · one-time payment</div>
 
       <div class="countdown" data-timer>
-        <div><b data-h>48</b><span>Hours</span></div>
+        <div><b data-d>02</b><span>Days</span></div>
+        <div><b data-h>00</b><span>Hours</span></div>
         <div><b data-m>00</b><span>Minutes</span></div>
         <div><b data-s>00</b><span>Seconds</span></div>
       </div>
@@ -972,7 +974,7 @@
 </footer>
 
 <div class="sticky" id="sticky">
-  <div class="p"><s>$25</s><b>$8</b><small>≈ 5000 FCFA · <span data-timer-inline>48:00:00</span></small></div>
+  <div class="p"><s>$25</s><b>$8</b><small>≈ 5000 FCFA · <span data-timer-inline>2 days 00:00:00</span></small></div>
   <a href="#offer" class="btn">Get it now</a>
 </div>
 
@@ -997,11 +999,13 @@
   const pad = n => String(n).padStart(2, '0');
   function tick() {
     const left = Math.max(0, deadline - Date.now());
-    const h = Math.floor(left / 3600000), m = Math.floor(left / 60000) % 60, s = Math.floor(left / 1000) % 60;
+    const d = Math.floor(left / 86400000), h = Math.floor(left / 3600000) % 24, m = Math.floor(left / 60000) % 60, s = Math.floor(left / 1000) % 60;
+    document.querySelectorAll('[data-d]').forEach(el => el.textContent = pad(d));
     document.querySelectorAll('[data-h]').forEach(el => el.textContent = pad(h));
     document.querySelectorAll('[data-m]').forEach(el => el.textContent = pad(m));
     document.querySelectorAll('[data-s]').forEach(el => el.textContent = pad(s));
-    document.querySelectorAll('[data-timer-inline]').forEach(el => el.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`);
+    const days = d ? `${d} day${d > 1 ? 's' : ''} ` : '';
+    document.querySelectorAll('[data-timer-inline]').forEach(el => el.textContent = `${days}${pad(h)}:${pad(m)}:${pad(s)}`);
   }
   tick();
   setInterval(tick, 1000);
