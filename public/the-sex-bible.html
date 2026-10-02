@@ -532,6 +532,23 @@
   .sticky .p small { display: block; font-size: 11px; color: var(--muted); }
   .sticky .btn { padding: 14px 22px; font-size: 13px; }
 
+  /* ===== PURCHASE NOTIFICATIONS ===== */
+  .toast {
+    position: fixed; z-index: 70; left: 16px; bottom: 90px; max-width: 330px;
+    display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center;
+    padding: 12px 16px 12px 12px; border-radius: 14px;
+    background: rgba(18, 11, 8, .96); border: 1px solid var(--gold-line);
+    box-shadow: 0 18px 50px rgba(0,0,0,.6), 0 0 30px rgba(226,168,75,.12);
+    font-size: 13px; line-height: 1.4; color: var(--muted);
+    opacity: 0; transform: translateX(-120%); visibility: hidden;
+    transition: transform .5s cubic-bezier(.2,.9,.3,1.2), opacity .5s ease, visibility 0s linear .5s;
+  }
+  .toast.show { opacity: 1; transform: none; visibility: visible; transition: transform .5s cubic-bezier(.2,.9,.3,1.2), opacity .5s ease; }
+  .toast img { width: 44px; height: 55px; object-fit: cover; border-radius: 4px; }
+  .toast b { color: var(--gold-pale); }
+  .toast small { color: var(--gold); font-weight: 600; }
+  @media (max-width: 899px) { .toast { right: 16px; max-width: none; } }
+
   /* ===== REVEAL ===== */
   .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s ease; }
   .js .reveal.in { opacity: 1; transform: none; }
@@ -1064,6 +1081,11 @@
   </div>
 </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <img src="sb-cover.webp" alt="" width="44" height="55">
+  <div><b data-who></b> from <span data-where></span><br><small>just got The Sex Bible · <span data-when></span></small></div>
+</div>
+
 <div class="sticky" id="sticky">
   <div class="p"><s>$25</s><b>$8</b><small>Ends in <span data-timer-inline>2 days 00:00:00</span></small></div>
   <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get it now</a>
@@ -1099,6 +1121,36 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 }) : null;
   document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+
+  // Purchase notifications — REAL sales only, copied from the Chariow dashboard.
+  // One line per sale: first name, city + country, and the purchase date/time.
+  // Example: { name: 'Chidi', place: 'Lagos, Nigeria', date: '2026-10-02T18:45' },
+  const RECENT_BUYERS = [
+  ];
+
+  function timeAgo(date) {
+    const min = Math.max(1, Math.round((Date.now() - new Date(date).getTime()) / 60000));
+    if (min < 60) return `${min} minute${min > 1 ? 's' : ''} ago`;
+    const h = Math.round(min / 60);
+    if (h < 24) return `${h} hour${h > 1 ? 's' : ''} ago`;
+    const d = Math.round(h / 24);
+    return `${d} day${d > 1 ? 's' : ''} ago`;
+  }
+
+  if (RECENT_BUYERS.length) {
+    const toast = document.getElementById('toast');
+    const buyers = RECENT_BUYERS.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+    let i = 0;
+    const showNext = () => {
+      const b = buyers[i++ % buyers.length];
+      toast.querySelector('[data-who]').textContent = b.name;
+      toast.querySelector('[data-where]').textContent = b.place;
+      toast.querySelector('[data-when]').textContent = timeAgo(b.date);
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5500);
+    };
+    setTimeout(() => { showNext(); setInterval(showNext, 18000); }, 7000);
+  }
 
   // Sticky CTA after the hero, hidden on the offer section
   const sticky = document.getElementById('sticky');
