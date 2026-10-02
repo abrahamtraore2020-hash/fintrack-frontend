@@ -3,94 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Sex Bible</title>
+<title>The Sex Bible — APHRODITE</title>
+<meta name="description" content="The Sex Bible: The Complete Guide to Understanding Sex, Intimacy & Pleasure. For men, women and couples. 258 pages + 365 Sex Positions bonus. Instant private digital access.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;0,900;1,500;1,700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* Design: Dark luxury landing page — molten sensual gold, candlelight glow, bordeaux accents */
+  /* APHRODITE — The Sex Bible. Dark luxury, molten sensual gold, bordeaux and crimson accents. */
 
   :root {
-    --bg-dark: #070504;
-    --bg-card: #120c08;
+    --bg: #070504;
+    --bg-2: #0f0907;
+    --card: #140c09;
     --gold: #E2A84B;
     --gold-light: #F7D48A;
     --gold-pale: #FFF3D1;
-    --gold-deep: #9A6420;
     --gold-metal: linear-gradient(120deg, #7A4A12 0%, #C98B30 16%, #F7D48A 32%, #FFF3D1 42%, #E2A84B 55%, #B9772A 72%, #F2C76E 88%, #8E5A1A 100%);
-    --gold-line: rgba(226, 168, 75, 0.35);
-    --wine: #6E0F24;
-    --wine-bright: #B3203F;
-    --text-primary: #F6EDE3;
-    --text-secondary: #CDBFAE;
-    --border-subtle: rgba(226, 168, 75, 0.14);
+    --gold-btn: linear-gradient(120deg, #B9772A 0%, #E2A84B 28%, #F7D48A 50%, #E2A84B 72%, #B9772A 100%);
+    --gold-line: rgba(226, 168, 75, 0.32);
+    --line: rgba(226, 168, 75, 0.13);
+    --wine: #5A0C1E;
+    --crimson: #D11A35;
+    --text: #F6EDE3;
+    --muted: #C9BBA9;
+    --radius: 14px;
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-    }
+    :root:not([data-theme="light"]) { color-scheme: dark; }
   }
+  :root[data-theme="dark"] { color-scheme: dark; }
 
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
-    background:
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(226, 168, 75, 0.14), transparent 70%),
-      radial-gradient(ellipse 70% 40% at 50% 100%, rgba(110, 15, 36, 0.28), transparent 70%),
-      var(--bg-dark);
-    background-attachment: fixed;
-    color: var(--text-primary);
+    background: var(--bg);
+    color: var(--text);
     font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.7;
     font-size: 16px;
-    padding: 0 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    padding-bottom: 76px;
   }
 
-  h1, h2, h3 {
+  img { max-width: 100%; height: auto; display: block; }
+
+  h1, h2, h3, .serif {
     font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 700;
-    letter-spacing: 0.3px;
     text-wrap: balance;
   }
 
-  h1 {
-    font-size: clamp(44px, 11vw, 84px);
-    font-weight: 900;
-    line-height: 1.05;
-    margin-bottom: 16px;
-  }
-
   h2 {
-    font-size: clamp(28px, 6vw, 44px);
-    margin-bottom: 20px;
+    font-size: clamp(30px, 6.4vw, 52px);
+    line-height: 1.12;
+    font-weight: 800;
+    margin-bottom: 18px;
   }
 
-  h3 {
-    font-size: 22px;
-    margin-bottom: 12px;
-  }
+  h3 { font-size: 22px; line-height: 1.25; font-weight: 700; }
 
-  a {
-    color: var(--gold);
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
+  em { font-family: 'Playfair Display', Georgia, serif; font-style: italic; }
 
-  a:hover {
-    text-decoration: underline;
-  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  .narrow { max-width: 760px; margin: 0 auto; }
+  .center { text-align: center; }
 
-  /* Metallic gold text */
-  .gold-text {
+  .gold {
     background: var(--gold-metal);
     background-size: 220% 100%;
     -webkit-background-clip: text;
@@ -99,874 +79,951 @@
     animation: shimmer 7s linear infinite;
   }
 
-  @keyframes shimmer {
-    from { background-position: 0% 0; }
-    to { background-position: 220% 0; }
-  }
+  @keyframes shimmer { from { background-position: 0% 0; } to { background-position: 220% 0; } }
 
-  .ornament {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    color: var(--gold);
+  .crimson { color: var(--crimson); }
+
+  .eyebrow {
+    display: inline-block;
     font-size: 12px;
-    margin: 18px auto;
-  }
-
-  .ornament::before,
-  .ornament::after {
-    content: '';
-    width: 70px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold));
-  }
-
-  .ornament::after {
-    background: linear-gradient(90deg, var(--gold), transparent);
-  }
-
-  /* Wrapper */
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  /* ===== HERO SECTION ===== */
-  .hero {
-    text-align: center;
-    padding: 60px 0;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .logo {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 8px;
-    margin-bottom: 26px;
-    text-transform: uppercase;
-  }
-
-  .hero-subtitle {
-    font-size: 18px;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 30px;
-    line-height: 1.7;
-  }
-
-  .hero-quote {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 20px;
-    font-style: italic;
-    color: var(--gold-light);
-    max-width: 680px;
-    margin: 30px auto;
-    padding: 4px 0 4px 24px;
-    border-left: 2px solid var(--wine-bright);
-    text-align: left;
-    line-height: 1.7;
-  }
-
-  .hero-image {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    display: block;
-    margin: 40px auto 0;
-    border: 1px solid var(--gold-line);
-    border-radius: 6px;
-    box-shadow: 0 0 0 6px rgba(226, 168, 75, 0.06), 0 30px 80px rgba(226, 168, 75, 0.22), 0 0 120px rgba(110, 15, 36, 0.35);
-  }
-
-  /* ===== PROBLEM SECTION ===== */
-  .section {
-    padding: 70px 0;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .section-title {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  .problem-list {
-    display: grid;
-    gap: 6px;
-    margin-bottom: 40px;
-  }
-
-  .problem-item {
-    padding: 20px 20px 20px 28px;
-    border-bottom: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    position: relative;
-  }
-
-  .problem-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 28px;
-    width: 8px;
-    height: 8px;
-    background: var(--wine-bright);
-    transform: rotate(45deg);
-  }
-
-  .problem-item:last-child {
-    border-bottom: none;
-  }
-
-  .problem-item strong {
-    color: var(--text-primary);
-    font-size: 17px;
-  }
-
-  /* ===== COMPASSION SECTION ===== */
-  .compassion {
-    background: linear-gradient(135deg, rgba(110, 15, 36, 0.35), rgba(110, 15, 36, 0.12));
-    padding: 40px;
-    border: 1px solid rgba(179, 32, 63, 0.4);
-    border-radius: 6px;
-    text-align: center;
-  }
-
-  .compassion p {
-    font-size: 18px;
-    color: var(--text-secondary);
-    line-height: 1.8;
-  }
-
-  .compassion strong {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 22px;
-    color: var(--gold-light);
-  }
-
-  /* ===== SOLUTION SECTION ===== */
-  .solution {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  .solution-intro {
-    font-size: 18px;
-    color: var(--text-secondary);
-    max-width: 700px;
-    margin: 0 auto 20px;
-    line-height: 1.8;
-  }
-
-  .solution-intro strong {
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-
-  .solution-tagline {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-style: italic;
-    font-size: 22px;
-    color: var(--gold-light);
-  }
-
-  /* ===== SEGMENTS SECTION ===== */
-  .segments {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin: 40px 0;
-  }
-
-  .segment-card {
-    background: var(--bg-card);
-    border: 1px solid var(--gold-line);
-    border-radius: 6px;
-    overflow: hidden;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-  }
-
-  .segment-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 50px rgba(226, 168, 75, 0.18);
-  }
-
-  .segment-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    display: block;
-    border-bottom: 1px solid var(--gold-line);
-  }
-
-  .segment-body {
-    padding: 26px 26px 30px;
-  }
-
-  .segment-label {
-    font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: var(--wine-bright);
-    margin-bottom: 6px;
-  }
-
-  .segment-card h3 {
-    font-size: 26px;
+    color: var(--gold);
     margin-bottom: 16px;
   }
 
-  .segment-card ul {
-    list-style: none;
-    font-size: 15px;
-    color: var(--text-secondary);
-  }
+  .lead { font-size: clamp(17px, 2.4vw, 20px); color: var(--muted); }
 
-  .segment-card li {
-    margin-bottom: 10px;
-    padding-left: 22px;
-    position: relative;
+  .ornament {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    color: var(--gold); font-size: 12px; margin: 22px auto;
   }
-
-  .segment-card li::before {
-    content: '✦';
-    position: absolute;
-    left: 0;
-    color: var(--gold);
-    font-size: 12px;
-    top: 3px;
+  .ornament::before, .ornament::after {
+    content: ''; width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
   }
+  .ornament::after { background: linear-gradient(90deg, var(--gold), transparent); }
 
-  /* ===== BENEFITS SECTION ===== */
-  .benefits {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 18px;
-  }
+  section { position: relative; padding: 90px 0; }
 
-  .benefit {
-    padding: 26px 22px;
-    background: linear-gradient(160deg, rgba(226, 168, 75, 0.1), rgba(226, 168, 75, 0.02));
-    border: 1px solid var(--gold-line);
-    border-radius: 6px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 15px;
-  }
-
-  .benefit strong {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 20px;
-    color: var(--gold-light);
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  /* ===== CONTENT SECTION ===== */
-  .content-highlight {
-    background: var(--bg-card);
-    padding: 40px;
-    border: 1px solid var(--gold-line);
-    border-radius: 6px;
-  }
-
-  .content-highlight h3 {
-    text-align: center;
-    font-size: clamp(22px, 5vw, 28px);
-  }
-
-  .content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-top: 30px;
-  }
-
-  .content-item {
-    padding: 16px 12px;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-  }
-
-  .content-item::before {
-    content: '◆';
-    display: block;
-    color: var(--gold);
-    font-size: 10px;
-    margin-bottom: 6px;
-  }
-
-  .content-item:hover {
-    border-color: var(--gold);
-    background: rgba(226, 168, 75, 0.08);
-  }
-
-  .content-item.bonus {
-    border-color: var(--wine-bright);
-    background: rgba(110, 15, 36, 0.25);
-    color: var(--gold-light);
-    font-weight: 600;
-  }
-
-  /* ===== OFFER SECTION ===== */
-  .offer-main {
-    position: relative;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(226, 168, 75, 0.22), transparent 65%),
-      linear-gradient(160deg, #1a0f08, #0d0806 60%, rgba(110, 15, 36, 0.4));
-    border: 1px solid var(--gold);
-    border-radius: 6px;
-    padding: 50px 30px;
-    text-align: center;
-    box-shadow: 0 0 80px rgba(226, 168, 75, 0.18);
-  }
-
-  .price-old {
-    font-size: 18px;
-    color: var(--text-secondary);
-    text-decoration: line-through;
-    text-decoration-color: var(--wine-bright);
-    text-decoration-thickness: 2px;
-    margin-bottom: 4px;
-  }
-
-  .price-new {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 88px;
-    font-weight: 900;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .price-local {
-    color: var(--gold-light);
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-
-  .price-desc {
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  .discount-badge {
-    display: inline-block;
-    background: var(--wine);
-    color: var(--gold-light);
-    border: 1px solid var(--wine-bright);
-    padding: 8px 18px;
-    border-radius: 40px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 24px;
-  }
-
-  .urgency {
-    color: var(--gold-light);
-    font-weight: 600;
-    font-size: 15px;
-    margin-top: 10px;
-  }
-
-  .urgency-item {
-    margin: 8px 0;
-  }
-
-  .urgency-item span {
-    color: var(--wine-bright);
-  }
-
-  /* ===== CTA BUTTON ===== */
-  .cta-button {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    background: linear-gradient(120deg, #B9772A 0%, #E2A84B 30%, #F7D48A 50%, #E2A84B 70%, #B9772A 100%);
+  /* ===== BUTTON ===== */
+  .btn {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--gold-btn);
     color: #1a0d04;
-    padding: 18px 44px;
-    border: none;
-    border-radius: 3px;
+    padding: 20px 38px;
+    border-radius: 999px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 28px 0 20px;
-    box-shadow: 0 10px 40px rgba(226, 168, 75, 0.35), inset 0 1px 0 rgba(255, 243, 209, 0.6);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 15px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase;
+    text-decoration: none; cursor: pointer; border: 0;
+    box-shadow: 0 12px 44px rgba(226, 168, 75, 0.38), inset 0 1px 0 rgba(255, 243, 209, 0.65);
+    transition: transform .3s ease, box-shadow .3s ease;
   }
-
-  .cta-button::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -60%;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-    animation: sweep 3.5s ease-in-out infinite;
+  .btn::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent);
+    animation: sweep 3.6s ease-in-out infinite;
   }
+  @keyframes sweep { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 56px rgba(226,168,75,.55), 0 0 0 1px var(--gold-light); }
+  .btn small { font-weight: 600; opacity: .75; letter-spacing: .5px; }
+  .btn-block { width: 100%; }
 
-  @keyframes sweep {
-    0%, 55% { left: -60%; }
-    100% { left: 130%; }
+  .cta-note { margin-top: 14px; font-size: 13px; color: var(--muted); letter-spacing: .3px; }
+  .cta-note span { color: var(--gold); margin: 0 6px; }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(90deg, #3d0814, #6b0f22, #3d0814);
+    border-bottom: 1px solid rgba(209, 26, 53, .5);
+    text-align: center; font-size: 13px; font-weight: 600; letter-spacing: .5px;
+    padding: 9px 12px; color: var(--gold-pale);
   }
+  .topbar b { color: var(--gold-light); font-variant-numeric: tabular-nums; }
 
-  .cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 50px rgba(226, 168, 75, 0.55), 0 0 0 1px var(--gold-light);
+  /* ===== HERO ===== */
+  .hero {
+    padding: 56px 0 80px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 60% at 75% 40%, rgba(209, 26, 53, .18), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 20% 10%, rgba(226, 168, 75, .16), transparent 70%),
+      var(--bg);
   }
-
-  /* ===== OBJECTIONS SECTION ===== */
-  .objections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: url('sb-hero.jpg') center 30% / cover no-repeat;
+    opacity: .16; filter: blur(2px) saturate(1.2);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
   }
-
-  .objection {
-    padding: 26px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    text-align: center;
+  .hero .wrap {
+    position: relative; display: grid; gap: 0 40px; align-items: center;
+    grid-template-columns: 1.1fr .9fr;
+    grid-template-areas: "top cover" "bottom cover";
   }
+  .hero-top { grid-area: top; align-self: end; }
+  .hero-bottom { grid-area: bottom; align-self: start; }
+  .hero .cover-wrap { grid-area: cover; }
+  .hero-timer { margin-top: 16px; font-size: 14px; color: var(--muted); }
+  .hero-timer b { color: var(--gold-pale); font-variant-numeric: tabular-nums; font-size: 16px; letter-spacing: 1px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+  .brand img { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--gold-line); }
+  .brand span { font-size: 12px; font-weight: 700; letter-spacing: 6px; color: var(--gold); }
+  .for-who { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: var(--crimson); margin-bottom: 14px; }
+  .hero h1 { font-size: clamp(54px, 10vw, 104px); line-height: .95; font-weight: 900; letter-spacing: -1px; margin-bottom: 14px; }
+  .hero h1 .the { display: block; font-size: .36em; letter-spacing: 10px; font-weight: 700; margin-bottom: 6px; }
+  .hero .subtitle { font-size: clamp(18px, 2.6vw, 22px); color: var(--text); font-weight: 500; margin-bottom: 22px; }
+  .hook {
+    font-family: 'Playfair Display', Georgia, serif; font-style: italic;
+    font-size: clamp(19px, 2.6vw, 23px); color: var(--gold-light); line-height: 1.55;
+    border-left: 2px solid var(--crimson); padding-left: 20px; margin-bottom: 28px;
+  }
+  .price-chip { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+  .price-chip s { color: var(--muted); font-size: 22px; text-decoration-color: var(--crimson); text-decoration-thickness: 2px; }
+  .price-chip strong { font-family: 'Playfair Display', Georgia, serif; font-size: 54px; line-height: 1; font-weight: 900; }
+  .price-chip .fcfa { font-weight: 700; color: var(--gold-light); }
+  .price-chip .off { background: var(--crimson); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; padding: 6px 12px; border-radius: 999px; }
+  .trust-row { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 24px; font-size: 13px; color: var(--muted); }
+  .trust-row span::before { content: '✦'; color: var(--gold); margin-right: 8px; font-size: 11px; }
 
-  .objection-icon {
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 14px;
+  .cover-wrap { position: relative; justify-self: center; max-width: 430px; width: 100%; }
+  .cover-wrap::before {
+    content: ''; position: absolute; inset: 8% 6%;
+    background: radial-gradient(circle, rgba(226,168,75,.5), rgba(209,26,53,.25) 45%, transparent 70%);
+    filter: blur(40px); z-index: 0;
+    animation: breathe 5s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%, 100% { opacity: .7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+  .cover-wrap img { position: relative; z-index: 1; filter: drop-shadow(0 30px 50px rgba(0,0,0,.7)); transform: rotate(-2deg); }
+  .cover-badge {
+    position: absolute; z-index: 2; right: -6px; bottom: 12%;
+    width: 112px; height: 112px; border-radius: 50%;
+    background: var(--gold-btn); color: #1a0d04;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    font-weight: 800; font-size: 11px; letter-spacing: 1px; line-height: 1.2;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 0 4px rgba(7,5,4,.8);
+    transform: rotate(10deg);
+  }
+  .cover-badge b { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 900; line-height: 1; }
+
+  /* ===== MARQUEE ===== */
+  .marquee { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #0c0705; padding: 16px 0; }
+  .marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+  .marquee-track span {
+    font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-style: italic;
+    color: var(--gold-light); white-space: nowrap; padding: 0 22px;
+  }
+  .marquee-track span::after { content: '✦'; font-style: normal; color: var(--crimson); font-size: 12px; margin-left: 44px; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ===== PAIN ===== */
+  .pain { background: linear-gradient(180deg, var(--bg), #0d0605 50%, var(--bg)); }
+  .pain-list { display: grid; gap: 14px; margin: 40px 0; }
+  .pain-item {
+    display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start;
+    padding: 20px 22px; background: rgba(90, 12, 30, .16);
+    border: 1px solid rgba(209, 26, 53, .22); border-radius: var(--radius);
+  }
+  .pain-item .x {
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(209, 26, 53, .15); color: var(--crimson); font-weight: 800; font-size: 15px;
+  }
+  .pain-item strong { display: block; color: var(--text); font-size: 17px; margin-bottom: 2px; }
+  .pain-item p { color: var(--muted); font-size: 15px; }
+
+  .mirror { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px; }
+  .mirror-card { padding: 26px 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+  .mirror-card h3 { font-size: 19px; margin-bottom: 12px; color: var(--gold-light); }
+  .mirror-card ul { list-style: none; }
+  .mirror-card li { color: var(--muted); font-size: 15px; padding: 7px 0 7px 18px; position: relative; border-bottom: 1px dashed rgba(226,168,75,.1); }
+  .mirror-card li:last-child { border-bottom: 0; }
+  .mirror-card li::before { content: ''; position: absolute; left: 0; top: 16px; width: 6px; height: 6px; background: var(--crimson); transform: rotate(45deg); }
+
+  .pain-close { margin-top: 48px; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3.6vw, 30px); line-height: 1.45; }
+
+  /* ===== COMPASSION ===== */
+  .compassion-box {
+    position: relative; padding: 52px 34px; border-radius: 20px; text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(226,168,75,.14), transparent 70%),
+      linear-gradient(160deg, rgba(90,12,30,.55), rgba(20,12,9,.9));
+    border: 1px solid rgba(226,168,75,.25);
+  }
+  .compassion-box p { font-size: 18px; color: var(--muted); margin-top: 16px; }
+  .compassion-box .big { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 3.4vw, 28px); color: var(--gold-pale); line-height: 1.5; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 34px; }
+  .stat { padding: 18px 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(7,5,4,.5); }
+  .stat b { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: 34px; line-height: 1.1; }
+  .stat span { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+  /* ===== SOLUTION ===== */
+  .solution .wrap { display: grid; grid-template-columns: .85fr 1.15fr; gap: 56px; align-items: center; }
+  .solution .cover-wrap { max-width: 380px; }
+  .solution p { color: var(--muted); font-size: 17px; margin-bottom: 16px; }
+  .solution p strong { color: var(--text); }
+  .pillars { display: grid; gap: 12px; margin: 26px 0; }
+  .pillar { display: flex; gap: 14px; align-items: center; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  .pillar b { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; min-width: 34px; }
+  .pillar span { font-size: 15px; }
+  .no-list { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 22px; color: var(--gold-light); line-height: 1.5; }
+
+  /* ===== SEGMENTS ===== */
+  .segments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 46px; }
+  .seg { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--gold-line); background: var(--card); transition: transform .4s ease, box-shadow .4s ease; }
+  .seg:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(226,168,75,.18); }
+  .seg-img { position: relative; height: 340px; }
+  .seg-img img { width: 100%; height: 100%; object-fit: cover; }
+  .seg-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(20,12,9,.96) 100%); }
+  .seg-tag { position: absolute; left: 22px; bottom: 16px; z-index: 1; }
+  .seg-tag small { display: block; font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--crimson); }
+  .seg-tag h3 { font-size: 30px; }
+  .seg-body { padding: 6px 22px 26px; }
+  .seg-body p { color: var(--muted); font-size: 15px; margin-bottom: 12px; font-style: italic; }
+  .seg-body ul { list-style: none; }
+  .seg-body li { position: relative; padding: 6px 0 6px 24px; font-size: 15px; }
+  .seg-body li::before { content: '✦'; position: absolute; left: 0; top: 7px; color: var(--gold); font-size: 12px; }
+
+  .punch {
+    margin-top: 60px; text-align: center; padding: 38px 20px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .punch p { font-family: 'Playfair Display', Georgia, serif; font-weight: 900; font-size: clamp(26px, 5vw, 44px); line-height: 1.15; letter-spacing: .5px; }
+
+  /* ===== BENEFITS ===== */
+  .benefits { background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(226,168,75,.08), transparent 70%); }
+  .benefit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 46px; }
+  .benefit {
+    display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: start;
+    padding: 24px; border-radius: var(--radius);
+    background: linear-gradient(160deg, rgba(226,168,75,.09), rgba(226,168,75,.015));
+    border: 1px solid var(--gold-line);
+  }
+  .benefit .num { font-family: 'Playfair Display', Georgia, serif; font-size: 40px; font-weight: 900; line-height: 1; }
+  .benefit h3 { font-size: 20px; margin-bottom: 6px; color: var(--gold-pale); }
+  .benefit p { color: var(--muted); font-size: 15px; }
+
+  .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 56px; }
+  .step { position: relative; padding: 28px 24px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
+  .step .when { font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--crimson); margin-bottom: 8px; }
+  .step h3 { font-size: 21px; margin-bottom: 8px; }
+  .step p { color: var(--muted); font-size: 15px; }
+
+  /* ===== INSIDE ===== */
+  .parts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 46px; }
+  .part {
+    display: grid; grid-template-columns: 54px 1fr auto; gap: 14px; align-items: center;
+    padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--line);
+    transition: border-color .3s ease, background .3s ease;
+  }
+  .part:hover { border-color: var(--gold); background: rgba(226,168,75,.06); }
+  .part .n { font-family: 'Playfair Display', Georgia, serif; font-size: 34px; font-weight: 900; line-height: 1; text-align: center; }
+  .part h3 { font-size: 17px; margin-bottom: 2px; }
+  .part p { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .part .pg { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--gold); white-space: nowrap; }
+  .part.bonus { border-color: rgba(209,26,53,.55); background: rgba(90,12,30,.3); }
+  .part.bonus .pg { color: var(--crimson); }
+
+  /* ===== PROOF ===== */
+  .proof { background: linear-gradient(180deg, var(--bg), #0e0806 50%, var(--bg)); }
+  .gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-top: 44px; }
+  .shot { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--gold-line); background: #000; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+  .shot:hover img { transform: scale(1.04); }
+  .shot figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 14px 12px;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.85));
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light);
+  }
+  .shot.s1 { grid-column: span 3; aspect-ratio: 665 / 440; }
+  .shot.s2 { grid-column: span 3; aspect-ratio: 665 / 440; }
+  .shot.s3, .shot.s4, .shot.s5 { grid-column: span 2; aspect-ratio: 1 / 1; }
+  .proof-note { margin-top: 26px; text-align: center; color: var(--muted); font-size: 15px; }
+  .proof-note b { color: var(--gold-light); }
+
+  /* ===== BONUS ===== */
+  .bonus-box {
+    display: grid; grid-template-columns: 260px 1fr; gap: 44px; align-items: center;
+    padding: 46px; border-radius: 22px;
+    background: radial-gradient(ellipse at 0% 50%, rgba(209,26,53,.2), transparent 60%), var(--card);
+    border: 1px solid rgba(209,26,53,.45);
+  }
+  .bonus-book {
+    position: relative; aspect-ratio: 3 / 4; border-radius: 4px 12px 12px 4px;
+    background:
+      radial-gradient(circle at 50% 35%, rgba(209,26,53,.55), transparent 60%),
+      linear-gradient(160deg, #2a0710, #0b0405);
+    border: 1px solid var(--gold-line);
+    box-shadow: -10px 0 0 -4px #3a0a14, 0 30px 60px rgba(0,0,0,.6), 0 0 60px rgba(209,26,53,.25);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
+    transform: rotate(-3deg);
+  }
+  .bonus-book .free { position: absolute; top: 14px; right: -10px; background: var(--crimson); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 2px; padding: 5px 12px; border-radius: 4px; }
+  .bonus-book b { font-family: 'Playfair Display', Georgia, serif; font-size: 78px; font-weight: 900; line-height: 1; }
+  .bonus-book span { font-size: 14px; font-weight: 800; letter-spacing: 4px; color: var(--gold-pale); margin-top: 6px; }
+  .bonus-book em { font-size: 13px; color: var(--muted); margin-top: 14px; }
+  .bonus-box h2 { font-size: clamp(28px, 5vw, 42px); }
+  .bonus-box p { color: var(--muted); margin-bottom: 14px; }
+  .bonus-box ul { list-style: none; margin-top: 8px; }
+  .bonus-box li { position: relative; padding: 6px 0 6px 24px; }
+  .bonus-box li::before { content: '✦'; position: absolute; left: 0; top: 7px; color: var(--crimson); font-size: 12px; }
+
+  /* ===== PRIVACY ===== */
+  .privacy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 44px; }
+  .priv { padding: 28px 20px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); text-align: center; }
+  .priv svg { width: 34px; height: 34px; margin: 0 auto 14px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+  .priv h3 { font-size: 18px; margin-bottom: 6px; color: var(--gold-pale); }
+  .priv p { font-size: 14px; color: var(--muted); }
+  .privacy-quote { margin-top: 40px; text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: clamp(22px, 4vw, 32px); }
+
+  /* ===== OFFER ===== */
+  .offer-card {
+    position: relative; max-width: 620px; margin: 46px auto 0; padding: 46px 34px 40px; border-radius: 24px; text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(226,168,75,.24), transparent 60%),
+      linear-gradient(170deg, #1b100a, #0b0705 55%, rgba(90,12,30,.6));
     border: 1px solid var(--gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', Georgia, serif;
-    color: var(--gold);
-    font-size: 18px;
+    box-shadow: 0 0 100px rgba(226,168,75,.2), 0 40px 80px rgba(0,0,0,.5);
   }
+  .offer-card .ribbon {
+    position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+    background: var(--crimson); color: #fff; padding: 8px 20px; border-radius: 999px;
+    font-size: 12px; font-weight: 800; letter-spacing: 2px; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(209,26,53,.45);
+  }
+  .stack { list-style: none; text-align: left; margin: 10px 0 26px; }
+  .stack li { display: flex; justify-content: space-between; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .stack li span:first-child::before { content: '✓'; color: var(--gold); font-weight: 800; margin-right: 10px; }
+  .stack li span:last-child { color: var(--gold-light); font-weight: 700; white-space: nowrap; }
+  .stack li.total { border-bottom: 0; font-weight: 700; }
+  .stack li.total span:first-child::before { content: ''; margin: 0; }
+  .stack li.total span:last-child { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--crimson); }
+  .today { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+  .big-price { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(96px, 20vw, 132px); font-weight: 900; line-height: 1; margin: 6px 0; }
+  .big-fcfa { font-size: 18px; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; margin-bottom: 24px; }
+  .countdown { display: flex; justify-content: center; gap: 10px; margin: 6px 0 22px; }
+  .countdown div { min-width: 74px; padding: 12px 6px; border-radius: 12px; background: rgba(7,5,4,.7); border: 1px solid var(--gold-line); }
+  .countdown b { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--gold-pale); }
+  .countdown span { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .scarcity { margin: 0 0 24px; font-size: 14px; font-weight: 600; color: var(--gold-pale); }
+  .scarcity .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; margin-top: 10px; }
+  .scarcity .bar i { display: block; height: 100%; width: 70%; background: linear-gradient(90deg, var(--crimson), #ff5470); border-radius: 999px; }
 
-  .objection strong {
-    color: var(--gold-light);
-    display: block;
-    margin-bottom: 8px;
-    font-size: 15px;
+  .guarantee {
+    display: grid; grid-template-columns: 92px 1fr; gap: 22px; align-items: center;
+    max-width: 620px; margin: 28px auto 0; padding: 24px; border-radius: 16px;
+    border: 1px dashed var(--gold-line); background: rgba(226,168,75,.04);
   }
+  .seal {
+    width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; text-align: center;
+    background: var(--gold-btn); color: #1a0d04; font-weight: 800; font-size: 11px; letter-spacing: 1px; line-height: 1.15;
+    box-shadow: 0 0 0 5px rgba(226,168,75,.15);
+  }
+  .seal b { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: 28px; }
+  .guarantee h3 { font-size: 19px; color: var(--gold-pale); margin-bottom: 4px; }
+  .guarantee p { font-size: 14px; color: var(--muted); }
 
-  .objection p {
-    font-size: 14px;
-    color: var(--text-secondary);
+  /* ===== FAQ ===== */
+  .faq { max-width: 780px; margin: 44px auto 0; }
+  .faq details { border: 1px solid var(--line); border-radius: 12px; background: var(--card); margin-bottom: 12px; transition: border-color .3s ease; }
+  .faq details[open] { border-color: var(--gold-line); }
+  .faq summary {
+    list-style: none; cursor: pointer; padding: 20px 56px 20px 22px; position: relative;
+    font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; color: var(--gold-pale);
   }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: '+'; position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+    font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 400; color: var(--gold); transition: transform .3s ease;
+  }
+  .faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .faq details p { padding: 0 22px 20px; color: var(--muted); font-size: 15px; }
 
-  /* ===== FAQ SECTION ===== */
-  .faq-item {
-    padding: 22px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    margin-bottom: 14px;
-    transition: border-color 0.3s ease;
+  /* ===== FINAL ===== */
+  .final {
+    overflow: hidden; text-align: center;
+    background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(209,26,53,.2), transparent 70%), var(--bg);
   }
-
-  .faq-item:hover {
-    border-color: var(--gold);
+  .final-bg {
+    position: absolute; inset: 0; background: url('sb-hero.jpg') center 35% / cover no-repeat;
+    opacity: .14; filter: blur(3px);
+    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
   }
-
-  .faq-question {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gold-light);
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-
-  .faq-answer {
-    color: var(--text-secondary);
-    font-size: 15px;
-    line-height: 1.7;
-  }
+  .final .wrap { position: relative; }
+  .final h2 { font-size: clamp(38px, 8vw, 72px); }
+  .final .cover-wrap { max-width: 280px; margin: 34px auto; }
 
   /* ===== FOOTER ===== */
-  .footer {
-    text-align: center;
-    padding: 40px 0;
-    color: var(--text-secondary);
-    font-size: 13px;
-  }
+  footer { border-top: 1px solid var(--line); padding: 46px 0 30px; text-align: center; color: var(--muted); font-size: 13px; }
+  footer img { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 12px; }
+  footer .tag { letter-spacing: 4px; font-size: 11px; color: var(--gold); margin-bottom: 18px; }
+  footer nav { margin: 16px 0; }
+  footer nav a { color: var(--muted); margin: 0 10px; text-decoration: none; }
+  footer nav a:hover { color: var(--gold); }
+  .adult { display: inline-block; border: 1px solid var(--crimson); color: var(--crimson); border-radius: 999px; padding: 3px 12px; font-weight: 700; font-size: 12px; margin-bottom: 14px; }
 
-  .footer-links {
-    margin-bottom: 20px;
+  /* ===== STICKY CTA ===== */
+  .sticky {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(10, 6, 5, .94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--gold-line);
+    transform: translateY(110%); visibility: hidden; transition: transform .4s ease, visibility 0s linear .4s;
   }
+  .sticky.show { transform: translateY(0); visibility: visible; transition: transform .4s ease; }
+  .sticky .p { line-height: 1.15; }
+  .sticky .p s { color: var(--muted); font-size: 13px; text-decoration-color: var(--crimson); }
+  .sticky .p b { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: var(--gold-light); margin-left: 6px; }
+  .sticky .p small { display: block; font-size: 11px; color: var(--muted); }
+  .sticky .btn { padding: 14px 22px; font-size: 13px; }
 
-  .footer-links a {
-    margin: 0 10px;
-    color: var(--text-secondary);
-  }
+  /* ===== REVEAL ===== */
+  .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s ease; }
+  .js .reveal.in { opacity: 1; transform: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .gold-text,
-    .cta-button::after {
-      animation: none;
-    }
+    .gold, .btn::after, .marquee-track, .cover-wrap::before { animation: none; }
+    .js .reveal { opacity: 1; transform: none; }
   }
 
   /* ===== RESPONSIVE ===== */
-  @media (max-width: 600px) {
-    .hero {
-      padding: 44px 0;
-    }
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; grid-template-areas: "top" "cover" "bottom"; }
+    .hero .cover-wrap { max-width: 270px; margin: 26px auto 30px; }
+    .solution .wrap { grid-template-columns: 1fr; }
+    .solution .cover-wrap { display: none; }
+    .segments, .mirror, .timeline { grid-template-columns: 1fr; }
+    .privacy-grid { grid-template-columns: repeat(2, 1fr); }
+    .bonus-box { grid-template-columns: 1fr; padding: 34px 22px; text-align: center; }
+    .bonus-book { max-width: 220px; margin: 0 auto; }
+    .bonus-box ul { text-align: left; max-width: 360px; margin: 8px auto 0; }
+  }
 
-    .section {
-      padding: 50px 0;
-    }
+  @media (max-width: 640px) {
+    section { padding: 66px 0; }
+    .hero { padding: 34px 0 60px; }
+    .brand { justify-content: center; }
+    .hero-top, .hero-bottom { text-align: center; }
+    .hook { text-align: left; }
+    .price-chip, .trust-row { justify-content: center; }
+    .btn { width: 100%; padding: 19px 20px; }
+    .benefit-grid, .parts { grid-template-columns: 1fr; }
+    .benefit { padding: 20px; grid-template-columns: 46px 1fr; }
+    .benefit .num { font-size: 32px; }
+    .gallery { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .shot.s1, .shot.s2 { grid-column: span 2; }
+    .shot.s3, .shot.s4 { grid-column: span 1; }
+    .shot.s5 { grid-column: span 2; aspect-ratio: 16 / 10; }
+    .privacy-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .priv { padding: 22px 14px; }
+    .stats { gap: 8px; }
+    .stat b { font-size: 26px; }
+    .stat span { font-size: 10px; letter-spacing: 1px; }
+    .compassion-box { padding: 38px 20px; }
+    .offer-card { padding: 42px 18px 30px; }
+    .countdown div { min-width: 64px; }
+    .countdown b { font-size: 26px; }
+    .guarantee { grid-template-columns: 1fr; text-align: center; }
+    .seal { margin: 0 auto; }
+    .part { grid-template-columns: 44px 1fr; }
+    .part .pg { grid-column: 2; }
+  }
 
-    .hero-quote {
-      font-size: 18px;
-    }
-
-    .segments {
-      grid-template-columns: 1fr;
-    }
-
-    .compassion,
-    .content-highlight {
-      padding: 28px 20px;
-    }
-
-    .offer-main {
-      padding: 40px 20px;
-    }
-
-    .price-new {
-      font-size: 72px;
-    }
-
-    .cta-button {
-      width: 100%;
-      padding: 18px 20px;
-    }
+  @media (min-width: 900px) {
+    body { padding-bottom: 0; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- HERO -->
-  <section class="hero">
-    <div class="logo gold-text">Aphrodite</div>
-    <h1 class="gold-text">The Sex Bible</h1>
-    <div class="ornament">✦</div>
-    <p class="hero-subtitle">The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure</p>
+<div class="topbar">68% OFF launch price — ends in <b data-timer-inline>48:00:00</b> · Reserved for the first 10 buyers</div>
 
-    <div class="hero-quote">
-      "What if you could stop searching for scattered answers about sex and finally have one complete guide that covers everything you need to know?"
+<!-- ===================== HOOK / HERO ===================== -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <div class="hero-top">
+      <div class="brand"><img src="sb-logo.jpg" alt="APHRODITE"><span>APHRODITE</span></div>
+      <div class="for-who">FOR MEN · FOR WOMEN · FOR COUPLES</div>
+      <h1 class="gold"><span class="the">THE</span>SEX BIBLE</h1>
+      <p class="subtitle">The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure</p>
     </div>
-
-    <img src="sb-hero.jpg" alt="The Sex Bible" class="hero-image">
-
-    <button class="cta-button">Get Instant Access — $8</button>
-  </section>
-
-  <!-- PROBLEM & PAIN -->
-  <section class="section">
-    <div class="section-title">
-      <h2>You're Not Alone</h2>
-    </div>
-
-    <div class="problem-list">
-      <div class="problem-item">
-        <strong>Confusion &amp; Questions Without Answers</strong><br>
-        You search online, find conflicting advice, and still don't have clarity.
+    <div class="hero-bottom">
+      <p class="hook">"What if you could stop searching for scattered answers about sex — and finally hold one complete guide that shows you everything, from the first look to the last shiver?"</p>
+      <div class="price-chip">
+        <s>$25</s><strong class="gold">$8</strong><span class="fcfa">≈ 5000 FCFA</span><span class="off">-68%</span>
       </div>
-      <div class="problem-item">
-        <strong>Insecurity &amp; Embarrassment</strong><br>
-        Too awkward to ask your partner or friends about intimacy and pleasure.
-      </div>
-      <div class="problem-item">
-        <strong>Stuck in Routine</strong><br>
-        The same patterns, the same results. Intimacy feels repetitive and unfulfilling.
-      </div>
-      <div class="problem-item">
-        <strong>Misunderstanding Your Partner</strong><br>
-        You don't fully understand what your partner wants or needs.
-      </div>
-      <div class="problem-item">
-        <strong>Lack of Confidence</strong><br>
-        Uncertainty about what you're doing and whether you're doing it right.
+      <a href="#offer" class="btn">Get Instant Access</a>
+      <p class="hero-timer">Launch price ends in <b data-timer-inline>48:00:00</b></p>
+      <div class="trust-row">
+        <span>258 pages</span><span>+ 365 Positions bonus</span><span>Instant download</span><span>100% private</span>
       </div>
     </div>
-
-    <!-- COMPASSION -->
-    <div class="compassion">
-      <p>
-        <strong>Hundreds of people have had exactly these feelings.</strong><br><br>
-        The good news? Many of them transformed their intimacy by getting the knowledge they were missing. You're not behind. You're not broken. You just need the right guide.
-      </p>
+    <div class="cover-wrap">
+      <img src="sb-cover.webp" alt="The Sex Bible — book cover" width="760" height="950">
+      <div class="cover-badge"><b>-68%</b>TODAY<br>ONLY</div>
     </div>
-  </section>
+  </div>
+</header>
 
-  <!-- SOLUTION -->
-  <section class="section">
-    <div class="section-title">
-      <h2 class="gold-text">Here's What You Need</h2>
-    </div>
-
-    <div class="solution">
-      <p class="solution-intro">
-        <strong>THE SEX BIBLE</strong> is not just another ebook about sex. It's a complete reference guide created for men, women, and couples who want to understand sexuality, intimacy, attraction, and pleasure at a deeper level.
-      </p>
-
-      <p class="solution-tagline">No awkwardness. No judgment. No pretending.</p>
-    </div>
-
-    <!-- SEGMENTS -->
-    <div class="segments">
-      <div class="segment-card">
-        <img src="sb-men.jpg" alt="For Men" class="segment-image" style="object-position: center 20%">
-        <div class="segment-body">
-          <div class="segment-label">I</div>
-          <h3 class="gold-text">For Men</h3>
-          <ul>
-            <li>Understand women deeply</li>
-            <li>Improve seduction</li>
-            <li>Develop real confidence</li>
-            <li>Master intimacy</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="segment-card">
-        <img src="sb-women.jpg" alt="For Women" class="segment-image" style="object-position: 63% center">
-        <div class="segment-body">
-          <div class="segment-label">II</div>
-          <h3 class="gold-text">For Women</h3>
-          <ul>
-            <li>Understand men &amp; desire</li>
-            <li>Explore your pleasure</li>
-            <li>Communicate needs</li>
-            <li>Feel more confident</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="segment-card">
-        <img src="sb-couples.jpg" alt="For Couples" class="segment-image" style="object-position: 55% center">
-        <div class="segment-body">
-          <div class="segment-label">III</div>
-          <h3 class="gold-text">For Couples</h3>
-          <ul>
-            <li>Learn together</li>
-            <li>Break routines</li>
-            <li>Deeper connection</li>
-            <li>Explore freely</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BENEFITS -->
-  <section class="section">
-    <div class="section-title">
-      <h2>What You'll Gain</h2>
-    </div>
-
-    <div class="benefits">
-      <div class="benefit">
-        <strong>Deep Understanding</strong>
-        Understand yourself and your partner like never before.
-      </div>
-      <div class="benefit">
-        <strong>Real Intimacy</strong>
-        Build stronger emotional and physical connection.
-      </div>
-      <div class="benefit">
-        <strong>Genuine Confidence</strong>
-        Feel assured about your knowledge and abilities.
-      </div>
-      <div class="benefit">
-        <strong>Explore Pleasure</strong>
-        Discover new dimensions of intimacy and desire.
-      </div>
-      <div class="benefit">
-        <strong>Break Free</strong>
-        Escape routine and create exciting new experiences.
-      </div>
-      <div class="benefit">
-        <strong>Better Communication</strong>
-        Talk openly with your partner about what matters.
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTENT & BONUS -->
-  <section class="section">
-    <div class="section-title">
-      <h2>What's Included</h2>
-    </div>
-
-    <div class="content-highlight">
-      <h3 class="gold-text">The Sex Bible + 365 Sex Positions (Bonus)</h3>
-
-      <p style="text-align: center; margin: 16px 0 0; color: var(--text-secondary); font-size: 16px;">
-        258 pages of comprehensive, real knowledge across 8+ major sections:
-      </p>
-
-      <div class="content-grid">
-        <div class="content-item">Seduction &amp; Attraction</div>
-        <div class="content-item">Foreplay &amp; Sensuality</div>
-        <div class="content-item">Intimacy &amp; Connection</div>
-        <div class="content-item">Understanding Sexuality</div>
-        <div class="content-item">Pleasure &amp; Orgasms</div>
-        <div class="content-item">Breaking Routines</div>
-        <div class="content-item">Ancient Sexual Wisdom</div>
-        <div class="content-item">Sex Toys &amp; Games</div>
-        <div class="content-item bonus">365 Positions Bonus</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE OFFER -->
-  <section class="section">
-    <div class="section-title">
-      <h2>Limited Time Offer</h2>
-    </div>
-
-    <div class="offer-main">
-      <div class="discount-badge">68% OFF · TODAY ONLY</div>
-
-      <div class="price-old">Usually $25</div>
-      <div class="price-new gold-text">$8</div>
-      <div class="price-local">≈ 5000 FCFA</div>
-      <div class="price-desc">Complete access to The Sex Bible + 365 Positions</div>
-
-      <button class="cta-button">Get Instant Access Now</button>
-
-      <div class="urgency">
-        <div class="urgency-item"><span>◆</span> Offer Expires in 2 Days</div>
-        <div class="urgency-item"><span>◆</span> Only 10 Spots Available</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- OBJECTIONS -->
-  <section class="section">
-    <div class="section-title">
-      <h2>Why You Can Trust This</h2>
-    </div>
-
-    <div class="objections">
-      <div class="objection">
-        <div class="objection-icon">I</div>
-        <strong>100% Confidential</strong>
-        <p>Your privacy is sacred. No tracking, no judgement.</p>
-      </div>
-
-      <div class="objection">
-        <div class="objection-icon">II</div>
-        <strong>Instant Access</strong>
-        <p>Get your PDF immediately. Read on any device, anytime.</p>
-      </div>
-
-      <div class="objection">
-        <div class="objection-icon">III</div>
-        <strong>Real Bonus</strong>
-        <p>365 Sex Positions guide included with your purchase.</p>
-      </div>
-
-      <div class="objection">
-        <div class="objection-icon">IV</div>
-        <strong>Satisfaction Guarantee</strong>
-        <p>If you're not completely satisfied, we'll refund you.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="section" style="text-align: center;">
-    <h2 class="gold-text">Don't Wait. Transform Your Intimacy Today.</h2>
-    <button class="cta-button">Claim Your $8 Access</button>
-    <p style="color: var(--text-secondary); font-size: 14px; font-style: italic;">
-      Two days. One decision. Unlimited possibilities.
-    </p>
-  </section>
-
-  <!-- FAQ -->
-  <section class="section">
-    <div class="section-title">
-      <h2>Common Questions</h2>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">Is this really just for $8?</div>
-      <div class="faq-answer">Yes. This is a limited-time offer to reach people who need this knowledge. The original price is $25, but we're offering 68% off for the next 48 hours to the first 10 buyers.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">Will my purchase be private?</div>
-      <div class="faq-answer">Completely. You receive a digital PDF instantly. No physical package. No one will know what you purchased. Your identity and privacy are 100% protected.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">What if I'm not satisfied?</div>
-      <div class="faq-answer">We stand behind our product. If you're not completely satisfied within 7 days, we'll refund your $8, no questions asked.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">Can I access it on my phone?</div>
-      <div class="faq-answer">Yes. The PDF works on any device — smartphone, tablet, laptop, or desktop. Read it anywhere, anytime, privately.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">What about the 365 Sex Positions bonus?</div>
-      <div class="faq-answer">It's included immediately. You get The Sex Bible (258 pages) + the 365 Positions guide as a bonus PDF, all for $8.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">Is this suitable for couples?</div>
-      <div class="faq-answer">Yes. This guide is designed for men, women, AND couples. Many couples buy it together to learn and explore as a team.</div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="logo gold-text" style="margin-bottom: 14px;">Aphrodite</div>
-    <p style="margin-bottom: 20px;">
-      The Sex Bible — The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure
-    </p>
-    <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact Us</a>
-    </div>
-    <p>© 2026 APHRODITE. All rights reserved.</p>
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Seduction</span><span>Foreplay</span><span>The Orals</span><span>Intercourse</span><span>Orgasms</span><span>Sacred Sexuality</span><span>Toys &amp; Games</span><span>365 Positions</span>
+    <span>Seduction</span><span>Foreplay</span><span>The Orals</span><span>Intercourse</span><span>Orgasms</span><span>Sacred Sexuality</span><span>Toys &amp; Games</span><span>365 Positions</span>
   </div>
 </div>
 
-<script>
-  // Smooth scroll and simple interactivity
-  document.querySelectorAll('.faq-item').forEach(item => {
-    item.addEventListener('click', function() {
-      const answer = this.querySelector('.faq-answer');
-      answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
-    });
-  });
+<!-- ===================== PAIN ===================== -->
+<section class="pain">
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Be honest with yourself</span>
+      <h2>The bedroom has gone quiet.<br><span class="crimson">And you feel it.</span></h2>
+      <p class="lead">Nobody talks about it. Not your friends. Not your family. Not even the person lying next to you. But deep down, you know something is missing.</p>
+    </div>
 
-  // CTA buttons
-  document.querySelectorAll('.cta-button').forEach(btn => {
-    btn.addEventListener('click', function() {
-      alert('Merci ! Redirigez vers votre page de paiement/checkout sécurisée.');
-    });
-  });
-</script></body>
+    <div class="pain-list narrow">
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>Same routine. Same positions. Same silence after.</strong><p>What used to be fire now feels like a habit. You both go through the motions — and pretend it's fine.</p></div></div>
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>You wonder if you're really enough.</strong><p>Are you doing it right? Is your partner really satisfied — or just being polite? That question follows you to bed every night.</p></div></div>
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>Desire that fades, and nobody knows why.</strong><p>The spark is still there somewhere. But between work, stress and routine, nobody knows how to light it again.</p></div></div>
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>Too shy to ask what you really want.</strong><p>You have fantasies, questions, things you'd love to try. But saying them out loud feels impossible.</p></div></div>
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>Scattered answers from the internet.</strong><p>Random videos, contradicting advice, unrealistic content. You end up more confused — and more insecure — than before.</p></div></div>
+      <div class="pain-item reveal"><div class="x">✕</div><div><strong>The fear that someone else will give them what you don't.</strong><p>It's the thought nobody admits. But when intimacy fades, distance grows — and distance opens doors.</p></div></div>
+    </div>
+
+    <div class="mirror">
+      <div class="mirror-card reveal">
+        <h3>If you're a man…</h3>
+        <ul>
+          <li>You don't really know what drives her wild</li>
+          <li>You finish too fast — or feel pressure to perform</li>
+          <li>You wonder if she's faking it</li>
+          <li>Your confidence drops when the lights go off</li>
+        </ul>
+      </div>
+      <div class="mirror-card reveal">
+        <h3>If you're a woman…</h3>
+        <ul>
+          <li>You rarely reach the pleasure you deserve</li>
+          <li>You don't know how to ask for what you want</li>
+          <li>You feel desired less than before</li>
+          <li>You want to surprise him, but don't know how</li>
+        </ul>
+      </div>
+      <div class="mirror-card reveal">
+        <h3>If you're a couple…</h3>
+        <ul>
+          <li>Intimacy has become predictable</li>
+          <li>You talk about everything — except sex</li>
+          <li>The passion of the beginning has faded</li>
+          <li>You feel like roommates more than lovers</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="pain-close narrow center reveal">And every night you wait, the distance grows a little more.<br><span class="gold">It doesn't have to be this way.</span></p>
+  </div>
+</section>
+
+<!-- ===================== COMPASSION ===================== -->
+<section>
+  <div class="wrap">
+    <div class="compassion-box narrow reveal">
+      <span class="eyebrow">You are not alone</span>
+      <p class="big">We've listened to hundreds of men, women and couples who felt exactly what you feel right now — the frustration, the shame, the silence.</p>
+      <p>And here is what we learned: <strong style="color: var(--text)">you're not broken. You're not behind. You were simply never taught.</strong> Nobody hands us a guide to desire, pleasure and intimacy. We're expected to just "know". The people who transformed their love life didn't have a secret talent — they finally got the knowledge they were missing.</p>
+      <p>That's exactly why we created this offer.</p>
+      <div class="stats">
+        <div class="stat"><b class="gold">258</b><span>pages</span></div>
+        <div class="stat"><b class="gold">8</b><span>complete parts</span></div>
+        <div class="stat"><b class="gold">365</b><span>bonus positions</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SOLUTION ===================== -->
+<section class="solution">
+  <div class="wrap">
+    <div class="cover-wrap reveal">
+      <img src="sb-cover.webp" alt="The Sex Bible" width="760" height="950" loading="lazy">
+    </div>
+    <div class="reveal">
+      <span class="eyebrow">Introducing</span>
+      <h2>More than a book about sex.<br><span class="gold">The complete reference.</span></h2>
+      <p><strong>THE SEX BIBLE</strong> is an in-depth adult guide created for men, women and couples who want to truly understand sexuality, intimacy, attraction and pleasure — all in one place.</p>
+      <p>Not another "sex ebook". A real reference you open whenever you need an answer: before a date, before tonight, after a fight, or when you simply want more.</p>
+      <div class="pillars">
+        <div class="pillar"><b class="gold">01</b><span><strong>Complete knowledge</strong> — from seduction to orgasm, every side of intimacy</span></div>
+        <div class="pillar"><b class="gold">02</b><span><strong>Real transformation</strong> — confidence, connection and pleasure</span></div>
+        <div class="pillar"><b class="gold">03</b><span><strong>Total privacy</strong> — digital, instant, read on your own device</span></div>
+      </div>
+      <p class="no-list">No awkwardness. No judgment. No pretending.<br>One guide. Many answers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOR MEN / WOMEN / COUPLES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Made for you</span>
+      <h2>Understand yourself.<br>Understand your partner.<br><span class="gold">Understand intimacy.</span></h2>
+    </div>
+
+    <div class="segments">
+      <article class="seg reveal">
+        <div class="seg-img"><img src="sb-men.jpg" alt="For men" loading="lazy" style="object-position: center 22%"><div class="seg-tag"><small>I</small><h3 class="gold">For Men</h3></div></div>
+        <div class="seg-body">
+          <p>Become the man she can't stop thinking about.</p>
+          <ul>
+            <li>Understand women and what really attracts them</li>
+            <li>Master seduction before the bedroom</li>
+            <li>Learn what she needs — and never says</li>
+            <li>Replace pressure with real confidence</li>
+          </ul>
+        </div>
+      </article>
+      <article class="seg reveal">
+        <div class="seg-img"><img src="sb-women.jpg" alt="For women" loading="lazy" style="object-position: 63% center"><div class="seg-tag"><small>II</small><h3 class="gold">For Women</h3></div></div>
+        <div class="seg-body">
+          <p>Own your desire. Claim your pleasure.</p>
+          <ul>
+            <li>Understand men and how desire works</li>
+            <li>Discover your own body and pleasure</li>
+            <li>Express what you want — without shame</li>
+            <li>Feel irresistible, confident and free</li>
+          </ul>
+        </div>
+      </article>
+      <article class="seg reveal">
+        <div class="seg-img"><img src="sb-couples.jpg" alt="For couples" loading="lazy" style="object-position: 55% center"><div class="seg-tag"><small>III</small><h3 class="gold">For Couples</h3></div></div>
+        <div class="seg-body">
+          <p>Fall back into each other — again and again.</p>
+          <ul>
+            <li>Learn and explore together</li>
+            <li>Finally talk openly about sex</li>
+            <li>Break the routine for good</li>
+            <li>Build a deeper, hotter connection</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <div class="punch reveal">
+      <p>DON'T JUST LEARN ABOUT SEX.<br><span class="gold">LEARN TO UNDERSTAND YOUR PARTNER.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BENEFITS ===================== -->
+<section class="benefits">
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">What changes for you</span>
+      <h2>Imagine your nights <span class="gold">after reading it.</span></h2>
+      <p class="lead">You don't buy a book. You buy what it does to your love life.</p>
+    </div>
+
+    <div class="benefit-grid">
+      <div class="benefit reveal"><div class="num gold">01</div><div><h3>Understand desire deeply</h3><p>Know what turns your partner on — and why. No more guessing in the dark.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">02</div><div><h3>Seduce with confidence</h3><p>Master attraction and anticipation, so desire starts long before the bedroom.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">03</div><div><h3>Foreplay that makes them crave you</h3><p>Touch, tease and build tension until they can't wait anymore.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">04</div><div><h3>More intense pleasure</h3><p>Understand orgasms — yours and your partner's — and how to reach them more often.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">05</div><div><h3>Break the routine forever</h3><p>New techniques, new positions, new games. Never boring again.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">06</div><div><h3>Deeper connection</h3><p>Turn sex into real intimacy. Feel closer, wanted and understood.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">07</div><div><h3>Unshakeable confidence</h3><p>Know exactly what you're doing. Talk about sex without blushing.</p></div></div>
+      <div class="benefit reveal"><div class="num gold">08</div><div><h3>Everything in one guide</h3><p>No more scattered answers. One reference for every question you'll ever have.</p></div></div>
+    </div>
+
+    <div class="timeline">
+      <div class="step reveal"><div class="when">Tonight</div><h3>Download in 60 seconds</h3><p>Open the Seduction chapter and try one thing tonight. Feel the difference immediately.</p></div>
+      <div class="step reveal"><div class="when">In 7 days</div><h3>A new energy between you</h3><p>New foreplay, new confidence, new conversations. Your partner notices — and wants more.</p></div>
+      <div class="step reveal"><div class="when">In 30 days</div><h3>A different love life</h3><p>Routine is gone. Passion is back. Intimacy feels exciting, deep and free again.</p></div>
+    </div>
+
+    <div class="center" style="margin-top: 48px;">
+      <a href="#offer" class="btn">I want this — $8</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHAT'S INSIDE ===================== -->
+<section>
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">What's inside</span>
+      <h2>8 complete parts.<br><span class="gold">Zero taboo.</span></h2>
+      <p class="lead">From the first look to the last shiver — everything is covered, in full color, beautifully photographed.</p>
+    </div>
+
+    <div class="parts">
+      <div class="part reveal"><div class="n gold">✦</div><div><h3>Introduction</h3><p>What I really know to be sexually true</p></div><div class="pg">P. 8</div></div>
+      <div class="part reveal"><div class="n gold">1</div><div><h3>Seduction</h3><p>The artful path to the bedroom — attraction, tension, connection</p></div><div class="pg">P. 13</div></div>
+      <div class="part reveal"><div class="n gold">2</div><div><h3>Foreplay</h3><p>Touch, anticipation and the play that changes everything</p></div><div class="pg">P. 35</div></div>
+      <div class="part reveal"><div class="n gold">3</div><div><h3>The Orals</h3><p>The power of the orals — techniques for him and for her</p></div><div class="pg">P. 73</div></div>
+      <div class="part reveal"><div class="n gold">4</div><div><h3>Intercourse</h3><p>Positions and techniques to go deeper and last longer</p></div><div class="pg">P. 91</div></div>
+      <div class="part reveal"><div class="n gold">5</div><div><h3>Orgasms</h3><p>The glory of orgasms — understand and multiply pleasure</p></div><div class="pg">P. 133</div></div>
+      <div class="part reveal"><div class="n gold">6</div><div><h3>Ancient Sex for Modern Lovers</h3><p>Sacred sexuality and ancient wisdom for today's couples</p></div><div class="pg">P. 171</div></div>
+      <div class="part reveal"><div class="n gold">7</div><div><h3>Sex Toys &amp; Sex Games</h3><p>Play, explore and surprise each other</p></div><div class="pg">P. 203</div></div>
+      <div class="part reveal"><div class="n gold">8</div><div><h3>Better &amp; More Intimate Sex</h3><p>How to make sex better — and keep it that way</p></div><div class="pg">P. 239</div></div>
+      <div class="part bonus reveal"><div class="n gold">+</div><div><h3>BONUS: 365 Sex Positions</h3><p>A new position for every night of the year</p></div><div class="pg">FREE</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROOF / LOOK INSIDE ===================== -->
+<section class="proof">
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Look inside</span>
+      <h2>See exactly <span class="gold">what you get.</span></h2>
+      <p class="lead">Real pages from The Sex Bible. No surprises — just 258 pages of elegant, explicit, beautifully illustrated knowledge.</p>
+    </div>
+
+    <div class="gallery">
+      <figure class="shot s1 reveal"><img src="sb-inside-contents.jpg" alt="Table of contents" loading="lazy"><figcaption>Table of contents</figcaption></figure>
+      <figure class="shot s2 reveal"><img src="sb-inside-seduction.jpg" alt="Part 1 — Seduction" loading="lazy"><figcaption>Part 1 · Seduction</figcaption></figure>
+      <figure class="shot s3 reveal"><img src="sb-inside-intro.jpg" alt="Introduction" loading="lazy"><figcaption>Introduction</figcaption></figure>
+      <figure class="shot s4 reveal"><img src="sb-inside-foreplay.jpg" alt="Part 2 — Foreplay" loading="lazy"><figcaption>Part 2 · Foreplay</figcaption></figure>
+      <figure class="shot s5 reveal"><img src="sb-inside-orals.jpg" alt="Part 3 — The Orals" loading="lazy"><figcaption>Part 3 · The Orals</figcaption></figure>
+    </div>
+    <p class="proof-note reveal">Full-color PDF · <b>258 pages</b> · Readable on phone, tablet &amp; computer</p>
+  </div>
+</section>
+
+<!-- ===================== BONUS ===================== -->
+<section>
+  <div class="wrap">
+    <div class="bonus-box reveal">
+      <div class="bonus-book">
+        <div class="free">FREE</div>
+        <b class="gold">365</b>
+        <span>SEX POSITIONS</span>
+        <em>One for every night of the year</em>
+      </div>
+      <div>
+        <span class="eyebrow" style="color: var(--crimson)">Exclusive bonus — included today</span>
+        <h2>365 Sex Positions.<br><span class="gold">A new night, every night.</span></h2>
+        <p>Never run out of ideas again. With this bonus, you get a new position to try every single night for a whole year — from the softest to the wildest.</p>
+        <ul>
+          <li>Positions for every mood and every level</li>
+          <li>Perfect to surprise your partner tonight</li>
+          <li>Instantly delivered with The Sex Bible</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRIVACY ===================== -->
+<section>
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Private · Digital · Convenient</span>
+      <h2>Your private life <span class="gold">stays private.</span></h2>
+      <p class="lead">No awkward questions. No package at your door. Nobody needs to know.</p>
+    </div>
+    <div class="privacy-grid">
+      <div class="priv reveal">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 7l9 6 9-6"/><path d="M4 4l16 16"/></svg>
+        <h3>No package</h3><p>No physical book. Nothing delivered to your home.</p>
+      </div>
+      <div class="priv reveal">
+        <svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+        <h3>Instant access</h3><p>Your copy arrives right after payment. No waiting.</p>
+      </div>
+      <div class="priv reveal">
+        <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>
+        <h3>Any device</h3><p>Read privately on your phone, tablet or computer.</p>
+      </div>
+      <div class="priv reveal">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <h3>Your identity protected</h3><p>We never share or sell your personal details.</p>
+      </div>
+    </div>
+    <p class="privacy-quote reveal">"Because great intimacy <span class="gold">starts with knowledge."</span></p>
+  </div>
+</section>
+
+<!-- ===================== OFFER ===================== -->
+<section id="offer">
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Limited launch offer</span>
+      <h2>Everything you get <span class="gold">today.</span></h2>
+    </div>
+
+    <div class="offer-card reveal">
+      <div class="ribbon">68% OFF · FIRST 10 BUYERS ONLY</div>
+      <ul class="stack">
+        <li><span>The Sex Bible — complete guide (258 pages)</span><span>$25</span></li>
+        <li><span>BONUS: 365 Sex Positions</span><span>FREE</span></li>
+        <li><span>Instant private digital access</span><span>Included</span></li>
+        <li><span>Read on phone, tablet &amp; computer</span><span>Included</span></li>
+        <li class="total"><span>Regular price</span><span>$25</span></li>
+      </ul>
+
+      <div class="today">Your price today</div>
+      <div class="big-price gold">$8</div>
+      <div class="big-fcfa">≈ 5000 FCFA · one-time payment</div>
+
+      <div class="countdown" data-timer>
+        <div><b data-h>48</b><span>Hours</span></div>
+        <div><b data-m>00</b><span>Minutes</span></div>
+        <div><b data-s>00</b><span>Seconds</span></div>
+      </div>
+
+      <div class="scarcity">
+        This price is reserved for the first 10 buyers only.
+        <div class="bar"><i></i></div>
+      </div>
+
+      <a href="#offer" class="btn btn-block" data-checkout>Yes! I want The Sex Bible — $8</a>
+      <p class="cta-note">Instant access<span>✦</span>Secure payment<span>✦</span>100% private</p>
+    </div>
+
+    <div class="guarantee reveal">
+      <div class="seal"><div><b>7</b>DAY<br>GUARANTEE</div></div>
+      <div>
+        <h3>Zero risk. Read it first.</h3>
+        <p>If you're not completely satisfied within 7 days, contact us and we'll refund your $8. No questions asked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OBJECTIONS / FAQ ===================== -->
+<section>
+  <div class="wrap">
+    <div class="narrow center reveal">
+      <span class="eyebrow">Still hesitating?</span>
+      <h2>Your questions, <span class="gold">answered.</span></h2>
+    </div>
+
+    <div class="faq reveal">
+      <details open>
+        <summary>Is it really only $8?</summary>
+        <p>Yes. It's our launch price, 68% off the regular $25 — reserved for the first 10 buyers and available for 2 days only. After that, the price goes back up.</p>
+      </details>
+      <details>
+        <summary>Is it just another PDF from the internet?</summary>
+        <p>No. The Sex Bible is a complete 258-page reference, organized in 8 parts and fully illustrated — you've just seen real pages above. It's the guide you keep and come back to, not a few tips thrown together.</p>
+      </details>
+      <details>
+        <summary>Will anyone know what I bought?</summary>
+        <p>The book is 100% digital: no physical book, no package, nothing delivered to your home. You read it on your own device. We never share or sell your personal details. Payment goes through a secure checkout — the line on your statement is set by your payment provider.</p>
+      </details>
+      <details>
+        <summary>How do I receive it?</summary>
+        <p>Right after payment you get instant access to download The Sex Bible and the 365 Sex Positions bonus. It takes less than a minute.</p>
+      </details>
+      <details>
+        <summary>Can I read it on my phone?</summary>
+        <p>Yes. It works on any smartphone, tablet or computer — read it anywhere, anytime, privately.</p>
+      </details>
+      <details>
+        <summary>I'm shy about these topics. Is it for me?</summary>
+        <p>Especially for you. Everything is explained clearly, elegantly and without judgment. You read alone, at your own pace — no awkward conversation needed.</p>
+      </details>
+      <details>
+        <summary>I already have experience. Will I learn something?</summary>
+        <p>Yes. With 8 parts — from seduction and the orals to sacred sexuality, toys and games — plus 365 positions, even experienced lovers discover new techniques and ideas.</p>
+      </details>
+      <details>
+        <summary>Is it for couples?</summary>
+        <p>Absolutely. It's written for men, women and couples. Many couples read it together to explore, talk openly and reconnect.</p>
+      </details>
+      <details>
+        <summary>What if I don't like it?</summary>
+        <p>You're covered by our 7-day satisfaction guarantee. If you're not happy, contact us and we'll refund your $8.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINAL CTA ===================== -->
+<section class="final">
+  <div class="final-bg"></div>
+  <div class="wrap">
+    <span class="eyebrow reveal">Your move</span>
+    <h2 class="reveal">Tonight could be <span class="gold">different.</span></h2>
+    <p class="lead narrow reveal">You can close this page and keep the same nights, the same silence, the same doubts. Or for less than the price of a drink, you can change everything — starting tonight.</p>
+    <div class="cover-wrap reveal"><img src="sb-cover.webp" alt="The Sex Bible" width="760" height="950" loading="lazy"></div>
+    <a href="#offer" class="btn reveal">Get The Sex Bible now — $8</a>
+    <p class="cta-note">Two days. Ten buyers. One decision.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="sb-logo.jpg" alt="APHRODITE" loading="lazy">
+    <div class="tag">LOVE · INTIMACY · DESIRE</div>
+    <div class="adult">18+ ADULTS ONLY</div>
+    <p>The Sex Bible — The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure</p>
+    <nav><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Contact</a></nav>
+    <p>© 2026 APHRODITE. All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky">
+  <div class="p"><s>$25</s><b>$8</b><small>≈ 5000 FCFA · <span data-timer-inline>48:00:00</span></small></div>
+  <a href="#offer" class="btn">Get it now</a>
+</div>
+
+<script>
+  // Paste the payment page link here (Selar, Chariow, etc.). While empty, buttons scroll to the offer.
+  const CHECKOUT_URL = '';
+
+  document.documentElement.classList.add('js');
+
+  if (CHECKOUT_URL) {
+    document.querySelectorAll('[data-checkout]').forEach(a => { a.href = CHECKOUT_URL; });
+  }
+
+  // 48-hour offer countdown, starting from the visitor's first visit
+  const KEY = 'sb_offer_deadline';
+  let deadline = 0;
+  try { deadline = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+  if (!deadline) {
+    deadline = Date.now() + 48 * 3600 * 1000;
+    try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
+  }
+  const pad = n => String(n).padStart(2, '0');
+  function tick() {
+    const left = Math.max(0, deadline - Date.now());
+    const h = Math.floor(left / 3600000), m = Math.floor(left / 60000) % 60, s = Math.floor(left / 1000) % 60;
+    document.querySelectorAll('[data-h]').forEach(el => el.textContent = pad(h));
+    document.querySelectorAll('[data-m]').forEach(el => el.textContent = pad(m));
+    document.querySelectorAll('[data-s]').forEach(el => el.textContent = pad(s));
+    document.querySelectorAll('[data-timer-inline]').forEach(el => el.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Reveal on scroll
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+
+  // Sticky CTA after the hero, hidden on the offer section
+  const sticky = document.getElementById('sticky');
+  const hero = document.querySelector('.hero');
+  const offer = document.getElementById('offer');
+  function onScroll() {
+    const pastHero = hero.getBoundingClientRect().bottom < 0;
+    const r = offer.getBoundingClientRect();
+    const onOffer = r.top < window.innerHeight && r.bottom > 0;
+    sticky.classList.toggle('show', pastHero && !onOffer);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
 </html>
