@@ -1,6 +1,9 @@
 {
   "buildCommand": "npm run build",
   "framework": "nextjs",
+  "github": {
+    "silent": true
+  },
   "headers": [
     {
       "source": "/(.*)",
