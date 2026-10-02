@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Montserrat:wght@400;600;800&display=block" rel="stylesheet">
+<style>
+  html,body{margin:0;width:540px;height:960px;overflow:hidden;background:#050404}
+  #stage{position:relative;width:540px;height:960px;overflow:hidden;background:#050404}
+  #glow{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 50%,rgba(212,165,116,.28),rgba(139,58,58,.14) 35%,transparent 65%)}
+  canvas{position:absolute;inset:0}
+  .ln{position:absolute;left:30px;right:30px;text-align:center;opacity:0;will-change:transform,opacity}
+  .serif{font-family:'Playfair Display',Georgia,serif}
+  .sans{font-family:'Montserrat',Arial,sans-serif;letter-spacing:4px;text-transform:uppercase}
+  .gold{background:linear-gradient(100deg,#8a6236 0%,#D4A574 30%,#f7e2c2 50%,#D4A574 70%,#8a6236 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+  .white{color:#f4ece4}
+  .red{color:#c0504d}
+  .rule{position:absolute;left:50%;height:1px;background:linear-gradient(90deg,transparent,#D4A574,transparent);transform:translateX(-50%)}
+  .btn{display:inline-block;padding:18px 34px;border:1.5px solid #D4A574;border-radius:2px;background:#D4A574;color:#0a0a0a;font-family:'Montserrat',sans-serif;font-weight:800;letter-spacing:3px;font-size:20px}
+  .strike{text-decoration:line-through;text-decoration-color:#c0504d;text-decoration-thickness:3px}
+  #vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.85) 100%);pointer-events:none}
+</style></head>
+<body><div id="stage"><div id="glow"></div><canvas id="dust" width="1080" height="1920" style="width:540px;height:960px"></canvas><div id="items"></div><div id="vignette"></div></div>
+<script>
+// [start, end, top(px), class, html, size]
+const L = [
+  // HOOK 0-5
+  [0.3, 4.8, 330, 'serif white', 'You searched<br>everywhere...', 50],
+  [1.8, 4.8, 500, 'serif gold', '<i>Still not satisfied.</i>', 40],
+  // PAIN 5-10
+  [5.2, 9.8, 280, 'sans white', 'Same routine', 26],
+  [6.2, 9.8, 360, 'sans white', 'Same nights', 26],
+  [7.2, 9.8, 470, 'serif gold', 'Something<br>is missing.', 56],
+  // SOLUTION 10-18
+  [10.2, 17.8, 200, 'sans gold', 'Introducing', 20],
+  [10.9, 17.8, 280, 'serif gold', '<span style="font-size:.42em;letter-spacing:6px">THE</span><br><span style="font-weight:900">SEX</span><br>BIBLE', 104],
+  [12.6, 17.8, 640, 'serif white', '<i>The complete guide<br>to sensual love</i>', 28],
+  [14.2, 17.8, 760, 'sans gold', '258 pages &middot; zero taboo', 18],
+  // BENEFITS 18-28
+  [18.2, 27.8, 170, 'sans gold', 'Inside you will learn', 18],
+  [18.8, 27.8, 250, 'serif white', 'Seduce with confidence', 34],
+  [19.8, 27.8, 320, 'serif white', 'Ignite desire again', 34],
+  [20.8, 27.8, 390, 'serif white', 'Deeper pleasure', 34],
+  [21.8, 27.8, 460, 'serif white', 'Unforgettable nights', 34],
+  [23.0, 27.8, 560, 'sans red', '+ Bonus: 365 positions', 20],
+  [24.0, 27.8, 640, 'serif white', '<span class="strike" style="font-size:.5em;color:#999">$25</span>&nbsp;&nbsp;<span class="gold" style="font-weight:900">$8</span>', 96],
+  [25.0, 27.8, 790, 'sans gold', '&asymp; 5000 FCFA', 18],
+  // CTA 28-35
+  [28.2, 35.0, 230, 'sans white', '100% private &middot; Instant PDF', 16],
+  [28.8, 35.0, 310, 'serif gold', 'Your nights<br>will never be<br>the same.', 52],
+  [30.2, 35.0, 560, '', '<span class="btn">GET IT NOW</span>', 20],
+  [31.2, 35.0, 670, 'sans red', 'Only 2 days &middot; 10 spots left', 18],
+  [32.2, 35.0, 820, 'sans gold', 'A P H R O D I T E', 16],
+];
+const R = [ // rules: [start,end,top,width]
+  [1.8,4.8,470,140],[7.2,9.8,445,160],[18.2,27.8,215,200],[28.8,35,290,180],[32.2,35,800,120]
+];
+const items = document.getElementById('items');
+const els = L.map(l => { const d=document.createElement('div'); d.className='ln '+l[3]; d.style.top=l[2]+'px'; d.style.fontSize=l[5]+'px'; d.style.lineHeight='1.15'; d.innerHTML=l[4]; items.appendChild(d); return d; });
+const rules = R.map(r => { const d=document.createElement('div'); d.className='rule'; d.style.top=r[2]+'px'; items.appendChild(d); return d; });
+const ease = x => 1-Math.pow(1-Math.min(Math.max(x,0),1),3);
+let seed=7; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+const P = Array.from({length:90},()=>({x:rnd()*1080,y:rnd()*1920,r:0.8+rnd()*2.6,s:12+rnd()*40,p:rnd()*6.28,a:0.2+rnd()*0.6}));
+const ctx = document.getElementById('dust').getContext('2d');
+window.render = t => {
+  const T=35;
+  L.forEach((l,i)=>{ const [s,e]=l; const fin=ease((t-s)/0.8), fout=ease((t-(e-0.6))/0.6);
+    const o = t<s?0:(t>e?0:fin*(1-fout)); const y=(1-fin)*24 - fout*10; const sc=1+(t-s)*0.004;
+    els[i].style.opacity=o; els[i].style.transform=`translateY(${y}px) scale(${sc})`; els[i].style.filter=`blur(${(1-fin)*6}px)`;
+    els[i].querySelectorAll('.gold').forEach(g=>g.style.backgroundPosition=`${(100-((t*18)%250))}% 0`);
+    if(els[i].classList.contains('gold')) els[i].style.backgroundPosition=`${(100-((t*18)%250))}% 0`; });
+  R.forEach((r,i)=>{ const [s,e,,w]=r; const g=ease((t-s)/1.0), out=ease((t-(e-0.6))/0.6); rules[i].style.width=(w*g)+'px'; rules[i].style.opacity=(t<s||t>e)?0:(1-out); });
+  const pulse = 1+0.06*Math.sin(t*1.6) + (t>28?0.15*ease((t-28)/2):0);
+  const glow=document.getElementById('glow'); glow.style.transform=`scale(${pulse})`; glow.style.opacity=Math.min(1,0.55+t/20);
+  ctx.clearRect(0,0,1080,1920);
+  P.forEach(p=>{ const y=(p.y - t*p.s*3 + 1920*10)%1920; const x=p.x+Math.sin(t*0.6+p.p)*22; const a=p.a*(0.5+0.5*Math.sin(t*2+p.p));
+    ctx.beginPath(); ctx.arc(x,y,p.r*2,0,6.283); ctx.fillStyle=`rgba(232,190,140,${a})`; ctx.shadowColor='rgba(212,165,116,.9)'; ctx.shadowBlur=12; ctx.fill(); });
+  const fade = t<0.4? t/0.4 : (t>34.4? (35-t)/0.6 : 1);
+  document.getElementById('stage').style.opacity=fade;
+};
+render(0);
+</script></body></html>
