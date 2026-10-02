@@ -416,26 +416,17 @@
     background: radial-gradient(ellipse at 0% 50%, rgba(209,26,53,.2), transparent 60%), var(--card);
     border: 1px solid rgba(209,26,53,.45);
   }
-  .bonus-cover { position: relative; perspective: 1100px; }
-  .bonus-cover .book {
-    position: relative; transform: rotateY(-18deg) rotateX(3deg); transform-origin: left center;
-    border-radius: 2px 6px 6px 2px;
-    box-shadow: 22px 30px 50px rgba(0,0,0,.7), 0 0 70px rgba(209,26,53,.3);
-    transition: transform .6s ease;
+  .bonus-cover { position: relative; }
+  .bonus-cover img {
+    display: block; width: 100%; height: auto;
+    transform: rotate(-3deg);
+    filter: drop-shadow(0 0 40px rgba(209,26,53,.3));
     animation: bookFloat 5s ease-in-out infinite;
   }
-  .bonus-cover .book img { display: block; width: 100%; height: auto; border-radius: 2px 6px 6px 2px; }
-  .bonus-cover .book::before {
-    content: ''; position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; width: 16px; border-radius: 2px 0 0 2px;
-    background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(255,255,255,.22) 45%, rgba(0,0,0,.3));
+  @keyframes bookFloat {
+    0%, 100% { transform: rotate(-3deg) translateY(0); }
+    50% { transform: rotate(-3deg) translateY(-8px); }
   }
-  .bonus-cover .book::after {
-    content: ''; position: absolute; top: 1.5%; bottom: 1.5%; right: -9px; width: 9px; border-radius: 0 3px 3px 0;
-    background: repeating-linear-gradient(180deg, #efe8dc 0 2px, #cfc5b6 2px 3px);
-    box-shadow: inset 3px 0 4px rgba(0,0,0,.35);
-  }
-  .bonus-cover:hover .book { transform: rotateY(-6deg) rotateX(1deg); }
-  @keyframes bookFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
   .bonus-cover .free {
     position: absolute; z-index: 2; top: -10px; right: -14px; background: var(--crimson); color: #fff;
     font-size: 12px; font-weight: 800; letter-spacing: 2px; padding: 7px 14px; border-radius: 4px;
@@ -600,7 +591,7 @@
   .js .reveal.in { opacity: 1; transform: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .gold, .btn, .btn::before, .btn::after, .marquee-track, .cover-wrap::before, .bonus-cover .book { animation: none; }
+    .gold, .btn, .btn::before, .btn::after, .marquee-track, .cover-wrap::before, .bonus-cover img { animation: none; }
     .js .reveal { opacity: 1; transform: none; }
   }
 
@@ -944,7 +935,10 @@
     <div class="bonus-box reveal">
       <div class="bonus-cover">
         <div class="free">FREE</div>
-        <div class="book"><img src="sb-bonus-cover.jpg" alt="365 Sex Positions — bonus book cover" width="411" height="486" loading="lazy"></div>
+        <picture>
+          <source srcset="sb-bonus-book.webp" type="image/webp">
+          <img src="sb-bonus-book.jpg" alt="365 Sex Positions — bonus book cover" width="520" height="587">
+        </picture>
       </div>
       <div>
         <span class="eyebrow" style="color: var(--crimson)">Exclusive bonus — included today</span>
