@@ -155,10 +155,10 @@
   }
   .hero-bg {
     position: absolute; inset: 0;
-    background: url('sb-hero.jpg') center 30% / cover no-repeat;
-    opacity: .16; filter: blur(2px) saturate(1.2);
-    mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+    background: url('sb-bg-passion.jpg') center 30% / cover no-repeat;
+    opacity: .5;
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 55%, transparent 92%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 55%, transparent 92%);
   }
   .hero .wrap {
     position: relative; display: grid; gap: 0 40px; align-items: center;
@@ -185,7 +185,6 @@
   .price-chip { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
   .price-chip s { color: var(--muted); font-size: 22px; text-decoration-color: var(--crimson); text-decoration-thickness: 2px; }
   .price-chip strong { font-family: 'Playfair Display', Georgia, serif; font-size: 54px; line-height: 1; font-weight: 900; }
-  .price-chip .fcfa { font-weight: 700; color: var(--gold-light); }
   .price-chip .off { background: var(--crimson); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; padding: 6px 12px; border-radius: 999px; }
   .trust-row { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 24px; font-size: 13px; color: var(--muted); }
   .trust-row span::before { content: '✦'; color: var(--gold); margin-right: 8px; font-size: 11px; }
@@ -294,7 +293,15 @@
   .punch p { font-family: 'Playfair Display', Georgia, serif; font-weight: 900; font-size: clamp(26px, 5vw, 44px); line-height: 1.15; letter-spacing: .5px; }
 
   /* ===== BENEFITS ===== */
-  .benefits { background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(226,168,75,.08), transparent 70%); }
+  .benefits { overflow: hidden; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(226,168,75,.08), transparent 70%); }
+  .photo-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-position: center 30%; background-size: cover; background-repeat: no-repeat;
+    opacity: .5;
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 30%, transparent 62%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 30%, transparent 62%);
+  }
+  .benefits .wrap { position: relative; z-index: 1; }
   .benefit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 46px; }
   .benefit {
     display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: start;
@@ -341,6 +348,13 @@
   .shot.s1 { grid-column: span 3; aspect-ratio: 665 / 440; }
   .shot.s2 { grid-column: span 3; aspect-ratio: 665 / 440; }
   .shot.s3, .shot.s4, .shot.s5 { grid-column: span 2; aspect-ratio: 1 / 1; }
+  .proof-feature { display: grid; grid-template-columns: 380px 1fr; gap: 44px; align-items: center; margin-top: 44px; }
+  .proof-feature .shot { aspect-ratio: 720 / 750; }
+  .proof-feature h3 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
+  .proof-feature p { color: var(--muted); margin-bottom: 14px; }
+  .proof-feature ul { list-style: none; }
+  .proof-feature li { position: relative; padding: 6px 0 6px 24px; }
+  .proof-feature li::before { content: '✦'; position: absolute; left: 0; top: 7px; color: var(--gold); font-size: 12px; }
   .proof-note { margin-top: 26px; text-align: center; color: var(--muted); font-size: 15px; }
   .proof-note b { color: var(--gold-light); }
 
@@ -403,7 +417,7 @@
   .stack li.total span:last-child { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--crimson); }
   .today { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
   .big-price { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(96px, 20vw, 132px); font-weight: 900; line-height: 1; margin: 6px 0; }
-  .big-fcfa { font-size: 18px; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; margin-bottom: 24px; }
+  .big-fcfa { font-size: 15px; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; margin-bottom: 24px; }
   .countdown { display: flex; justify-content: center; gap: 10px; margin: 6px 0 22px; }
   .countdown div { min-width: 74px; padding: 12px 6px; border-radius: 12px; background: rgba(7,5,4,.7); border: 1px solid var(--gold-line); }
   .countdown b { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--gold-pale); }
@@ -448,12 +462,13 @@
     background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(209,26,53,.2), transparent 70%), var(--bg);
   }
   .final-bg {
-    position: absolute; inset: 0; background: url('sb-hero.jpg') center 35% / cover no-repeat;
-    opacity: .14; filter: blur(3px);
-    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    position: absolute; inset: 0; background: url('sb-bg-touch.jpg') center / cover no-repeat;
+    opacity: .55;
+    mask-image: radial-gradient(ellipse at center, #000 35%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent 85%);
   }
   .final .wrap { position: relative; }
+  .final .lead { color: var(--text); text-shadow: 0 2px 14px rgba(0,0,0,.9); }
   .final h2 { font-size: clamp(38px, 8vw, 72px); }
   .final .cover-wrap { max-width: 280px; margin: 34px auto; }
 
@@ -501,6 +516,8 @@
     .privacy-grid { grid-template-columns: repeat(2, 1fr); }
     .bonus-box { grid-template-columns: 1fr; padding: 34px 22px; text-align: center; }
     .bonus-book { max-width: 220px; margin: 0 auto; }
+    .proof-feature { grid-template-columns: 1fr; gap: 26px; }
+    .proof-feature .shot { max-width: 420px; width: 100%; margin: 0 auto; }
     .bonus-box ul { text-align: left; max-width: 360px; margin: 8px auto 0; }
   }
 
@@ -537,6 +554,11 @@
 
   @media (min-width: 900px) {
     body { padding-bottom: 0; }
+    .hero-bg {
+      background:
+        linear-gradient(90deg, rgba(7,5,4,.85) 0%, rgba(7,5,4,.45) 45%, transparent 75%),
+        url('sb-bg-passion.jpg') center 30% / cover no-repeat;
+    }
   }
 </style>
 </head>
@@ -557,7 +579,7 @@
     <div class="hero-bottom">
       <p class="hook">"What if you could stop searching for scattered answers about sex — and finally hold one complete guide that shows you everything, from the first look to the last shiver?"</p>
       <div class="price-chip">
-        <s>$25</s><strong class="gold">$8</strong><span class="fcfa">≈ 5000 FCFA</span><span class="off">-68%</span>
+        <s>$25</s><strong class="gold">$8</strong><span class="off">-68%</span>
       </div>
       <a href="#offer" class="btn">Get Instant Access</a>
       <p class="hero-timer">Launch price ends in <b data-timer-inline>2 days 00:00:00</b></p>
@@ -724,6 +746,7 @@
 
 <!-- ===================== BENEFITS ===================== -->
 <section class="benefits">
+  <div class="photo-bg" style="background-image: url('sb-bg-desire.jpg')"></div>
   <div class="wrap">
     <div class="narrow center reveal">
       <span class="eyebrow">What changes for you</span>
@@ -785,6 +808,20 @@
       <span class="eyebrow">Look inside</span>
       <h2>See exactly <span class="gold">what you get.</span></h2>
       <p class="lead">Real pages from The Sex Bible. No surprises — just 258 pages of elegant, explicit, beautifully illustrated knowledge.</p>
+    </div>
+
+    <div class="proof-feature reveal">
+      <figure class="shot"><img src="sb-inside-cover.jpg" alt="The Sex Bible — original edition cover" loading="lazy"><figcaption>The original edition</figcaption></figure>
+      <div>
+        <h3>The real book. <span class="gold">The real pages.</span></h3>
+        <p>This is the complete Sex Bible you receive — the full illustrated edition, nothing cut, nothing censored.</p>
+        <ul>
+          <li>258 full-color pages</li>
+          <li>8 complete parts, from seduction to sacred sexuality</li>
+          <li>Explicit photos and step-by-step techniques</li>
+          <li>Delivered instantly as a PDF</li>
+        </ul>
+      </div>
     </div>
 
     <div class="gallery">
@@ -872,7 +909,7 @@
 
       <div class="today">Your price today</div>
       <div class="big-price gold">$8</div>
-      <div class="big-fcfa">≈ 5000 FCFA · one-time payment</div>
+      <div class="big-fcfa">One-time payment · Instant access</div>
 
       <div class="countdown" data-timer>
         <div><b data-d>02</b><span>Days</span></div>
@@ -974,7 +1011,7 @@
 </footer>
 
 <div class="sticky" id="sticky">
-  <div class="p"><s>$25</s><b>$8</b><small>≈ 5000 FCFA · <span data-timer-inline>2 days 00:00:00</span></small></div>
+  <div class="p"><s>$25</s><b>$8</b><small>Ends in <span data-timer-inline>2 days 00:00:00</span></small></div>
   <a href="#offer" class="btn">Get it now</a>
 </div>
 
