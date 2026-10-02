@@ -385,6 +385,25 @@
   .bonus-box li { position: relative; padding: 6px 0 6px 24px; }
   .bonus-box li::before { content: '✦'; position: absolute; left: 0; top: 7px; color: var(--crimson); font-size: 12px; }
 
+  .teaser-head { text-align: center; margin: 56px 0 22px; }
+  .teaser-head h3 { font-size: clamp(22px, 4vw, 30px); }
+  .teaser-head p { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .teasers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .teaser { position: relative; aspect-ratio: 4 / 5; border-radius: 14px; overflow: hidden; border: 1px solid rgba(209,26,53,.45); background: #000; }
+  .teaser img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); }
+  .teaser::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 30%, rgba(0,0,0,.88) 100%); }
+  .teaser .lock {
+    position: absolute; z-index: 1; top: 38%; left: 50%; transform: translate(-50%, -50%);
+    width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(7,5,4,.55); border: 1px solid var(--gold); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  .teaser .lock svg { width: 22px; height: 22px; stroke: var(--gold-light); fill: none; stroke-width: 1.6; }
+  .teaser figcaption { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: 16px; }
+  .teaser small { font-size: 10px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--crimson); }
+  .teaser h3 { font-size: 21px; color: var(--gold-pale); margin: 2px 0 4px; }
+  .teaser p { font-size: 13px; color: var(--muted); line-height: 1.45; }
+  .teaser-more { text-align: center; margin-top: 22px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 20px; color: var(--gold-light); }
+
   /* ===== PRIVACY ===== */
   .privacy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 44px; }
   .priv { padding: 28px 20px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); text-align: center; }
@@ -536,6 +555,11 @@
     .shot.s1, .shot.s2 { grid-column: span 2; }
     .shot.s3, .shot.s4 { grid-column: span 1; }
     .shot.s5 { grid-column: span 2; aspect-ratio: 16 / 10; }
+    .teasers { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .teaser figcaption { padding: 12px; }
+    .teaser h3 { font-size: 17px; }
+    .teaser p { font-size: 12px; }
+    .teaser .lock { width: 44px; height: 44px; top: 28%; }
     .privacy-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
     .priv { padding: 22px 14px; }
     .stats { gap: 8px; }
@@ -581,7 +605,7 @@
       <div class="price-chip">
         <s>$25</s><strong class="gold">$8</strong><span class="off">-68%</span>
       </div>
-      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" class="btn">Get Instant Access</a>
+      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get Instant Access</a>
       <p class="hero-timer">Launch price ends in <b data-timer-inline>2 days 00:00:00</b></p>
       <div class="trust-row">
         <span>258 pages</span><span>+ 365 Positions bonus</span><span>Instant download</span><span>100% private</span>
@@ -772,7 +796,7 @@
     </div>
 
     <div class="center" style="margin-top: 48px;">
-      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" class="btn">I want this — $8</a>
+      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">I want this — $8</a>
     </div>
   </div>
 </section>
@@ -856,6 +880,20 @@
         </ul>
       </div>
     </div>
+
+    <div class="teaser-head reveal">
+      <h3>A taste of the boldest positions inside</h3>
+      <p>Full photos and instructions unlock right after purchase.</p>
+    </div>
+    <div class="teasers">
+      <figure class="teaser reveal"><img src="sb-pos-handstand.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #11</small><h3>The Handstand</h3><p>For bold lovers only — the most intense pose in the book.</p></figcaption></figure>
+      <figure class="teaser reveal"><img src="sb-pos-crazycat.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #37</small><h3>The Crazy Cat</h3><p>Gravity-defying, with all the friction exactly where she wants it.</p></figcaption></figure>
+      <figure class="teaser reveal"><img src="sb-pos-chariot.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #2</small><h3>The Chariot</h3><p>Her pleasure is entirely in his hands.</p></figcaption></figure>
+      <figure class="teaser reveal"><img src="sb-pos-tribal.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #1</small><h3>Tribal Rhythm</h3><p>He gets the full view — and controls her every move.</p></figcaption></figure>
+      <figure class="teaser reveal"><img src="sb-pos-circus.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #8</small><h3>The Circus</h3><p>A daring twist that keeps you going round after round.</p></figcaption></figure>
+      <figure class="teaser reveal"><img src="sb-pos-loveseat.jpg" alt="" loading="lazy"><div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><figcaption><small>Position #29</small><h3>The Love Seat</h3><p>She sits back and savours every stroke while he leads.</p></figcaption></figure>
+    </div>
+    <p class="teaser-more reveal">+ 359 more positions — one for every night of the year.</p>
   </div>
 </section>
 
@@ -923,7 +961,7 @@
         <div class="bar"><i></i></div>
       </div>
 
-      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" class="btn btn-block">Yes! I want The Sex Bible — $8</a>
+      <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn btn-block">Yes! I want The Sex Bible — $8</a>
       <p class="cta-note">Instant access<span>✦</span>Secure payment<span>✦</span>100% private</p>
     </div>
 
@@ -994,7 +1032,7 @@
     <h2 class="reveal">Tonight could be <span class="gold">different.</span></h2>
     <p class="lead narrow reveal">You can close this page and keep the same nights, the same silence, the same doubts. Or for less than the price of a drink, you can change everything — starting tonight.</p>
     <div class="cover-wrap reveal"><img src="sb-cover.webp" alt="The Sex Bible" width="760" height="950" loading="lazy"></div>
-    <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" class="btn reveal">Get The Sex Bible now — $8</a>
+    <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn reveal">Get The Sex Bible now — $8</a>
     <p class="cta-note">Two days. Ten buyers. One decision.</p>
   </div>
 </section>
@@ -1012,7 +1050,7 @@
 
 <div class="sticky" id="sticky">
   <div class="p"><s>$25</s><b>$8</b><small>Ends in <span data-timer-inline>2 days 00:00:00</span></small></div>
-  <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" class="btn">Get it now</a>
+  <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get it now</a>
 </div>
 
 <script>
