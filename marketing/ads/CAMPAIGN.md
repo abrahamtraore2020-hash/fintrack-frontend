@@ -31,10 +31,10 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
   > Same bed. Same routine. Same silence.
   > Many couples go through it — the spark fades, the nights repeat, and nobody talks about it.
   > The Sex Bible is the complete guide to understanding intimacy, desire and pleasure — for men, women and couples.
-  > 📖 258 pages + bonus 365 Positions · 100% private · instant download
+  > 📱 258-page PDF ebook + bonus 365 Positions (PDF) · 100% private · instant download
   > 👉 $8 instead of $25 — 48 hours only.
 - **Titre** : There's a way back.
-- **Description** : Private digital guide · $8
+- **Description** : PDF ebook · instant download · $8
 - **Bouton** : Shop now / Get offer
 
 ### Ad 2 — Curiosité
@@ -42,20 +42,20 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
   > What nobody ever taught you about pleasure.
   > Not in school. Not at home. Not even by your partner.
   > The Sex Bible: one complete guide — seduction, foreplay, intimacy, pleasure. No awkwardness. No judgment. No pretending.
-  > 🔒 100% private — no package, read it on your phone.
+  > 📱 PDF ebook — no package, instant download, read it on your phone.
   > 👉 $8 today only (instead of $25).
 - **Titre** : The guide everyone needs — and nobody talks about.
-- **Description** : 258 pages + 365 Positions bonus
+- **Description** : 258-page PDF + 365 Positions bonus
 - **Bouton** : Learn more
 
 ### Ad 3 — Offre
 - **Texte principal** :
   > ⏳ Last chance: 68% OFF ends in 48 hours.
-  > The Sex Bible (258 pages) + FREE bonus: 365 Sex Positions.
+  > The Sex Bible (258-page PDF ebook) + FREE bonus PDF: 365 Sex Positions.
   > $25 → $8. Reserved for the first 10 buyers.
-  > Instant private download — read it tonight.
+  > Instant PDF download — no physical book, read it tonight.
 - **Titre** : $8 · 48 hours only
-- **Description** : 100% private · Instant access
+- **Description** : PDF ebook · Instant download
 - **Bouton** : Shop now
 
 ## Structure de campagne
@@ -77,6 +77,8 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
 - CTR lien ≥ 1,5 % · coût par InitiateCheckout ≤ 1,5 $ · coût par achat ≤ 4 $ (marge sur 8 $)
 
 ## Règles Meta (important)
+
+- Toujours préciser **PDF ebook / instant download** dans les textes : sans ça, les gens croient recevoir un livre papier.
 
 - Meta encadre fortement les produits « adultes » : présenter le livre comme un **guide d'intimité et de relation de couple**, pas comme un contenu érotique.
 - Pas de nudité ni de pose suggestive dans les visuels ; la couverture montre un couple dénudé — si une pub est refusée, tester le livre plus petit, de biais ou affiché sur un téléphone.
