@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css"><style>
+  :root{--gold:#E2A84B;--gold-light:#F7D48A;--gold-pale:#FFF3D1;--crimson:#D11A35;
+    --metal:linear-gradient(120deg,#8E5A1A 0%,#C98B30 16%,#F7D48A 32%,#FFF3D1 42%,#E2A84B 55%,#B9772A 72%,#F2C76E 88%,#8E5A1A 100%);
+    --btn:linear-gradient(120deg,#B9772A 0%,#E2A84B 28%,#F7D48A 50%,#E2A84B 72%,#B9772A 100%)}
+  html,body{margin:0;width:1080px;height:1350px;overflow:hidden;background:#06090f}
+  .ad{position:relative;width:1080px;height:1350px;overflow:hidden;font-family:'Montserrat',sans-serif;background:url('ad1-pain-real-cover.jpg') center top/1080px auto no-repeat,#0c0806}
+  .shade-top{position:absolute;inset:0 0 auto 0;height:300px;background:linear-gradient(180deg,rgba(4,7,14,.94) 0%,rgba(4,7,14,.72) 45%,transparent)}
+  .shade-bot{position:absolute;inset:auto 0 0 0;height:230px;background:linear-gradient(0deg,rgba(9,6,4,.97) 0%,rgba(9,6,4,.82) 50%,transparent)}
+  .glow{position:absolute;left:250px;top:560px;width:560px;height:640px;border-radius:50%;background:radial-gradient(ellipse,rgba(247,212,138,.28),rgba(226,168,75,.1) 45%,transparent 70%);mix-blend-mode:screen}
+  .spark{position:absolute;border-radius:50%;background:#FFE7B0;box-shadow:0 0 10px 3px rgba(247,212,138,.85);mix-blend-mode:screen}
+  .frame{position:absolute;inset:18px;border-radius:8px;border:2px solid transparent;background:var(--metal) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);mask-composite:exclude}
+  .corner{position:absolute;color:var(--gold-light);font-size:22px;text-shadow:0 0 10px rgba(247,212,138,.9)}
+  .eyebrow{position:absolute;top:40px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px;color:var(--crimson);font-weight:800;font-size:16px;letter-spacing:5px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+  .eyebrow::before,.eyebrow::after{content:'';width:70px;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold))}
+  .eyebrow::after{background:linear-gradient(90deg,var(--gold),transparent)}
+  .the{position:absolute;top:68px;left:0;right:0;text-align:center;font-family:'Playfair';font-weight:800;font-size:22px;letter-spacing:14px;color:var(--gold-light);text-shadow:0 2px 8px rgba(0,0,0,.8)}
+  .title{position:absolute;top:88px;left:0;right:0;text-align:center;font-family:'Playfair';font-weight:900;font-size:100px;line-height:1;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
+  .title .sex{background:linear-gradient(120deg,#7a0c1d 0%,#D11A35 35%,#ff6b80 50%,#D11A35 65%,#7a0c1d 100%);-webkit-background-clip:text;color:transparent}
+  .title .bible{background:var(--metal);-webkit-background-clip:text;color:transparent}
+  .ornament{position:absolute;top:198px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--gold-light);font-weight:700;font-size:15px;letter-spacing:4px;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+  .ornament i{font-style:normal;color:var(--crimson)}
+  .ornament::before,.ornament::after{content:'';width:110px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+  .ornament::after{background:linear-gradient(90deg,var(--gold),transparent)}
+  .seal{position:absolute;left:54px;top:930px;width:158px;height:158px;border-radius:50%;background:var(--btn);color:#1a0d04;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-10deg);
+    box-shadow:0 0 0 5px rgba(9,6,4,.85),0 0 0 7px rgba(247,212,138,.7),0 14px 40px rgba(0,0,0,.6),0 0 46px rgba(226,168,75,.45)}
+  .seal b{font-family:'Playfair';font-weight:900;font-size:46px;line-height:1}
+  .seal span{font-weight:800;font-size:14px;letter-spacing:2px;margin-top:3px}
+  .seal i{font-style:normal;font-weight:800;font-size:11px;letter-spacing:1.5px;background:var(--crimson);color:#fff;padding:3px 9px;border-radius:99px;margin-top:6px}
+  .hook{position:absolute;top:1176px;left:0;right:0;text-align:center;font-family:'Playfair';font-style:italic;font-weight:700;font-size:33px;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.95)}
+  .hook em{font-style:italic;background:var(--metal);-webkit-background-clip:text;color:transparent}
+  .bar{position:absolute;left:52px;right:52px;top:1226px;display:flex;align-items:center;justify-content:space-between}
+  .price{display:flex;align-items:baseline;gap:12px}
+  .price s{font-size:28px;color:#cbbfae;font-weight:700;text-decoration-color:var(--crimson);text-decoration-thickness:3px}
+  .price b{font-family:'Playfair';font-weight:900;font-size:76px;line-height:.9;background:var(--metal);-webkit-background-clip:text;color:transparent}
+  .price small{font-weight:700;font-size:13px;letter-spacing:2px;color:var(--gold-light);margin-left:4px}
+  .cta{display:flex;align-items:center;gap:14px;padding:22px 40px;border-radius:999px;background:var(--btn);color:#1a0d04;font-weight:800;font-size:24px;letter-spacing:2.5px;white-space:nowrap;
+    box-shadow:0 0 0 4px rgba(247,212,138,.18),0 12px 44px rgba(226,168,75,.55),inset 0 1px 0 rgba(255,243,209,.8)}
+  .trust{position:absolute;left:0;right:0;top:1306px;text-align:center;color:#bfb3a2;font-weight:600;font-size:12.5px;letter-spacing:1.5px}
+  .trust span{color:var(--gold);margin:0 8px}
+</style></head><body><div class="ad">
+  <div class="shade-top"></div><div class="glow"></div><div class="shade-bot"></div><div id="sparks"></div>
+  <div class="frame"></div>
+  <div class="corner" style="left:30px;top:24px">✦</div><div class="corner" style="right:30px;top:24px">✦</div>
+  <div class="corner" style="left:30px;bottom:22px">✦</div><div class="corner" style="right:30px;bottom:22px">✦</div>
+  <div class="eyebrow">FOR MEN · FOR WOMEN · FOR COUPLES</div>
+  <div class="the">THE</div>
+  <div class="title"><span class="sex">SEX</span> <span class="bible">BIBLE</span></div>
+  <div class="ornament">258 PAGES <i>✦</i> + 365 POSITIONS BONUS</div>
+  <div class="seal"><b>-68%</b><span>TODAY</span><i>48H ONLY</i></div>
+  <div class="hook">Same bed. Same routine. <em>Same silence.</em></div>
+  <div class="bar"><div class="price"><s>$25</s><b>$8</b></div><div class="cta">GET IT NOW <span>→</span></div></div>
+  <div class="trust">100% PRIVATE<span>✦</span>INSTANT DOWNLOAD<span>✦</span>READ IT TONIGHT</div>
+</div>
+<script>
+  let seed = 5; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const box = document.getElementById('sparks');
+  for (let i = 0; i < 40; i++) { const s = document.createElement('div'); s.className = 'spark';
+    const a = r() * Math.PI * 2, d = 230 + r() * 120; const x = 548 + Math.cos(a) * d * .9, y = 890 + Math.sin(a) * d * 1.05, z = 1.5 + r() * 3.5;
+    if (y > 600 && y < 1170) { s.style.cssText = `left:${x}px;top:${y}px;width:${z}px;height:${z}px;opacity:${.3 + r() * .7}`; box.appendChild(s); } }
+</script></body></html>
