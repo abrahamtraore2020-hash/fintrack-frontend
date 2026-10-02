@@ -4,17 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Sex Bible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Design: Dark luxury landing page with sensual typography, progressive reveal, and aphrodisiac atmosphere */
+  /* Design: Dark luxury landing page — molten sensual gold, candlelight glow, bordeaux accents */
 
   :root {
-    --bg-dark: #0a0a0a;
-    --bg-card: #1a1a1a;
-    --accent-gold: #D4A574;
-    --accent-red: #8b3a3a;
-    --text-primary: #ffffff;
-    --text-secondary: #d4d4d4;
-    --border-subtle: #2a2a2a;
+    --bg-dark: #070504;
+    --bg-card: #120c08;
+    --gold: #E2A84B;
+    --gold-light: #F7D48A;
+    --gold-pale: #FFF3D1;
+    --gold-deep: #9A6420;
+    --gold-metal: linear-gradient(120deg, #7A4A12 0%, #C98B30 16%, #F7D48A 32%, #FFF3D1 42%, #E2A84B 55%, #B9772A 72%, #F2C76E 88%, #8E5A1A 100%);
+    --gold-line: rgba(226, 168, 75, 0.35);
+    --wine: #6E0F24;
+    --wine-bright: #B3203F;
+    --text-primary: #F6EDE3;
+    --text-secondary: #CDBFAE;
+    --border-subtle: rgba(226, 168, 75, 0.14);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -34,45 +43,87 @@
   }
 
   body {
-    background: var(--bg-dark);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(226, 168, 75, 0.14), transparent 70%),
+      radial-gradient(ellipse 70% 40% at 50% 100%, rgba(110, 15, 36, 0.28), transparent 70%),
+      var(--bg-dark);
+    background-attachment: fixed;
     color: var(--text-primary);
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.6;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.7;
     font-size: 16px;
     padding: 0 16px;
   }
 
   h1, h2, h3 {
-    font-family: 'Georgia', serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-wrap: balance;
   }
 
   h1 {
-    font-size: clamp(32px, 8vw, 56px);
+    font-size: clamp(44px, 11vw, 84px);
+    font-weight: 900;
+    line-height: 1.05;
     margin-bottom: 16px;
-    color: var(--accent-gold);
   }
 
   h2 {
-    font-size: clamp(24px, 6vw, 40px);
+    font-size: clamp(28px, 6vw, 44px);
     margin-bottom: 20px;
   }
 
   h3 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 12px;
   }
 
   a {
-    color: var(--accent-gold);
+    color: var(--gold);
     text-decoration: none;
     transition: all 0.3s ease;
   }
 
   a:hover {
     text-decoration: underline;
+  }
+
+  /* Metallic gold text */
+  .gold-text {
+    background: var(--gold-metal);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 7s linear infinite;
+  }
+
+  @keyframes shimmer {
+    from { background-position: 0% 0; }
+    to { background-position: 220% 0; }
+  }
+
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: var(--gold);
+    font-size: 12px;
+    margin: 18px auto;
+  }
+
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    width: 70px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .ornament::after {
+    background: linear-gradient(90deg, var(--gold), transparent);
   }
 
   /* Wrapper */
@@ -89,39 +140,48 @@
   }
 
   .logo {
-    font-size: 14px;
-    color: var(--accent-gold);
-    letter-spacing: 2px;
-    margin-bottom: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 8px;
+    margin-bottom: 26px;
     text-transform: uppercase;
-  }
-
-  .hero h1 {
-    line-height: 1.2;
-    margin-bottom: 20px;
   }
 
   .hero-subtitle {
     font-size: 18px;
     color: var(--text-secondary);
     max-width: 600px;
-    margin: 0 auto 40px;
+    margin: 0 auto 30px;
     line-height: 1.7;
   }
 
   .hero-quote {
-    font-size: 16px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
     font-style: italic;
-    color: var(--accent-gold);
-    margin: 30px 0;
-    padding: 20px;
-    border-left: 3px solid var(--accent-red);
-    line-height: 1.8;
+    color: var(--gold-light);
+    max-width: 680px;
+    margin: 30px auto;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--wine-bright);
+    text-align: left;
+    line-height: 1.7;
+  }
+
+  .hero-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: block;
+    margin: 40px auto 0;
+    border: 1px solid var(--gold-line);
+    border-radius: 6px;
+    box-shadow: 0 0 0 6px rgba(226, 168, 75, 0.06), 0 30px 80px rgba(226, 168, 75, 0.22), 0 0 120px rgba(110, 15, 36, 0.35);
   }
 
   /* ===== PROBLEM SECTION ===== */
   .section {
-    padding: 60px 0;
+    padding: 70px 0;
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -130,20 +190,28 @@
     margin-bottom: 40px;
   }
 
-  .section-title h2 {
-    color: var(--text-primary);
-  }
-
   .problem-list {
     display: grid;
-    gap: 20px;
+    gap: 6px;
     margin-bottom: 40px;
   }
 
   .problem-item {
-    padding: 20px;
-    background: transparent;
+    padding: 20px 20px 20px 28px;
     border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    position: relative;
+  }
+
+  .problem-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 28px;
+    width: 8px;
+    height: 8px;
+    background: var(--wine-bright);
+    transform: rotate(45deg);
   }
 
   .problem-item:last-child {
@@ -151,17 +219,17 @@
   }
 
   .problem-item strong {
-    color: var(--accent-red);
+    color: var(--text-primary);
+    font-size: 17px;
   }
 
   /* ===== COMPASSION SECTION ===== */
   .compassion {
-    background: rgba(139, 58, 58, 0.1);
+    background: linear-gradient(135deg, rgba(110, 15, 36, 0.35), rgba(110, 15, 36, 0.12));
     padding: 40px;
-    border-left: 4px solid var(--accent-red);
-    border-radius: 4px;
+    border: 1px solid rgba(179, 32, 63, 0.4);
+    border-radius: 6px;
     text-align: center;
-    margin-bottom: 40px;
   }
 
   .compassion p {
@@ -170,97 +238,127 @@
     line-height: 1.8;
   }
 
+  .compassion strong {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    color: var(--gold-light);
+  }
+
   /* ===== SOLUTION SECTION ===== */
   .solution {
     text-align: center;
     margin-bottom: 40px;
   }
 
-  .solution h2 {
-    color: var(--accent-gold);
-    margin-bottom: 20px;
-  }
-
   .solution-intro {
     font-size: 18px;
     color: var(--text-secondary);
     max-width: 700px;
-    margin: 0 auto 30px;
+    margin: 0 auto 20px;
     line-height: 1.8;
+  }
+
+  .solution-intro strong {
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .solution-tagline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--gold-light);
   }
 
   /* ===== SEGMENTS SECTION ===== */
   .segments {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    gap: 24px;
     margin: 40px 0;
   }
 
   .segment-card {
-    padding: 30px;
     background: var(--bg-card);
-    border: 1px solid var(--accent-gold);
-    border-radius: 4px;
+    border: 1px solid var(--gold-line);
+    border-radius: 6px;
     overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .segment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(226, 168, 75, 0.18);
   }
 
   .segment-image {
     width: 100%;
-    height: 280px;
+    height: 300px;
     object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 20px;
     display: block;
+    border-bottom: 1px solid var(--gold-line);
   }
 
-  .segment-icon {
-    font-size: 32px;
-    margin-bottom: 15px;
+  .segment-body {
+    padding: 26px 26px 30px;
+  }
+
+  .segment-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--wine-bright);
+    margin-bottom: 6px;
   }
 
   .segment-card h3 {
-    color: var(--accent-gold);
-    margin-bottom: 15px;
+    font-size: 26px;
+    margin-bottom: 16px;
   }
 
   .segment-card ul {
     list-style: none;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-secondary);
   }
 
   .segment-card li {
     margin-bottom: 10px;
-    padding-left: 20px;
+    padding-left: 22px;
     position: relative;
   }
 
   .segment-card li::before {
-    content: '✓';
+    content: '✦';
     position: absolute;
     left: 0;
-    color: var(--accent-red);
-    font-weight: bold;
+    color: var(--gold);
+    font-size: 12px;
+    top: 3px;
   }
 
   /* ===== BENEFITS SECTION ===== */
   .benefits {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
   }
 
   .benefit {
-    padding: 20px;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid var(--accent-gold);
-    border-radius: 4px;
+    padding: 26px 22px;
+    background: linear-gradient(160deg, rgba(226, 168, 75, 0.1), rgba(226, 168, 75, 0.02));
+    border: 1px solid var(--gold-line);
+    border-radius: 6px;
     text-align: center;
+    color: var(--text-secondary);
+    font-size: 15px;
   }
 
   .benefit strong {
-    color: var(--accent-gold);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    color: var(--gold-light);
     display: block;
     margin-bottom: 8px;
   }
@@ -269,194 +367,239 @@
   .content-highlight {
     background: var(--bg-card);
     padding: 40px;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    margin: 40px 0;
+    border: 1px solid var(--gold-line);
+    border-radius: 6px;
+  }
+
+  .content-highlight h3 {
+    text-align: center;
+    font-size: clamp(22px, 5vw, 28px);
   }
 
   .content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
     margin-top: 30px;
   }
 
   .content-item {
-    padding: 15px;
-    background: rgba(212, 175, 55, 0.05);
+    padding: 16px 12px;
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     text-align: center;
-    font-size: 13px;
+    font-size: 14px;
+    color: var(--text-primary);
     transition: all 0.3s ease;
   }
 
+  .content-item::before {
+    content: '◆';
+    display: block;
+    color: var(--gold);
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
   .content-item:hover {
-    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+    background: rgba(226, 168, 75, 0.08);
+  }
+
+  .content-item.bonus {
+    border-color: var(--wine-bright);
+    background: rgba(110, 15, 36, 0.25);
+    color: var(--gold-light);
+    font-weight: 600;
   }
 
   /* ===== OFFER SECTION ===== */
   .offer-main {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(139, 58, 58, 0.1) 100%);
-    border: 2px solid var(--accent-gold);
-    border-radius: 4px;
+    position: relative;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(226, 168, 75, 0.22), transparent 65%),
+      linear-gradient(160deg, #1a0f08, #0d0806 60%, rgba(110, 15, 36, 0.4));
+    border: 1px solid var(--gold);
+    border-radius: 6px;
     padding: 50px 30px;
     text-align: center;
-    margin: 40px 0;
-  }
-
-  .price-container {
-    margin: 30px 0;
+    box-shadow: 0 0 80px rgba(226, 168, 75, 0.18);
   }
 
   .price-old {
     font-size: 18px;
     color: var(--text-secondary);
     text-decoration: line-through;
-    margin-bottom: 10px;
+    text-decoration-color: var(--wine-bright);
+    text-decoration-thickness: 2px;
+    margin-bottom: 4px;
   }
 
   .price-new {
-    font-size: 48px;
-    color: var(--accent-gold);
-    font-weight: 700;
-    margin-bottom: 5px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 88px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .price-local {
+    color: var(--gold-light);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .price-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
   }
 
   .discount-badge {
     display: inline-block;
-    background: var(--accent-red);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    background: var(--wine);
+    color: var(--gold-light);
+    border: 1px solid var(--wine-bright);
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
   }
 
   .urgency {
-    color: var(--accent-red);
-    font-weight: bold;
-    font-size: 16px;
-    margin: 20px 0;
+    color: var(--gold-light);
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 10px;
   }
 
   .urgency-item {
-    margin: 10px 0;
+    margin: 8px 0;
+  }
+
+  .urgency-item span {
+    color: var(--wine-bright);
   }
 
   /* ===== CTA BUTTON ===== */
   .cta-button {
+    position: relative;
+    overflow: hidden;
     display: inline-block;
-    background: var(--accent-gold);
-    color: var(--bg-dark);
-    padding: 16px 40px;
+    background: linear-gradient(120deg, #B9772A 0%, #E2A84B 30%, #F7D48A 50%, #E2A84B 70%, #B9772A 100%);
+    color: #1a0d04;
+    padding: 18px 44px;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 3px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    margin: 20px 10px 20px 0;
+    margin: 28px 0 20px;
+    box-shadow: 0 10px 40px rgba(226, 168, 75, 0.35), inset 0 1px 0 rgba(255, 243, 209, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .cta-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: sweep 3.5s ease-in-out infinite;
+  }
+
+  @keyframes sweep {
+    0%, 55% { left: -60%; }
+    100% { left: 130%; }
   }
 
   .cta-button:hover {
-    background: var(--accent-red);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 50px rgba(226, 168, 75, 0.55), 0 0 0 1px var(--gold-light);
   }
 
   /* ===== OBJECTIONS SECTION ===== */
   .objections {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    gap: 18px;
   }
 
   .objection {
-    padding: 20px;
+    padding: 26px 20px;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
-    border-radius: 4px;
+    border-radius: 6px;
     text-align: center;
   }
 
   .objection-icon {
-    font-size: 28px;
-    margin-bottom: 10px;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 14px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--gold);
+    font-size: 18px;
   }
 
   .objection strong {
-    color: var(--accent-gold);
+    color: var(--gold-light);
     display: block;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .objection p {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-secondary);
   }
 
   /* ===== FAQ SECTION ===== */
   .faq-item {
-    padding: 20px;
+    padding: 22px;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    transition: border-color 0.3s ease;
   }
 
   .faq-item:hover {
-    border-color: var(--accent-gold);
+    border-color: var(--gold);
   }
 
   .faq-question {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
     font-weight: 700;
-    color: var(--accent-gold);
+    color: var(--gold-light);
     margin-bottom: 10px;
     cursor: pointer;
   }
 
   .faq-answer {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.7;
-  }
-
-  /* ===== ANIMATIONS ===== */
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .fade-in {
-    animation: none;
   }
 
   /* ===== FOOTER ===== */
   .footer {
     text-align: center;
     padding: 40px 0;
-    border-top: 1px solid var(--border-subtle);
     color: var(--text-secondary);
     font-size: 13px;
   }
@@ -470,39 +613,47 @@
     color: var(--text-secondary);
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .gold-text,
+    .cta-button::after {
+      animation: none;
+    }
+  }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 600px) {
     .hero {
-      padding: 40px 0;
+      padding: 44px 0;
     }
 
     .section {
-      padding: 40px 0;
+      padding: 50px 0;
     }
 
-    h1 {
-      font-size: 28px;
-    }
-
-    h2 {
-      font-size: 20px;
+    .hero-quote {
+      font-size: 18px;
     }
 
     .segments {
       grid-template-columns: 1fr;
     }
 
+    .compassion,
+    .content-highlight {
+      padding: 28px 20px;
+    }
+
     .offer-main {
-      padding: 30px 20px;
+      padding: 40px 20px;
     }
 
     .price-new {
-      font-size: 36px;
+      font-size: 72px;
     }
 
     .cta-button {
       width: 100%;
-      margin: 10px 0;
+      padding: 18px 20px;
     }
   }
 </style>
@@ -512,15 +663,18 @@
 <div class="container">
   <!-- HERO -->
   <section class="hero">
-    <div class="logo">APHRODITE</div>
-    <h1>The Sex Bible</h1>
-    <p class="hero-subtitle">The Complete Guide to Understanding Sex, Intimacy & Pleasure</p>
+    <div class="logo gold-text">Aphrodite</div>
+    <h1 class="gold-text">The Sex Bible</h1>
+    <div class="ornament">✦</div>
+    <p class="hero-subtitle">The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure</p>
 
     <div class="hero-quote">
       "What if you could stop searching for scattered answers about sex and finally have one complete guide that covers everything you need to know?"
     </div>
 
-    <img src="/sb-hero.jpg" alt="The Sex Bible - Hero" style="width: 100%; max-width: 600px; height: auto; border-radius: 4px; margin-top: 40px;">
+    <img src="sb-hero.jpg" alt="The Sex Bible" class="hero-image">
+
+    <button class="cta-button">Get Instant Access — $8</button>
   </section>
 
   <!-- PROBLEM & PAIN -->
@@ -531,11 +685,11 @@
 
     <div class="problem-list">
       <div class="problem-item">
-        <strong>Confusion & Questions Without Answers</strong><br>
+        <strong>Confusion &amp; Questions Without Answers</strong><br>
         You search online, find conflicting advice, and still don't have clarity.
       </div>
       <div class="problem-item">
-        <strong>Insecurity & Embarrassment</strong><br>
+        <strong>Insecurity &amp; Embarrassment</strong><br>
         Too awkward to ask your partner or friends about intimacy and pleasure.
       </div>
       <div class="problem-item">
@@ -564,7 +718,7 @@
   <!-- SOLUTION -->
   <section class="section">
     <div class="section-title">
-      <h2 style="color: var(--accent-red);">Here's What You Need</h2>
+      <h2 class="gold-text">Here's What You Need</h2>
     </div>
 
     <div class="solution">
@@ -572,47 +726,51 @@
         <strong>THE SEX BIBLE</strong> is not just another ebook about sex. It's a complete reference guide created for men, women, and couples who want to understand sexuality, intimacy, attraction, and pleasure at a deeper level.
       </p>
 
-      <p style="color: var(--text-secondary); font-size: 18px; max-width: 700px; margin: 20px auto;">
-        <em>No awkwardness. No judgment. No pretending.</em>
-      </p>
+      <p class="solution-tagline">No awkwardness. No judgment. No pretending.</p>
     </div>
 
     <!-- SEGMENTS -->
     <div class="segments">
-      <div class="segment-card fade-in">
-        <img src="/sb-men.jpg" alt="For Men" class="segment-image" style="object-position: center 20%">
-        <div class="segment-icon">👨</div>
-        <h3>For Men</h3>
-        <ul>
-          <li>Understand women deeply</li>
-          <li>Improve seduction</li>
-          <li>Develop real confidence</li>
-          <li>Master intimacy</li>
-        </ul>
+      <div class="segment-card">
+        <img src="sb-men.jpg" alt="For Men" class="segment-image" style="object-position: center 20%">
+        <div class="segment-body">
+          <div class="segment-label">I</div>
+          <h3 class="gold-text">For Men</h3>
+          <ul>
+            <li>Understand women deeply</li>
+            <li>Improve seduction</li>
+            <li>Develop real confidence</li>
+            <li>Master intimacy</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="segment-card fade-in">
-        <img src="/sb-women.jpg" alt="For Women" class="segment-image">
-        <div class="segment-icon">👩</div>
-        <h3>For Women</h3>
-        <ul>
-          <li>Understand men & desire</li>
-          <li>Explore your pleasure</li>
-          <li>Communicate needs</li>
-          <li>Feel more confident</li>
-        </ul>
+      <div class="segment-card">
+        <img src="sb-women.jpg" alt="For Women" class="segment-image" style="object-position: 63% center">
+        <div class="segment-body">
+          <div class="segment-label">II</div>
+          <h3 class="gold-text">For Women</h3>
+          <ul>
+            <li>Understand men &amp; desire</li>
+            <li>Explore your pleasure</li>
+            <li>Communicate needs</li>
+            <li>Feel more confident</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="segment-card fade-in">
-        <img src="/sb-couples.jpg" alt="For Couples" class="segment-image">
-        <div class="segment-icon">💑</div>
-        <h3>For Couples</h3>
-        <ul>
-          <li>Learn together</li>
-          <li>Break routines</li>
-          <li>Deeper connection</li>
-          <li>Explore freely</li>
-        </ul>
+      <div class="segment-card">
+        <img src="sb-couples.jpg" alt="For Couples" class="segment-image" style="object-position: 55% center">
+        <div class="segment-body">
+          <div class="segment-label">III</div>
+          <h3 class="gold-text">For Couples</h3>
+          <ul>
+            <li>Learn together</li>
+            <li>Break routines</li>
+            <li>Deeper connection</li>
+            <li>Explore freely</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -625,27 +783,27 @@
 
     <div class="benefits">
       <div class="benefit">
-        <strong>✓ Deep Understanding</strong>
+        <strong>Deep Understanding</strong>
         Understand yourself and your partner like never before.
       </div>
       <div class="benefit">
-        <strong>✓ Real Intimacy</strong>
+        <strong>Real Intimacy</strong>
         Build stronger emotional and physical connection.
       </div>
       <div class="benefit">
-        <strong>✓ Genuine Confidence</strong>
+        <strong>Genuine Confidence</strong>
         Feel assured about your knowledge and abilities.
       </div>
       <div class="benefit">
-        <strong>✓ Explore Pleasure</strong>
+        <strong>Explore Pleasure</strong>
         Discover new dimensions of intimacy and desire.
       </div>
       <div class="benefit">
-        <strong>✓ Break Free</strong>
+        <strong>Break Free</strong>
         Escape routine and create exciting new experiences.
       </div>
       <div class="benefit">
-        <strong>✓ Better Communication</strong>
+        <strong>Better Communication</strong>
         Talk openly with your partner about what matters.
       </div>
     </div>
@@ -658,22 +816,22 @@
     </div>
 
     <div class="content-highlight">
-      <h3 style="text-align: center; color: var(--accent-gold);">📚 The Sex Bible + 365 Sex Positions (Bonus)</h3>
+      <h3 class="gold-text">The Sex Bible + 365 Sex Positions (Bonus)</h3>
 
-      <p style="text-align: center; margin: 20px 0; color: var(--text-secondary); font-size: 16px;">
+      <p style="text-align: center; margin: 16px 0 0; color: var(--text-secondary); font-size: 16px;">
         258 pages of comprehensive, real knowledge across 8+ major sections:
       </p>
 
       <div class="content-grid">
-        <div class="content-item">🔥 Seduction & Attraction</div>
-        <div class="content-item">💫 Foreplay & Sensuality</div>
-        <div class="content-item">❤️ Intimacy & Connection</div>
-        <div class="content-item">🎯 Understanding Sexuality</div>
-        <div class="content-item">😍 Pleasure & Orgasms</div>
-        <div class="content-item">✨ Breaking Routines</div>
-        <div class="content-item">🌙 Ancient Sexual Wisdom</div>
-        <div class="content-item">🎮 Sex Toys & Games</div>
-        <div class="content-item">🎁 365 Positions Bonus</div>
+        <div class="content-item">Seduction &amp; Attraction</div>
+        <div class="content-item">Foreplay &amp; Sensuality</div>
+        <div class="content-item">Intimacy &amp; Connection</div>
+        <div class="content-item">Understanding Sexuality</div>
+        <div class="content-item">Pleasure &amp; Orgasms</div>
+        <div class="content-item">Breaking Routines</div>
+        <div class="content-item">Ancient Sexual Wisdom</div>
+        <div class="content-item">Sex Toys &amp; Games</div>
+        <div class="content-item bonus">365 Positions Bonus</div>
       </div>
     </div>
   </section>
@@ -685,19 +843,18 @@
     </div>
 
     <div class="offer-main">
-      <div class="discount-badge">68% OFF - TODAY ONLY</div>
+      <div class="discount-badge">68% OFF · TODAY ONLY</div>
 
-      <div style="margin-bottom: 20px;">
-        <div class="price-old">Usually $25</div>
-        <div class="price-new">$8</div>
-        <div style="color: var(--accent-gold); font-size: 14px;">Complete access to The Sex Bible + 365 Positions</div>
-      </div>
+      <div class="price-old">Usually $25</div>
+      <div class="price-new gold-text">$8</div>
+      <div class="price-local">≈ 5000 FCFA</div>
+      <div class="price-desc">Complete access to The Sex Bible + 365 Positions</div>
 
       <button class="cta-button">Get Instant Access Now</button>
 
       <div class="urgency">
-        <div class="urgency-item">⏰ Offer Expires in 2 Days</div>
-        <div class="urgency-item">🔥 Only 10 Spots Available</div>
+        <div class="urgency-item"><span>◆</span> Offer Expires in 2 Days</div>
+        <div class="urgency-item"><span>◆</span> Only 10 Spots Available</div>
       </div>
     </div>
   </section>
@@ -710,25 +867,25 @@
 
     <div class="objections">
       <div class="objection">
-        <div class="objection-icon">🔒</div>
+        <div class="objection-icon">I</div>
         <strong>100% Confidential</strong>
         <p>Your privacy is sacred. No tracking, no judgement.</p>
       </div>
 
       <div class="objection">
-        <div class="objection-icon">⚡</div>
+        <div class="objection-icon">II</div>
         <strong>Instant Access</strong>
         <p>Get your PDF immediately. Read on any device, anytime.</p>
       </div>
 
       <div class="objection">
-        <div class="objection-icon">🎁</div>
+        <div class="objection-icon">III</div>
         <strong>Real Bonus</strong>
         <p>365 Sex Positions guide included with your purchase.</p>
       </div>
 
       <div class="objection">
-        <div class="objection-icon">✅</div>
+        <div class="objection-icon">IV</div>
         <strong>Satisfaction Guarantee</strong>
         <p>If you're not completely satisfied, we'll refund you.</p>
       </div>
@@ -737,9 +894,9 @@
 
   <!-- FINAL CTA -->
   <section class="section" style="text-align: center;">
-    <h2 style="margin-bottom: 30px;">Don't Wait. Transform Your Intimacy Today.</h2>
-    <button class="cta-button" style="padding: 18px 50px; font-size: 18px;">Claim Your $8 Access</button>
-    <p style="margin-top: 20px; color: var(--text-secondary); font-size: 14px;">
+    <h2 class="gold-text">Don't Wait. Transform Your Intimacy Today.</h2>
+    <button class="cta-button">Claim Your $8 Access</button>
+    <p style="color: var(--text-secondary); font-size: 14px; font-style: italic;">
       Two days. One decision. Unlimited possibilities.
     </p>
   </section>
@@ -783,8 +940,9 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    <p style="margin-bottom: 20px; font-size: 16px;">
-      <strong>The Sex Bible</strong> — The Complete Guide to Understanding Sex, Intimacy & Pleasure
+    <div class="logo gold-text" style="margin-bottom: 14px;">Aphrodite</div>
+    <p style="margin-bottom: 20px;">
+      The Sex Bible — The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure
     </p>
     <div class="footer-links">
       <a href="#">Privacy Policy</a>
