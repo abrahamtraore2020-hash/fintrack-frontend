@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css"><style>
+  :root{--gold:#E2A84B;--gold-light:#F7D48A;--gold-pale:#FFF3D1;--crimson:#D11A35;
+    --metal:linear-gradient(120deg,#8E5A1A 0%,#C98B30 16%,#F7D48A 32%,#FFF3D1 42%,#E2A84B 55%,#B9772A 72%,#F2C76E 88%,#8E5A1A 100%);
+    --btn:linear-gradient(120deg,#B9772A 0%,#E2A84B 28%,#F7D48A 50%,#E2A84B 72%,#B9772A 100%)}
+  html,body{margin:0;width:1080px;height:1350px;overflow:hidden;background:#050302}
+  .ad{position:relative;width:1080px;height:1350px;overflow:hidden;font-family:'Montserrat',sans-serif;
+    background:radial-gradient(ellipse 70% 45% at 50% 52%,rgba(120,14,34,.55),transparent 70%),radial-gradient(ellipse 90% 60% at 50% 100%,rgba(60,8,18,.7),transparent 70%),#050302}
+  .ray{position:absolute;top:-120px;width:170px;height:1000px;transform-origin:top center;filter:blur(18px);
+    background:linear-gradient(180deg,rgba(255,226,160,.55),rgba(247,212,138,.12) 55%,transparent);mix-blend-mode:screen}
+  .silk{position:absolute;left:-60px;right:-60px;bottom:-40px;height:420px;filter:blur(1px);
+    background:radial-gradient(ellipse 40% 30% at 20% 30%,rgba(255,255,255,.10),transparent 70%),radial-gradient(ellipse 35% 25% at 70% 45%,rgba(255,255,255,.08),transparent 70%),radial-gradient(ellipse 50% 30% at 45% 80%,rgba(255,255,255,.07),transparent 70%),linear-gradient(180deg,transparent,#0b0706 35%)}
+  .spark{position:absolute;border-radius:50%;background:#FFE7B0;box-shadow:0 0 10px 3px rgba(247,212,138,.85);mix-blend-mode:screen}
+  .frame{position:absolute;inset:18px;border-radius:8px;border:2px solid transparent;background:var(--metal) border-box;
+    -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);mask-composite:exclude}
+  .corner{position:absolute;color:var(--gold-light);font-size:22px;text-shadow:0 0 10px rgba(247,212,138,.9)}
+  .eyebrow{position:absolute;top:44px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px;color:var(--crimson);font-weight:800;font-size:17px;letter-spacing:5px}
+  .eyebrow::before,.eyebrow::after{content:'';width:80px;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold))}
+  .eyebrow::after{background:linear-gradient(90deg,var(--gold),transparent)}
+  .the{position:absolute;top:76px;left:0;right:0;text-align:center;font-family:'Playfair';font-weight:800;font-size:24px;letter-spacing:14px;color:var(--gold-light)}
+  .title{position:absolute;top:98px;left:0;right:0;text-align:center;font-family:'Playfair';font-weight:900;font-size:108px;line-height:1;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8))}
+  .title .sex{background:linear-gradient(120deg,#7a0c1d 0%,#D11A35 35%,#ff6b80 50%,#D11A35 65%,#7a0c1d 100%);-webkit-background-clip:text;color:transparent}
+  .title .bible{background:var(--metal);-webkit-background-clip:text;color:transparent}
+  .sub{position:absolute;top:218px;left:0;right:0;text-align:center;font-family:'Playfair';font-style:italic;font-weight:700;font-size:27px;color:var(--gold-pale)}
+  .glow{position:absolute;left:90px;top:330px;width:620px;height:640px;border-radius:50%;background:radial-gradient(ellipse,rgba(247,212,138,.38),rgba(209,26,53,.18) 45%,transparent 70%);filter:blur(10px)}
+  .bonus{position:absolute;left:28px;top:350px;width:320px;transform:rotate(-10deg);filter:drop-shadow(0 20px 30px rgba(0,0,0,.7))}
+  .main{position:absolute;left:262px;top:388px;width:420px;filter:drop-shadow(0 30px 40px rgba(0,0,0,.8)) drop-shadow(0 0 40px rgba(226,168,75,.25))}
+  .ribbon{position:absolute;left:30px;top:326px;transform:rotate(-10deg);background:var(--crimson);color:#fff;font-weight:800;font-size:17px;letter-spacing:2.5px;padding:9px 18px;border-radius:6px;box-shadow:0 8px 24px rgba(209,26,53,.55)}
+  .tagwrap{position:absolute;left:712px;top:340px;width:290px;height:560px;transform:rotate(6deg);transform-origin:50% 0}
+  .tag{position:absolute;left:0;right:0;top:110px;bottom:0;border-radius:30px 30px 26px 26px;background:linear-gradient(160deg,#1c120b,#0b0705);
+    border:5px solid transparent;background-clip:padding-box;box-shadow:0 0 0 5px #C98B30,0 0 0 7px #F7D48A,0 30px 60px rgba(0,0,0,.7),0 0 50px rgba(226,168,75,.35);
+    display:flex;flex-direction:column;align-items:center;padding-top:62px}
+  .hole{position:absolute;left:50%;top:132px;width:34px;height:34px;margin-left:-17px;border-radius:50%;background:#050302;box-shadow:inset 0 0 0 4px #C98B30}
+  .string{position:absolute;left:0;top:0;width:300px;height:160px}
+  .was{position:relative;font-family:'Playfair';font-weight:900;font-size:62px;color:#c9b38a;opacity:.9}
+  .was::after{content:'';position:absolute;left:-8px;right:-8px;top:50%;height:6px;background:var(--crimson);transform:rotate(-14deg);border-radius:4px;box-shadow:0 0 10px rgba(209,26,53,.7)}
+  .now{font-family:'Playfair';font-weight:900;font-size:168px;line-height:.95;background:var(--metal);-webkit-background-clip:text;color:transparent;margin-top:6px}
+  .off{margin-top:22px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff5a70,#D11A35 45%,#7a0c1d);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Playfair';font-weight:900;font-size:40px;box-shadow:0 0 0 4px rgba(247,212,138,.7),0 10px 26px rgba(209,26,53,.6)}
+  .timer{position:absolute;left:0;right:0;top:1000px;display:flex;align-items:center;justify-content:center;gap:12px}
+  .timer .lbl{font-weight:800;font-size:17px;letter-spacing:3px;color:var(--gold-light);margin-right:8px}
+  .timer .box{width:92px;padding:10px 0;border-radius:12px;border:1.5px solid rgba(226,168,75,.5);background:rgba(10,6,4,.85);text-align:center}
+  .timer b{display:block;font-family:'Playfair';font-weight:900;font-size:44px;line-height:1;color:var(--gold-pale)}
+  .timer span{font-size:11px;font-weight:700;letter-spacing:2px;color:#b9ab98}
+  .timer .colon{font-family:'Playfair';font-weight:900;font-size:40px;color:var(--gold)}
+  .cta{position:absolute;left:110px;right:110px;top:1132px;display:flex;align-items:center;justify-content:center;gap:16px;padding:28px 0;border-radius:999px;background:var(--btn);color:#1a0d04;font-weight:800;font-size:30px;letter-spacing:3px;
+    box-shadow:0 0 0 5px rgba(247,212,138,.16),0 14px 50px rgba(226,168,75,.6),inset 0 1px 0 rgba(255,243,209,.8)}
+  .trust{position:absolute;left:0;right:0;top:1252px;text-align:center;color:#cbbfae;font-weight:600;font-size:16px;letter-spacing:1.5px}
+  .trust span{color:var(--gold);margin:0 10px}
+</style></head><body><div class="ad">
+  <div class="ray" style="left:180px;transform:rotate(14deg)"></div><div class="ray" style="left:455px;width:200px"></div><div class="ray" style="left:760px;transform:rotate(-14deg)"></div>
+  <div class="silk"></div><div class="glow"></div><div id="sparks"></div>
+  <div class="frame"></div>
+  <div class="corner" style="left:30px;top:24px">✦</div><div class="corner" style="right:30px;top:24px">✦</div>
+  <div class="corner" style="left:30px;bottom:22px">✦</div><div class="corner" style="right:30px;bottom:22px">✦</div>
+  <div class="eyebrow">LIMITED LAUNCH OFFER</div>
+  <div class="the">THE</div>
+  <div class="title"><span class="sex">SEX</span> <span class="bible">BIBLE</span></div>
+  <div class="sub">The Complete Guide to Understanding Sex, Intimacy &amp; Pleasure</div>
+  <img class="bonus" src="bonus3d.webp"><div class="ribbon">+ FREE BONUS</div>
+  <img class="main" src="cover3d.webp">
+  <div class="tagwrap">
+    <svg class="string" viewBox="0 0 300 160"><path d="M150 149 C 120 80, 110 20, 150 6 C 190 20, 180 80, 150 149" fill="none" stroke="#E2A84B" stroke-width="4"/></svg>
+    <div class="tag"><div class="was">$25</div><div class="now">$8</div><div class="off">-68%</div></div>
+    <div class="hole"></div>
+  </div>
+  <div class="timer"><span class="lbl">ENDS IN</span>
+    <div class="box"><b>48</b><span>HOURS</span></div><span class="colon">:</span>
+    <div class="box"><b>00</b><span>MIN</span></div><span class="colon">:</span>
+    <div class="box"><b>00</b><span>SEC</span></div></div>
+  <div class="cta">GET INSTANT ACCESS <span>→</span></div>
+  <div class="trust">FIRST 10 BUYERS ONLY<span>✦</span>100% PRIVATE<span>✦</span>INSTANT DOWNLOAD</div>
+</div>
+<script>
+  let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const box = document.getElementById('sparks');
+  for (let i = 0; i < 60; i++) { const s = document.createElement('div'); s.className = 'spark';
+    const x = 60 + r() * 960, y = 260 + r() * 700, z = 1.5 + r() * 4;
+    s.style.cssText = `left:${x}px;top:${y}px;width:${z}px;height:${z}px;opacity:${.25 + r() * .7}`; box.appendChild(s); }
+</script></body></html>
