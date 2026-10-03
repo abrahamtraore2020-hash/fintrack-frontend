@@ -687,6 +687,33 @@
     animation: btnPulse 2.2s ease-in-out infinite;
   }
   .story-play svg { width: 36px; height: 36px; fill: #1a0d04; margin-left: 5px; }
+
+  /* Preview button + first-5-pages viewer */
+  .preview-btn {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; padding: 13px 22px;
+    border: 1px solid var(--gold); border-radius: 999px; background: rgba(226,168,75,.08); color: var(--gold-light);
+    font: 700 14px 'Montserrat', sans-serif; letter-spacing: .5px; cursor: pointer; transition: background .3s, transform .3s;
+  }
+  .preview-btn svg { width: 20px; height: 20px; fill: currentColor; }
+  .preview-btn:hover { background: rgba(226,168,75,.18); transform: translateY(-2px); }
+  .preview-btn.big { margin-top: 26px; padding: 16px 28px; font-size: 15px; }
+  .pv { position: fixed; inset: 0; z-index: 200; background: #070504; display: flex; flex-direction: column; }
+  .pv[hidden] { display: none; }
+  .pv-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; color: var(--gold); font: 700 12px 'Montserrat', sans-serif; letter-spacing: 3px; }
+  .pv-top b { color: var(--gold-pale); }
+  .pv-x { background: none; border: 1px solid var(--gold-line); color: var(--gold-pale); width: 40px; height: 40px; border-radius: 50%; font-size: 16px; cursor: pointer; }
+  .pv-stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 8px; min-height: 0; }
+  .pv-page { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; min-width: 0; }
+  .pv-page img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,.7); }
+  .pv-nav { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--gold-line); background: rgba(226,168,75,.1); color: var(--gold-light); font-size: 30px; line-height: 1; cursor: pointer; }
+  .pv-nav:disabled { opacity: .25; cursor: default; }
+  .pv-dots { display: flex; justify-content: center; gap: 8px; padding: 16px 0 22px; }
+  .pv-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(226,168,75,.3); }
+  .pv-dots i.on { background: var(--gold); width: 22px; border-radius: 4px; }
+  .pv-end { text-align: center; max-width: 380px; padding: 0 10px; }
+  .pv-end h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: 1.2; margin-bottom: 12px; }
+  .pv-end p { color: var(--muted); margin-bottom: 22px; }
+  @media (max-width: 600px) { .pv-nav { position: absolute; bottom: 70px; } .pv-nav.prev { left: 22%; } .pv-nav.next { right: 22%; } .pv-stage { padding-bottom: 70px; } }
 </style>
 </head>
 <body>
@@ -710,6 +737,7 @@
         <s>$25</s><strong class="gold">$8</strong><span class="off">-68%</span>
       </div>
       <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get Instant Access</a>
+      <button type="button" class="preview-btn" data-preview><svg viewBox="0 0 24 24"><path d="M12 5c-5 0-9 4.5-10 7 1 2.5 5 7 10 7s9-4.5 10-7c-1-2.5-5-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z"/></svg>Preview · Read the first 5 pages free</button>
       <p class="hero-timer">Launch price ends in <b data-timer-inline>2 days 00:00:00</b></p>
       <div class="trust-row">
         <span>258-page eBook</span><span>+ 365 Positions bonus eBook</span><span>Instant download</span><span>100% private</span>
@@ -975,8 +1003,20 @@
       <figure class="shot s5 reveal"><img src="sb-inside-orals.jpg" alt="Part 3 — The Orals" loading="lazy"><figcaption>Part 3 · The Orals</figcaption></figure>
     </div>
     <p class="proof-note reveal">Full-color eBook · <b>258 pages</b> · Readable on phone, tablet &amp; computer</p>
+    <div class="center"><button type="button" class="preview-btn big" data-preview><svg viewBox="0 0 24 24"><path d="M12 5c-5 0-9 4.5-10 7 1 2.5 5 7 10 7s9-4.5 10-7c-1-2.5-5-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z"/></svg>Preview · Read the first 5 pages free</button></div>
   </div>
 </section>
+
+<!-- ===================== PREVIEW (first 5 pages, Chariow-style) ===================== -->
+<div class="pv" id="pv" role="dialog" aria-modal="true" aria-label="Preview of The Sex Bible" hidden>
+  <div class="pv-top"><span>PREVIEW · <b id="pvCount">1 / 5</b></span><button type="button" class="pv-x" id="pvClose" aria-label="Close preview">✕</button></div>
+  <div class="pv-stage" id="pvStage">
+    <button type="button" class="pv-nav prev" id="pvPrev" aria-label="Previous page">‹</button>
+    <div class="pv-page" id="pvPage"></div>
+    <button type="button" class="pv-nav next" id="pvNext" aria-label="Next page">›</button>
+  </div>
+  <div class="pv-dots" id="pvDots"></div>
+</div>
 
 <!-- ===================== BONUS ===================== -->
 <section>
@@ -1214,6 +1254,60 @@
   document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 
   document.querySelectorAll('a.btn').forEach(a => a.addEventListener('click', trackCheckout));
+
+  // Preview: the first 5 pages, then a buy screen (like Chariow's "Aperçu")
+  const PREVIEW_PAGES = [
+    ['sb-cover.webp', 'Cover'],
+    ['sb-inside-contents.jpg', 'Table of contents'],
+    ['sb-inside-intro.jpg', 'Introduction'],
+    ['sb-inside-seduction.jpg', 'Part 1 — Seduction'],
+    ['sb-inside-foreplay.jpg', 'Part 2 — Foreplay']
+  ];
+  const pv = document.getElementById('pv'), pvPage = document.getElementById('pvPage');
+  const pvPrev = document.getElementById('pvPrev'), pvNext = document.getElementById('pvNext');
+  const pvCount = document.getElementById('pvCount'), pvDots = document.getElementById('pvDots');
+  const pvLast = PREVIEW_PAGES.length; // index of the buy screen
+  let pvIndex = 0;
+  pvDots.innerHTML = PREVIEW_PAGES.map(() => '<i></i>').join('');
+  function pvShow(i) {
+    pvIndex = Math.max(0, Math.min(pvLast, i));
+    if (pvIndex < pvLast) {
+      const [src, alt] = PREVIEW_PAGES[pvIndex];
+      pvPage.innerHTML = '<img src="' + src + '" alt="' + alt + '">';
+      pvCount.textContent = (pvIndex + 1) + ' / ' + pvLast;
+    } else {
+      pvPage.innerHTML = '<div class="pv-end"><h3>Want the other <span class="gold">253 pages?</span></h3>'
+        + '<p>Seduction, foreplay, orgasms, positions, sacred sexuality — plus the FREE 365 Positions eBook.</p>'
+        + '<a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get The Sex Bible — $8</a></div>';
+      pvPage.querySelector('a.btn').addEventListener('click', trackCheckout);
+      pvCount.textContent = 'END OF PREVIEW';
+    }
+    pvDots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === Math.min(pvIndex, pvLast - 1)));
+    pvPrev.disabled = pvIndex === 0;
+    pvNext.disabled = pvIndex === pvLast;
+  }
+  function pvOpen() {
+    pv.hidden = false; document.body.style.overflow = 'hidden'; pvShow(0);
+    if (window.fbq) fbq('trackCustom', 'PreviewOpen');
+  }
+  function pvCloseFn() { pv.hidden = true; document.body.style.overflow = ''; }
+  document.querySelectorAll('[data-preview]').forEach(b => b.addEventListener('click', pvOpen));
+  document.getElementById('pvClose').addEventListener('click', pvCloseFn);
+  pvPrev.addEventListener('click', () => pvShow(pvIndex - 1));
+  pvNext.addEventListener('click', () => pvShow(pvIndex + 1));
+  document.addEventListener('keydown', e => {
+    if (pv.hidden) return;
+    if (e.key === 'Escape') pvCloseFn();
+    if (e.key === 'ArrowRight') pvShow(pvIndex + 1);
+    if (e.key === 'ArrowLeft') pvShow(pvIndex - 1);
+  });
+  let pvX = null;
+  pvPage.addEventListener('touchstart', e => { pvX = e.touches[0].clientX; }, { passive: true });
+  pvPage.addEventListener('touchend', e => {
+    if (pvX === null) return;
+    const dx = e.changedTouches[0].clientX - pvX; pvX = null;
+    if (Math.abs(dx) > 40) pvShow(pvIndex + (dx < 0 ? 1 : -1));
+  });
 
   // Video ad: the 18 MB file is fetched only after the tap, then plays with sound
   const VIDEO_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3JHgLm4wPHxpOAZrMlr4dnXHh5c/0623c38c-5a74-4333-80d6-1a394dcca771.mp4';
