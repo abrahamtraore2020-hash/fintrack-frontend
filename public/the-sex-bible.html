@@ -665,6 +665,28 @@
         url('sb-bg-passion.jpg') center 30% / cover no-repeat;
     }
   }
+
+  /* Video ad, loaded only when the visitor taps play (18 MB, saves mobile data) */
+  .story { padding: 70px 0 60px; }
+  .story h2 { margin-bottom: 26px; }
+  .story-player {
+    position: relative; width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto 30px;
+    border-radius: 22px; overflow: hidden; border: 1px solid var(--gold-line); background: #000;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 50px rgba(226,168,75,.18);
+  }
+  .story-player video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .story-poster {
+    position: absolute; inset: 0; width: 100%; border: 0; padding: 0; cursor: pointer; color: var(--gold-pale);
+    background: linear-gradient(180deg, rgba(7,5,4,.15), rgba(7,5,4,.75)), url('sb-hero.jpg') center 20% / cover no-repeat;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    font: 600 14px 'Montserrat', sans-serif; letter-spacing: 1px;
+  }
+  .story-play {
+    width: 86px; height: 86px; border-radius: 50%; background: var(--gold-btn);
+    display: grid; place-items: center; box-shadow: 0 0 0 10px rgba(226,168,75,.18), 0 12px 30px rgba(0,0,0,.5);
+    animation: btnPulse 2.2s ease-in-out infinite;
+  }
+  .story-play svg { width: 36px; height: 36px; fill: #1a0d04; margin-left: 5px; }
 </style>
 </head>
 <body>
@@ -706,6 +728,21 @@
     <span>Seduction</span><span>Foreplay</span><span>The Orals</span><span>Intercourse</span><span>Orgasms</span><span>Sacred Sexuality</span><span>Toys &amp; Games</span><span>365 Positions</span>
   </div>
 </div>
+
+<!-- ===================== VIDEO ===================== -->
+<section class="story">
+  <div class="wrap narrow center">
+    <span class="eyebrow">Watch · 30 seconds</span>
+    <h2>Every couple hits the routine…<br><span class="gold">She found the secret.</span></h2>
+    <div class="story-player reveal" id="storyPlayer">
+      <button type="button" class="story-poster" id="storyPlay" aria-label="Play the video">
+        <span class="story-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="story-cap">Tap to watch — sound on 🔊</span>
+      </button>
+    </div>
+    <a href="https://aphroditelove.mychariow.market/thesxbibleforcouple/checkout" target="_blank" rel="noopener" class="btn">Get The Sex Bible — $8</a>
+  </div>
+</section>
 
 <!-- ===================== PAIN ===================== -->
 <section class="pain">
@@ -1177,6 +1214,20 @@
   document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 
   document.querySelectorAll('a.btn').forEach(a => a.addEventListener('click', trackCheckout));
+
+  // Video ad: the 18 MB file is fetched only after the tap, then plays with sound
+  const VIDEO_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3JHgLm4wPHxpOAZrMlr4dnXHh5c/0623c38c-5a74-4333-80d6-1a394dcca771.mp4';
+  const storyPlay = document.getElementById('storyPlay');
+  if (storyPlay) storyPlay.addEventListener('click', () => {
+    const v = document.createElement('video');
+    v.src = VIDEO_URL;
+    v.controls = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    storyPlay.replaceWith(v);
+    v.play().catch(() => {});
+    if (window.fbq) fbq('trackCustom', 'VideoPlay');
+  });
 
   // Purchase notifications — REAL sales only, copied from the Chariow dashboard.
   // One line per sale: first name, city + country, and the purchase date/time.
