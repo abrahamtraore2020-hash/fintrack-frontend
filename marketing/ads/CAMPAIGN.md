@@ -151,13 +151,13 @@ Structure : urgence → ce qu'est le livre → tout ce qu'on reçoit (empilement
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 - La couverture du bonus n'apparaît pas dans la vidéo (nudité explicite → refus Meta) : badge texte seulement.
 
-## Structure de campagne
+## Structure de campagne (lancement)
 
-- **Objectif** : Ventes (conversions) sur l'événement **InitiateCheckout** au début, puis **Purchase** dès que Chariow le remonte. Si le pixel n'a pas encore de données : objectif Trafic → page de vente pendant les 2-3 premiers jours.
-- **Ensemble 1 — Froid large** : Nigeria + Ghana, 21-45 ans, tous genres, ciblage Advantage+ (large). Pubs 1 + 2 + 3 + la vidéo.
-- **Ensemble 2 — Couples** : 25-45 ans, intérêts mariage / relationships / romance. Pub 1.
-- **Ensemble 3 — Reciblage** : visiteurs de la page (7 jours) + personnes ayant interagi avec les pubs. Pub 3.
-- **Placements** : Advantage+ (fil + stories + reels). Formats 4:5 (fil) et 9:16 (stories).
+- **Objectif** : Ventes, événement de conversion **Achat** (le pixel 856242154235451 doit être ajouté dans la boutique Chariow APHRODITE pour que les achats remontent).
+- **Budget** : **CBO** (budget Advantage+ au niveau de la campagne), **5 $/jour**.
+- **Un seul ensemble, ciblage broad** : Nigeria + Ghana, 18-65+, tous genres, aucun intérêt, Advantage+ audience, placements Advantage+.
+- **4 pubs** dans l'ensemble : la vidéo, ad1, ad2, ad3.
+- Claude dans Chrome prépare tout et **demande la permission avant de publier**.
 
 ## Budget de test
 
