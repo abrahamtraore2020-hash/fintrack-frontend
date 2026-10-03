@@ -1327,6 +1327,7 @@
   // (see below); this list is only for adding a sale by hand if ever needed.
   // Example: { name: 'Chidi', place: 'Lagos, Nigeria', date: '2026-10-02T18:45' },
   const RECENT_BUYERS = [
+    { name: 'Taiye', place: 'Nigeria', date: '2026-10-03T17:37:06Z' },
   ];
 
   function timeAgo(date) {
@@ -1358,7 +1359,14 @@
   fetch('/api/aphrodite/recent-buyers')
     .then(r => r.ok ? r.json() : { buyers: [] })
     .catch(() => ({ buyers: [] }))
-    .then(d => startNotifications(RECENT_BUYERS.concat(Array.isArray(d.buyers) ? d.buyers : [])));
+    .then(d => {
+      // Same sale can come from both lists: keep one per name + minute
+      const seen = new Set();
+      startNotifications(RECENT_BUYERS.concat(Array.isArray(d.buyers) ? d.buyers : []).filter(b => {
+        const key = b.name + '|' + new Date(b.date).toISOString().slice(0, 16);
+        return seen.has(key) ? false : seen.add(key);
+      }));
+    });
 
   // Sticky CTA after the hero, hidden on the offer section
   const sticky = document.getElementById('sticky');

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // Configuration (Vercel → Settings → Environment Variables) :
 //   CHARIOW_API_KEY        clé API Chariow (Chariow → Développeurs → API)
 //   CHARIOW_PRODUCT_MATCH  optionnel, texte à chercher dans le nom du produit
-//                          (par défaut : "sex bible")
+//                          (par défaut : "sex bible" ou "sx bible")
 
 export const dynamic = 'force-dynamic'
 
@@ -69,7 +69,10 @@ function toBuyer(sale: any, productMatch: RegExp): Buyer | null {
   const name = firstName(customer)
   if (!name) return null
 
+  if (sale?.status && sale.status !== 'completed') return null
+
   const place =
+    countryName(customer.phone?.country) ||
     countryName(customer.country) ||
     countryName(sale?.shipping?.country) ||
     countryName(sale?.billing?.country) ||
@@ -97,7 +100,7 @@ async function fetchSales(apiKey: string): Promise<{ status: number; sales: any[
 
 export async function GET(req: NextRequest) {
   const apiKey = process.env.CHARIOW_API_KEY
-  const productMatch = new RegExp(process.env.CHARIOW_PRODUCT_MATCH || 'sex\\s*bible|sxbible', 'i')
+  const productMatch = new RegExp(process.env.CHARIOW_PRODUCT_MATCH || 'se?x\\s*bible', 'i')
 
   // ?debug=1 : montre la structure des ventes (noms des champs uniquement, aucune donnée client)
   if (req.nextUrl.searchParams.get('debug')) {
