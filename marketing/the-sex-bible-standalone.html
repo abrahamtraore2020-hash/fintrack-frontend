@@ -1323,8 +1323,8 @@
     if (window.fbq) fbq('trackCustom', 'VideoPlay');
   });
 
-  // Purchase notifications — REAL sales only, copied from the Chariow dashboard.
-  // One line per sale: first name, city + country, and the purchase date/time.
+  // Purchase notifications — REAL sales only. They come automatically from Chariow
+  // (see below); this list is only for adding a sale by hand if ever needed.
   // Example: { name: 'Chidi', place: 'Lagos, Nigeria', date: '2026-10-02T18:45' },
   const RECENT_BUYERS = [
   ];
@@ -1338,9 +1338,10 @@
     return `${d} day${d > 1 ? 's' : ''} ago`;
   }
 
-  if (RECENT_BUYERS.length) {
+  function startNotifications(list) {
+    if (!list.length) return;
     const toast = document.getElementById('toast');
-    const buyers = RECENT_BUYERS.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+    const buyers = list.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
     let i = 0;
     const showNext = () => {
       const b = buyers[i++ % buyers.length];
@@ -1352,6 +1353,12 @@
     };
     setTimeout(() => { showNext(); setInterval(showNext, 18000); }, 7000);
   }
+
+  // Real sales are pulled automatically from Chariow by /api/aphrodite/recent-buyers
+  fetch('/api/aphrodite/recent-buyers')
+    .then(r => r.ok ? r.json() : { buyers: [] })
+    .catch(() => ({ buyers: [] }))
+    .then(d => startNotifications(RECENT_BUYERS.concat(Array.isArray(d.buyers) ? d.buyers : [])));
 
   // Sticky CTA after the hero, hidden on the offer section
   const sticky = document.getElementById('sticky');
