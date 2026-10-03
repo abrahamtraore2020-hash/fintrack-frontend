@@ -13,7 +13,7 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
 
 ## Avant de lancer
 
-- [ ] Mettre l'ID du pixel Meta dans `public/the-sex-bible.html` (`FB_PIXEL_ID`) — la page envoie déjà PageView, ViewContent et InitiateCheckout
+- [x] Pixel Meta **856242154235451** installé dans `public/the-sex-bible.html` (`FB_PIXEL_ID`) — la page envoie PageView, ViewContent et InitiateCheckout
 - [ ] Ajouter le même pixel côté Chariow si possible, pour l'événement Purchase
 - [ ] Vérifier le pixel dans le Gestionnaire d'événements → Tester les événements
 - [ ] Ciblage 18+ obligatoire
@@ -58,10 +58,26 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
 - **Description** : Digital eBook · Instant download
 - **Bouton** : Shop now
 
+## La vidéo (Reels / Stories / TikTok)
+
+- **Fichier** : https://d2ol7oe51mr4n9.cloudfront.net/user_3JHgLm4wPHxpOAZrMlr4dnXHh5c/0623c38c-5a74-4333-80d6-1a394dcca771.mp4 (30 s, 9:16, 1080×1920, aussi dans l'espace Higgsfield)
+- **Angle** : « Le secret qu'elle a découvert » — routine froide → elle lit l'eBook → transformation → il est captivé → intimité → offre
+- **Voix** : Linda (Higgsfield), sous-titres synchronisés, mots clés en or
+- **Musique** (version A) : piano « Heartbreaking » pendant la routine, puis « Smooth Lovin' » à partir de « but she found the secret »
+- **Mention obligatoire dans le texte de la pub** : `Music: Kevin MacLeod (incompetech.com) CC BY 4.0`
+- **Texte principal** :
+  > She found the secret every couple needs. 🔥
+  > The Sex Bible — 258-page eBook on seduction, foreplay and pleasure + FREE bonus eBook 365 Positions.
+  > 📱 Instant download · 100% private
+  > 👉 $8 instead of $25 — 48 hours only.
+  > Music: Kevin MacLeod (incompetech.com) CC BY 4.0
+- **Bouton** : Shop now
+- La couverture du bonus n'apparaît pas dans la vidéo (nudité explicite → refus Meta) : badge texte seulement.
+
 ## Structure de campagne
 
 - **Objectif** : Ventes (conversions) sur l'événement **InitiateCheckout** au début, puis **Purchase** dès que Chariow le remonte. Si le pixel n'a pas encore de données : objectif Trafic → page de vente pendant les 2-3 premiers jours.
-- **Ensemble 1 — Froid large** : Nigeria + Ghana, 21-45 ans, tous genres, ciblage Advantage+ (large). Pubs 1 + 2.
+- **Ensemble 1 — Froid large** : Nigeria + Ghana, 21-45 ans, tous genres, ciblage Advantage+ (large). Pubs 1 + 2 + la vidéo.
 - **Ensemble 2 — Couples** : 25-45 ans, intérêts mariage / relationships / romance. Pub 1.
 - **Ensemble 3 — Reciblage** : visiteurs de la page (7 jours) + personnes ayant interagi avec les pubs. Pub 3.
 - **Placements** : Advantage+ (fil + stories + reels). Formats 4:5 (fil) et 9:16 (stories).
