@@ -51,7 +51,7 @@ Structure : accroche → douleur → empathie (« ce n'est pas un manque d'amour
   >
   > The spark isn't gone. It's waiting.
   > 👇 BUY NOW — tap the button below.
-- **Titre** : There's a way back to passion.
+- **Titres** (5 options Meta) : The Sex Bible · The Sex Bible — Bring Back the Passion · The Sex Bible — End the Routine · The Sex Bible — $8 Instead of $25 · The Sex Bible — For Couples Who Want More
 - **Description** : 258-page eBook + FREE bonus · $8
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
@@ -86,7 +86,7 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
   > 💰 $8 today instead of $25 — 48 hours only.
   >
   > 👇 BUY NOW — tap the button below and finally get the answers.
-- **Titre** : The guide everyone needs — and nobody talks about.
+- **Titres** (5 options Meta) : The Sex Bible · The Sex Bible — What Nobody Taught Us · The Sex Bible — 258 Pages of Answers · The Sex Bible — The Guide Nobody Talks About · The Sex Bible — $8 Today Only
 - **Description** : 258-page eBook · instant download · $8
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
@@ -112,7 +112,7 @@ Structure : urgence → ce qu'est le livre → tout ce qu'on reçoit (empilement
   > ⚠️ When the 48 hours end, the price goes back to $25.
   >
   > 👇 BUY NOW — tap the button below before the offer ends.
-- **Titre** : $25 → $8 · 48 hours only
+- **Titres** (5 options Meta) : The Sex Bible · The Sex Bible — 68% OFF for 48h · The Sex Bible — $25 → $8 Today · The Sex Bible + FREE Bonus eBook · The Sex Bible — Last Chance at $8
 - **Description** : 258-page eBook + FREE 365 Positions bonus
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
@@ -146,7 +146,7 @@ Structure : urgence → ce qu'est le livre → tout ce qu'on reçoit (empilement
   > 👇 BUY NOW — tap the button below and read it tonight.
   >
   > Music: Kevin MacLeod (incompetech.com) CC BY 4.0
-- **Titre** : She found the secret. $8 today.
+- **Titres** (5 options Meta) : The Sex Bible · The Sex Bible — Her Secret Is Out · The Sex Bible — $8 Today Only · The Sex Bible + FREE 365 Positions · The Sex Bible — Read It Tonight
 - **Description** : 258-page eBook + FREE 365 Positions bonus
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 - La couverture du bonus n'apparaît pas dans la vidéo (nudité explicite → refus Meta) : badge texte seulement.
