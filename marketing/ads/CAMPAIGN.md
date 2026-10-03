@@ -91,13 +91,29 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
 ### Ad 3 — Offre
+Structure : urgence → ce qu'est le livre → tout ce qu'on reçoit (empilement de valeur) → discrétion → prix et comparaison → rareté → appel à l'action. Peut tourner avec les autres pubs dès le lancement, puis servir au reciblage des visiteurs.
 - **Texte principal** :
-  > ⏳ Last chance: 68% OFF ends in 48 hours.
-  > The Sex Bible (258-page eBook) + FREE bonus eBook: 365 Sex Positions.
-  > $25 → $8. Reserved for the first 10 buyers.
-  > Instant eBook download — no physical book, read it tonight.
-- **Titre** : $8 · 48 hours only
-- **Description** : Digital eBook · Instant download
+  > ⏳ 68% OFF — ends in 48 hours. Only for the first 10 buyers.
+  >
+  > The Sex Bible is the most complete guide to intimacy, desire and pleasure: 258 full-color pages, 8 complete parts, for men, women and couples.
+  >
+  > Here's everything you get today:
+  > 📕 The Sex Bible — 258-page eBook (value $25)
+  > 🎁 FREE BONUS: 365 Sex Positions eBook — a new idea for every night of the year
+  > ✅ Seduction, foreplay, pleasure, positions & techniques — step by step
+  > ✅ Ancient secrets of intimacy for modern couples
+  > ✅ Read it tonight: instant download, right after payment
+  >
+  > 📱 100% digital and private. No package, no delivery, nobody knows. Read it discreetly on your phone.
+  >
+  > 💰 Total value: over $25 → today only $8.
+  > That's less than a dinner out — for a love life that changes for good.
+  >
+  > ⚠️ When the 48 hours end, the price goes back to $25.
+  >
+  > 👇 BUY NOW — tap the button below before the offer ends.
+- **Titre** : $25 → $8 · 48 hours only
+- **Description** : 258-page eBook + FREE 365 Positions bonus
 - **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
 ## La vidéo (Reels / Stories / TikTok)
@@ -138,7 +154,7 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
 ## Structure de campagne
 
 - **Objectif** : Ventes (conversions) sur l'événement **InitiateCheckout** au début, puis **Purchase** dès que Chariow le remonte. Si le pixel n'a pas encore de données : objectif Trafic → page de vente pendant les 2-3 premiers jours.
-- **Ensemble 1 — Froid large** : Nigeria + Ghana, 21-45 ans, tous genres, ciblage Advantage+ (large). Pubs 1 + 2 + la vidéo.
+- **Ensemble 1 — Froid large** : Nigeria + Ghana, 21-45 ans, tous genres, ciblage Advantage+ (large). Pubs 1 + 2 + 3 + la vidéo.
 - **Ensemble 2 — Couples** : 25-45 ans, intérêts mariage / relationships / romance. Pub 1.
 - **Ensemble 3 — Reciblage** : visiteurs de la page (7 jours) + personnes ayant interagi avec les pubs. Pub 3.
 - **Placements** : Advantage+ (fil + stories + reels). Formats 4:5 (fil) et 9:16 (stories).
