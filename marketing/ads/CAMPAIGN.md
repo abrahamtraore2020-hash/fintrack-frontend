@@ -27,26 +27,67 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
 | 3 | `ad3-offer-4x5.jpg` | Offre — « -68 % pendant 48 h » | Reciblage (visiteurs, vidéo/engagement) | Faire acheter |
 
 ### Ad 1 — Douleur
+Structure : accroche → douleur → empathie (« ce n'est pas un manque d'amour ») → solution → bénéfices → bonus → discrétion → offre + urgence → appel à l'action. Toujours parler « des couples » (jamais « ta vie sexuelle ») : règle Meta sur les attributs personnels.
 - **Texte principal** :
-  > Same bed. Same routine. Same silence.
-  > Many couples go through it — the spark fades, the nights repeat, and nobody talks about it.
-  > The Sex Bible is the complete guide to understanding intimacy, desire and pleasure — for men, women and couples.
-  > 📱 258-page eBook + bonus 365 Positions eBook · 100% private · instant download
-  > 👉 $8 instead of $25 — 48 hours only.
-- **Titre** : There's a way back.
-- **Description** : Digital eBook · instant download · $8
-- **Bouton** : Shop now / Get offer
+  > Same bed. Same routine. Same silence. 💔
+  >
+  > It happens to so many couples. At the beginning, they couldn't keep their hands off each other. Then come work, kids, phones, stress… and slowly the nights become predictable.
+  > They talk about everything — except that. They live like roommates, not lovers.
+  >
+  > It's not a lack of love. It's that nobody ever taught us how desire really works.
+  >
+  > The Sex Bible is the complete 258-page guide to intimacy, desire and pleasure — for men, women and couples:
+  > ✅ Understand what really creates desire — and how to keep it alive
+  > ✅ Bring back the tension and anticipation of the beginning
+  > ✅ Seduction, foreplay and pleasure explained step by step
+  > ✅ Talk about intimacy openly, without shame
+  > ✅ Turn routine into a deep, passionate connection
+  >
+  > 🎁 FREE BONUS: the 365 Sex Positions eBook — never the same night twice.
+  >
+  > 📱 Digital eBook · instant download · 100% private. No package, no delivery — read it on your phone tonight.
+  >
+  > 💰 $8 instead of $25 (-68%) — offer ends in 48 hours.
+  >
+  > 👉 The spark isn't gone. It's waiting. Tap "Shop now".
+- **Titre** : There's a way back to passion.
+- **Description** : 258-page eBook + FREE bonus · $8
+- **Bouton** : Shop now
 
 ### Ad 2 — Curiosité
+Structure : accroche → constat (personne ne nous l'a appris) → questions qui piquent → la réponse : le livre → sommaire (titres adoucis pour Meta) → réassurance → bonus → offre + urgence → appel à l'action.
 - **Texte principal** :
-  > What nobody ever taught you about pleasure.
-  > Not in school. Not at home. Not even by your partner.
-  > The Sex Bible: one complete guide — seduction, foreplay, intimacy, pleasure. No awkwardness. No judgment. No pretending.
-  > 📱 Digital eBook — no package, instant download, read it on your phone.
-  > 👉 $8 today only (instead of $25).
+  > What nobody ever taught us about pleasure. 🤫
+  >
+  > Not in school. Not at home. Not even in our relationships.
+  > So most people learn from rumours, movies and guesswork… and keep the same questions for years:
+  >
+  > ❓ What really creates desire — and what kills it?
+  > ❓ What does a woman need, and never says out loud?
+  > ❓ How do you build tension long before the bedroom?
+  > ❓ How do some couples keep the fire alive for years?
+  >
+  > All the answers are in ONE book: The Sex Bible — 258 full-color pages, 8 complete parts:
+  > 1️⃣ Seduction — the art of attraction
+  > 2️⃣ Foreplay — the touch that changes everything
+  > 3️⃣ Pleasure — understand it, his and hers
+  > 4️⃣ Positions & techniques for every mood
+  > 5️⃣ Ancient secrets of intimacy for modern lovers
+  > 6️⃣ Games to surprise each other
+  > 7️⃣ How to keep passion alive for good
+  >
+  > No awkwardness. No judgment. No pretending. Just clear, practical knowledge.
+  >
+  > 🎁 FREE BONUS: the 365 Sex Positions eBook.
+  >
+  > 📱 Digital eBook · instant download · 100% private — read it discreetly on your phone.
+  >
+  > 💰 $8 today instead of $25 — 48 hours only.
+  >
+  > 👉 Tap "Shop now" and finally get the answers.
 - **Titre** : The guide everyone needs — and nobody talks about.
-- **Description** : 258-page eBook + 365 Positions bonus
-- **Bouton** : Learn more
+- **Description** : 258-page eBook · instant download · $8
+- **Bouton** : Shop now
 
 ### Ad 3 — Offre
 - **Texte principal** :
@@ -65,12 +106,31 @@ Tout ce qu'il faut pour lancer la campagne le moment venu.
 - **Voix** : Linda (Higgsfield), sous-titres synchronisés, mots clés en or
 - **Musique** (version A) : piano « Heartbreaking » pendant la routine, puis « Smooth Lovin' » à partir de « but she found the secret »
 - **Mention obligatoire dans le texte de la pub** : `Music: Kevin MacLeod (incompetech.com) CC BY 4.0`
-- **Texte principal** :
-  > She found the secret every couple needs. 🔥
-  > The Sex Bible — 258-page eBook on seduction, foreplay and pleasure + FREE bonus eBook 365 Positions.
-  > 📱 Instant download · 100% private
-  > 👉 $8 instead of $25 — 48 hours only.
+- **Texte principal** (structure : histoire → bénéfices → bonus → discrétion → offre + urgence → appel à l'action) :
+  > Every couple hits the routine… but she found the secret. 🔥
+  >
+  > Same bed. Same phone screens. Same silence every night.
+  > Then she started reading one book — and everything changed.
+  > He doesn't know what happened. He just knows he can't take his eyes off her.
+  >
+  > That book is The Sex Bible — 258 pages of everything nobody ever taught us:
+  > ✅ Seduction — desire starts long before the bedroom
+  > ✅ Foreplay — the touch and tension that make them crave you
+  > ✅ Pleasure — understand it, his and hers
+  > ✅ Positions & techniques to break the routine for good
+  > ✅ Ancient secrets of intimacy for modern couples
+  >
+  > 🎁 FREE BONUS: the 365 Sex Positions eBook — a new idea for every night of the year.
+  >
+  > 📱 Digital eBook · instant download · read it privately on your phone. No package, no delivery, nobody knows.
+  >
+  > 💰 $8 instead of $25 (-68%) — 48 hours only, first 10 buyers.
+  >
+  > 👉 Tap "Shop now" and read it tonight.
+  >
   > Music: Kevin MacLeod (incompetech.com) CC BY 4.0
+- **Titre** : She found the secret. $8 today.
+- **Description** : 258-page eBook + FREE 365 Positions bonus
 - **Bouton** : Shop now
 - La couverture du bonus n'apparaît pas dans la vidéo (nudité explicite → refus Meta) : badge texte seulement.
 
