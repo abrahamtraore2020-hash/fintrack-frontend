@@ -49,10 +49,11 @@ Structure : accroche → douleur → empathie (« ce n'est pas un manque d'amour
   >
   > 💰 $8 instead of $25 (-68%) — offer ends in 48 hours.
   >
-  > 👉 The spark isn't gone. It's waiting. Tap "Shop now".
+  > The spark isn't gone. It's waiting.
+  > 👇 BUY NOW — tap the button below.
 - **Titre** : There's a way back to passion.
 - **Description** : 258-page eBook + FREE bonus · $8
-- **Bouton** : Shop now
+- **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
 ### Ad 2 — Curiosité
 Structure : accroche → constat (personne ne nous l'a appris) → questions qui piquent → la réponse : le livre → sommaire (titres adoucis pour Meta) → réassurance → bonus → offre + urgence → appel à l'action.
@@ -84,10 +85,10 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
   >
   > 💰 $8 today instead of $25 — 48 hours only.
   >
-  > 👉 Tap "Shop now" and finally get the answers.
+  > 👇 BUY NOW — tap the button below and finally get the answers.
 - **Titre** : The guide everyone needs — and nobody talks about.
 - **Description** : 258-page eBook · instant download · $8
-- **Bouton** : Shop now
+- **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
 ### Ad 3 — Offre
 - **Texte principal** :
@@ -97,7 +98,7 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
   > Instant eBook download — no physical book, read it tonight.
 - **Titre** : $8 · 48 hours only
 - **Description** : Digital eBook · Instant download
-- **Bouton** : Shop now
+- **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 
 ## La vidéo (Reels / Stories / TikTok)
 
@@ -126,12 +127,12 @@ Structure : accroche → constat (personne ne nous l'a appris) → questions qui
   >
   > 💰 $8 instead of $25 (-68%) — 48 hours only, first 10 buyers.
   >
-  > 👉 Tap "Shop now" and read it tonight.
+  > 👇 BUY NOW — tap the button below and read it tonight.
   >
   > Music: Kevin MacLeod (incompetech.com) CC BY 4.0
 - **Titre** : She found the secret. $8 today.
 - **Description** : 258-page eBook + FREE 365 Positions bonus
-- **Bouton** : Shop now
+- **Bouton** : Buy now (sinon Shop now si Meta ne le propose pas)
 - La couverture du bonus n'apparaît pas dans la vidéo (nudité explicite → refus Meta) : badge texte seulement.
 
 ## Structure de campagne
