@@ -13,6 +13,12 @@
   const FB_PIXEL_ID = '856242154235451';
 
   // Chariow checkout links of the three offers — paste them here once the products exist.
+  // Download links of the two eBooks the buyer just paid for — paste them here.
+  const DOWNLOAD_LINKS = {
+    bible: '',  // The Sex Bible (258-page eBook)
+    bonus: ''   // 365 Sex Positions (bonus eBook)
+  };
+
   const OFFER_LINKS = {
     pack: '',   // $17 — Adult Video Pack — 500 Videos
     video: '',  // $8  — Orgasm Techniques Video Training — For Him & Her
@@ -159,6 +165,16 @@
   footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 0 30px; letter-spacing: 1px; }
 
 
+
+  /* Direct download of the two eBooks */
+  .downloads { display: grid; gap: 12px; max-width: 520px; margin: 20px auto 0; text-align: left; }
+  .dl { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 16px; background: rgba(11, 18, 53, .75); border: 1px solid var(--line); }
+  .dl img { width: 64px; height: auto; border-radius: 4px; box-shadow: 0 8px 20px rgba(0,0,0,.5); flex: none; }
+  .dl small { display: block; font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--pink-soft); }
+  .dl b { display: block; font-size: 17px; margin: 2px 0 8px; }
+  .dl-btn { display: inline-block; padding: 10px 18px; border-radius: 12px; background: var(--duo); color: #fff; font-weight: 800; font-size: 14px; letter-spacing: .5px; text-decoration: none; box-shadow: 0 8px 22px rgba(176, 77, 255, .4); }
+  .delivery { font-size: 12px !important; }
+
   /* Animated arrow telling buyers there is more below */
   .scroll-cue { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 22px auto 0; text-decoration: none; color: var(--text); }
   .scroll-cue span { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--pink-soft); }
@@ -179,8 +195,26 @@
   <div class="brand duo-text">APHRODITE</div>
   <div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
   <h1>Thank you! <span class="duo-text">The Sex Bible is yours.</span></h1>
-  <p>Your payment is confirmed. Your <b>258-page eBook</b> and your <b>FREE 365 Positions bonus</b> have been sent to the email you used at checkout.</p>
-  <div class="delivery"><i>📩</i> Check your inbox (and your spam folder) in the next few minutes</div>
+  <p>Your payment is confirmed. <b>Download your two eBooks right now</b> — tap each button below.</p>
+  <div class="downloads">
+    <div class="dl">
+      <img src="sb-cover.webp" alt="The Sex Bible" width="760" height="950">
+      <div>
+        <small>YOUR EBOOK · 258 PAGES</small>
+        <b>The Sex Bible</b>
+        <a class="dl-btn" data-download="bible" href="#" target="_blank" rel="noopener">⬇ Download now</a>
+      </div>
+    </div>
+    <div class="dl">
+      <img src="sb-bonus-book.webp" alt="365 Sex Positions" width="520" height="587">
+      <div>
+        <small>FREE BONUS EBOOK</small>
+        <b>365 Sex Positions</b>
+        <a class="dl-btn" data-download="bonus" href="#" target="_blank" rel="noopener">⬇ Download now</a>
+      </div>
+    </div>
+  </div>
+  <div class="delivery"><i>📩</i> A copy was also sent to your email (check your spam folder too)</div>
   <a class="scroll-cue" href="#offers" aria-label="See the special offer below">
     <span>Before you go… one more surprise for you</span>
     <div class="cue-row">
@@ -278,6 +312,13 @@
 <footer>© APHRODITE · The Sex Bible · Adults only (18+)</footer>
 
 <script>
+  // Download buttons for the two eBooks
+  document.querySelectorAll('[data-download]').forEach(a => {
+    const link = DOWNLOAD_LINKS[a.dataset.download];
+    if (link) a.href = link;
+    else a.addEventListener('click', e => e.preventDefault());
+  });
+
   // Fill the buy buttons with the Chariow links (left on "#" until the products exist)
   document.querySelectorAll('[data-buy]').forEach(a => {
     const link = OFFER_LINKS[a.dataset.buy];
