@@ -158,6 +158,12 @@
   .final p { color: var(--muted); max-width: 480px; margin: 0 auto; }
   footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 0 30px; letter-spacing: 1px; }
 
+
+  /* Animated arrow telling buyers there is more below */
+  .scroll-cue { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 22px auto 0; text-decoration: none; color: var(--text); }
+  .scroll-cue span { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--pink-soft); }
+  .scroll-cue svg { width: 34px; height: 104px; filter: drop-shadow(0 0 10px rgba(255, 61, 139, .55)) drop-shadow(0 0 14px rgba(61, 123, 255, .45)); animation: cueDown 1.4s ease-in-out infinite; }
+  @keyframes cueDown { 0% { transform: translateY(-10px); opacity: .35; } 50% { opacity: 1; } 100% { transform: translateY(14px); opacity: .35; } }
   @media (prefers-reduced-motion: reduce) { .btn, .offer { animation: none; } }
 </style>
 </head>
@@ -172,10 +178,17 @@
   <h1>Thank you! <span class="duo-text">The Sex Bible is yours.</span></h1>
   <p>Your payment is confirmed. Your <b>258-page eBook</b> and your <b>FREE 365 Positions bonus</b> have been sent to the email you used at checkout.</p>
   <div class="delivery"><i>📩</i> Check your inbox (and your spam folder) in the next few minutes</div>
+  <a class="scroll-cue" href="#offers" aria-label="See the special offer below">
+    <span>Before you go… one more surprise for you</span>
+    <svg viewBox="0 0 40 120" aria-hidden="true">
+      <defs><linearGradient id="cue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF3D8B"/><stop offset="1" stop-color="#3D7BFF"/></linearGradient></defs>
+      <path d="M20 4 V108 M6 94 L20 112 L34 94" stroke="url(#cue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </a>
 </section>
 
 <!-- ===================== ONE-TIME OFFERS (one at a time) ===================== -->
-<section class="offer-zone wrap">
+<section class="offer-zone wrap" id="offers">
 
   <!-- Offer 1 — $17 -->
   <div class="offer active" data-offer="pack">
