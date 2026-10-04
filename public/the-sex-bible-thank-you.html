@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Thank You — The Sex Bible · APHRODITE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://dauphin-analytics.vercel.app/d.js" data-project-id="the-sex-bible-anglophones" async></script>
+<script>
+  const FB_PIXEL_ID = '856242154235451';
+
+  // Chariow checkout links of the three offers — paste them here once the products exist.
+  const OFFER_LINKS = {
+    pack: '',   // $17 — Adult Video Pack — 500 Videos
+    video: '',  // $8  — Orgasm Techniques Video Training — For Him & Her
+    ebook: ''   // $5  — G-Spot & P-Spot: The Complete Guide
+  };
+
+  if (FB_PIXEL_ID) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', FB_PIXEL_ID);
+    fbq('track', 'PageView');
+    // Visitors only land here after paying on Chariow: count the purchase once per browser session
+    let counted = false;
+    try { counted = sessionStorage.getItem('sb-purchase-tracked') === '1'; } catch (e) {}
+    if (!counted) {
+      fbq('track', 'Purchase', { content_name: 'The Sex Bible', content_ids: ['the-sex-bible'], content_type: 'product', value: 8, currency: 'USD' });
+      try { sessionStorage.setItem('sb-purchase-tracked', '1'); } catch (e) {}
+    }
+  }
+</script>
+<style>
+  /* APHRODITE — thank-you page with one-time offers. Midnight blue + neon pink (her) + electric blue (him). */
+  :root {
+    --night: #060A1F;
+    --night-2: #0B1235;
+    --card: rgba(18, 26, 70, .55);
+    --pink: #FF3D8B;
+    --pink-soft: #FF8DBB;
+    --blue: #3D7BFF;
+    --blue-soft: #8DB4FF;
+    --text: #F2F4FF;
+    --muted: #AEB6DA;
+    --line: rgba(141, 180, 255, .22);
+    --duo: linear-gradient(90deg, var(--pink) 0%, #B04DFF 50%, var(--blue) 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Montserrat', sans-serif; color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(900px 600px at 0% 0%, rgba(255, 61, 139, .20), transparent 60%),
+      radial-gradient(900px 600px at 100% 30%, rgba(61, 123, 255, .22), transparent 60%),
+      radial-gradient(700px 500px at 50% 100%, rgba(176, 77, 255, .14), transparent 60%),
+      var(--night);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  .wrap { width: min(100% - 32px, 720px); margin: 0 auto; }
+  .duo-text { background: var(--duo); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .pink { color: var(--pink); }
+  .blue { color: var(--blue-soft); }
+  h1, h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 900; line-height: 1.12; }
+
+  /* Steps */
+  .steps { display: flex; justify-content: center; gap: 8px; padding: 18px 0 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); flex-wrap: wrap; }
+  .steps span { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11, 18, 53, .6); }
+  .steps .done { color: #fff; border-color: transparent; background: linear-gradient(90deg, rgba(255,61,139,.35), rgba(61,123,255,.35)); }
+  .steps .now { color: #fff; border-color: var(--pink); box-shadow: 0 0 18px rgba(255, 61, 139, .45); }
+
+  /* Thank-you card */
+  .thanks { text-align: center; padding: 26px 0 10px; }
+  .brand { font-size: 12px; font-weight: 700; letter-spacing: 8px; margin-bottom: 18px; }
+  .check {
+    width: 74px; height: 74px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--duo); box-shadow: 0 0 0 8px rgba(255,255,255,.04), 0 0 40px rgba(176, 77, 255, .55);
+  }
+  .check svg { width: 36px; height: 36px; stroke: #fff; stroke-width: 3; fill: none; }
+  .thanks h1 { font-size: clamp(30px, 6vw, 42px); margin-bottom: 10px; }
+  .thanks p { color: var(--muted); max-width: 520px; margin: 0 auto; }
+  .thanks p b { color: var(--text); }
+  .delivery { display: inline-flex; gap: 10px; align-items: center; margin-top: 16px; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--line); background: rgba(11, 18, 53, .7); font-size: 13px; font-weight: 600; }
+  .delivery i { font-style: normal; font-size: 18px; }
+
+  /* Offer */
+  .offer-zone { padding: 26px 0 60px; }
+  .offer { display: none; animation: pop .5s ease both; }
+  .offer.active { display: block; }
+  @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+  .wait {
+    text-align: center; padding: 14px 16px; border-radius: 14px; margin-bottom: 18px;
+    background: linear-gradient(90deg, rgba(255,61,139,.18), rgba(61,123,255,.18)); border: 1px solid var(--line);
+  }
+  .wait b { display: block; font-size: 13px; letter-spacing: 3px; color: var(--pink-soft); }
+  .wait span { font-size: 14px; color: var(--text); }
+  .card {
+    position: relative; border-radius: 24px; padding: 26px 20px 24px; background: var(--card);
+    border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+  }
+  .card::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 24px; padding: 1px; background: var(--duo); opacity: .65;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  }
+  .tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; padding: 6px 12px; border-radius: 999px; background: var(--duo); color: #fff; margin-bottom: 12px; }
+  .card h2 { font-size: clamp(26px, 5.4vw, 36px); margin-bottom: 8px; }
+  .lead { color: var(--muted); margin-bottom: 18px; }
+  .visual { border-radius: 18px; overflow: hidden; margin: 0 auto 20px; max-width: 460px; box-shadow: 0 20px 50px rgba(0,0,0,.55), 0 0 40px rgba(176, 77, 255, .25); }
+  .duo { display: grid; gap: 12px; margin-bottom: 18px; }
+  @media (min-width: 620px) { .duo { grid-template-columns: 1fr 1fr; } }
+  .side { border-radius: 16px; padding: 16px; border: 1px solid; }
+  .side.her { border-color: rgba(255, 61, 139, .45); background: rgba(255, 61, 139, .08); }
+  .side.him { border-color: rgba(61, 123, 255, .45); background: rgba(61, 123, 255, .08); }
+  .side h3 { font-size: 13px; letter-spacing: 3px; font-weight: 800; margin-bottom: 8px; }
+  .side.her h3 { color: var(--pink-soft); }
+  .side.him h3 { color: var(--blue-soft); }
+  .side li { list-style: none; position: relative; padding-left: 22px; font-size: 14px; margin: 6px 0; }
+  .side li::before { content: '✦'; position: absolute; left: 0; top: 0; font-size: 12px; }
+  .side.her li::before { color: var(--pink); }
+  .side.him li::before { color: var(--blue); }
+  .inside { margin: 0 0 18px; }
+  .inside li { list-style: none; display: flex; gap: 10px; align-items: flex-start; font-size: 15px; margin: 8px 0; }
+  .inside li i { font-style: normal; flex: none; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.06); font-size: 14px; }
+  .price-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 6px 0 4px; }
+  .price-row s { color: var(--muted); font-size: 22px; text-decoration-color: var(--pink); text-decoration-thickness: 2px; }
+  .price-row b { font-family: 'Playfair Display', serif; font-size: 58px; line-height: 1; }
+  .price-row .once { font-size: 11px; font-weight: 800; letter-spacing: 2px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--pink); color: var(--pink-soft); }
+  .timer { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .timer b { color: #fff; font-variant-numeric: tabular-nums; font-size: 16px; }
+  .btn {
+    display: block; width: 100%; text-align: center; text-decoration: none; color: #fff; font-weight: 900; font-size: 16px; letter-spacing: 1.5px;
+    padding: 19px 20px; border-radius: 16px; background: var(--duo); background-size: 200% 100%;
+    box-shadow: 0 14px 40px rgba(255, 61, 139, .35), 0 14px 40px rgba(61, 123, 255, .25);
+    animation: shimmer 3.5s ease-in-out infinite, pulse 2.4s ease-in-out infinite;
+  }
+  .btn small { display: block; font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: .9; margin-top: 3px; }
+  @keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+  .safe { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .no {
+    display: block; margin: 18px auto 0; background: none; border: 0; color: var(--muted); font: 500 13px 'Montserrat', sans-serif;
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+  }
+  .no:hover { color: var(--text); }
+  .note18 { text-align: center; font-size: 11px; color: var(--muted); margin-top: 14px; }
+
+  /* Final */
+  .final { text-align: center; padding: 30px 10px; }
+  .final h2 { font-size: clamp(26px, 5vw, 34px); margin-bottom: 10px; }
+  .final p { color: var(--muted); max-width: 480px; margin: 0 auto; }
+  footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 0 30px; letter-spacing: 1px; }
+
+  @media (prefers-reduced-motion: reduce) { .btn, .offer { animation: none; } }
+</style>
+</head>
+<body>
+
+<div class="steps"><span class="done">✓ ORDER COMPLETE</span><span class="now">STEP 2 · SPECIAL OFFER</span><span>ENJOY</span></div>
+
+<!-- ===================== THANK YOU ===================== -->
+<section class="thanks wrap">
+  <div class="brand duo-text">APHRODITE</div>
+  <div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <h1>Thank you! <span class="duo-text">The Sex Bible is yours.</span></h1>
+  <p>Your payment is confirmed. Your <b>258-page eBook</b> and your <b>FREE 365 Positions bonus</b> have been sent to the email you used at checkout.</p>
+  <div class="delivery"><i>📩</i> Check your inbox (and your spam folder) in the next few minutes</div>
+</section>
+
+<!-- ===================== ONE-TIME OFFERS (one at a time) ===================== -->
+<section class="offer-zone wrap">
+
+  <!-- Offer 1 — $17 -->
+  <div class="offer active" data-offer="pack">
+    <div class="wait"><b>WAIT — YOUR ORDER IS NOT COMPLETE</b><span>One exclusive offer, only on this page, only for new readers.</span></div>
+    <div class="card">
+      <span class="tag">PRIVATE · 18+ ONLY</span>
+      <h2>The book shows you. <span class="duo-text">These 500 videos make you feel it.</span></h2>
+      <p class="lead">Turn up the heat tonight with a private collection made for couples who want more — to watch alone or together.</p>
+      <div class="visual"><img src="sb-up-pack.jpg" alt="Adult Video Pack — 500 Videos" width="1080" height="1080"></div>
+      <div class="duo">
+        <div class="side her"><h3>FOR HER</h3><ul><li>Feel desired and in the mood faster</li><li>Discover what really turns you on</li><li>Ideas to surprise him tonight</li></ul></div>
+        <div class="side him"><h3>FOR HIM</h3><ul><li>Endless inspiration, zero routine</li><li>See what drives her wild</li><li>Last longer, play bolder</li></ul></div>
+      </div>
+      <ul class="inside">
+        <li><i>🎬</i><span><b>500 adult videos</b> — a private collection, ready to download</span></li>
+        <li><i>💬</i><span><b>BONUS:</b> access to private adult Telegram groups</span></li>
+        <li><i>🌐</i><span><b>BONUS:</b> list of 70 free adult sites</span></li>
+        <li><i>🔒</i><span>100% discreet — nothing physical, nobody knows</span></li>
+      </ul>
+      <div class="price-row"><s>$49</s><b class="duo-text">$17</b><span class="once">ONE TIME</span></div>
+      <p class="timer">This offer disappears in <b data-offer-timer>15:00</b></p>
+      <a class="btn" data-buy="pack" href="#" target="_blank" rel="noopener">YES, ADD THE 500 VIDEOS — $17<small>Instant access · One-time payment</small></a>
+      <div class="safe"><span>🔒 Secure payment</span><span>⚡ Instant access</span><span>🤫 Discreet</span></div>
+      <button type="button" class="no" data-next>No thanks, I don't want the 500 videos</button>
+      <p class="note18">Adults only (18+). All content is licensed for resale.</p>
+    </div>
+  </div>
+
+  <!-- Offer 2 — $8 -->
+  <div class="offer" data-offer="video">
+    <div class="wait"><b>OK — HOW ABOUT THIS INSTEAD?</b><span>Don't just read it. Watch every technique done, step by step.</span></div>
+    <div class="card">
+      <span class="tag">VIDEO TRAINING</span>
+      <h2>Orgasm Techniques <span class="duo-text">— For Him &amp; Her</span></h2>
+      <p class="lead">You've got the book. Now see exactly how it's done — the touches, the rhythm, the moves that take both of you over the edge.</p>
+      <div class="visual"><img src="sb-up-video.jpg" alt="Orgasm Techniques Video Training" width="1080" height="1080"></div>
+      <div class="duo">
+        <div class="side her"><h3>FOR HER</h3><ul><li>Reach orgasm more easily — and more often</li><li>Guide him to exactly what you love</li><li>Feel confident and free in bed</li></ul></div>
+        <div class="side him"><h3>FOR HIM</h3><ul><li>Make her come, again and again</li><li>Control, stamina and timing</li><li>Techniques to make you explode together</li></ul></div>
+      </div>
+      <div class="price-row"><s>$25</s><b class="duo-text">$8</b><span class="once">ONE TIME</span></div>
+      <p class="timer">This offer disappears in <b data-offer-timer>15:00</b></p>
+      <a class="btn" data-buy="video" href="#" target="_blank" rel="noopener">YES, I WANT THE VIDEO TRAINING — $8<small>Instant access · Watch on your phone</small></a>
+      <div class="safe"><span>🔒 Secure payment</span><span>⚡ Instant access</span><span>🤫 Discreet</span></div>
+      <button type="button" class="no" data-next>No thanks, I'll skip the videos</button>
+    </div>
+  </div>
+
+  <!-- Offer 3 — $5 -->
+  <div class="offer" data-offer="ebook">
+    <div class="wait"><b>LAST CHANCE — JUST $5</b><span>The two hidden pleasure points most couples never find.</span></div>
+    <div class="card">
+      <span class="tag">EBOOK · 18+</span>
+      <h2>G-Spot &amp; P-Spot: <span class="duo-text">The Complete Guide</span></h2>
+      <p class="lead">Where they are, how to find them, and exactly how to touch them — for the most intense orgasms of your life.</p>
+      <div class="visual"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3JHgLm4wPHxpOAZrMlr4dnXHh5c/51fe6dc8-ba87-4401-ae76-8514009e194c.jpg" alt="G-Spot & P-Spot: The Complete Guide" width="1080" height="1080"></div>
+      <div class="duo">
+        <div class="side her"><h3>HER G-SPOT</h3><ul><li>Find it in seconds</li><li>The touch that leads to squirting</li><li>Deeper, longer orgasms</li></ul></div>
+        <div class="side him"><h3>HIS P-SPOT</h3><ul><li>The hidden pleasure point of men</li><li>How to stimulate it, safely</li><li>Orgasms he has never felt before</li></ul></div>
+      </div>
+      <div class="price-row"><s>$15</s><b class="duo-text">$5</b><span class="once">ONE TIME</span></div>
+      <p class="timer">This offer disappears in <b data-offer-timer>15:00</b></p>
+      <a class="btn" data-buy="ebook" href="#" target="_blank" rel="noopener">YES, SEND ME THE GUIDE — $5<small>Instant download · eBook</small></a>
+      <div class="safe"><span>🔒 Secure payment</span><span>⚡ Instant access</span><span>🤫 Discreet</span></div>
+      <button type="button" class="no" data-next>No thanks, take me to my book</button>
+    </div>
+  </div>
+
+  <!-- End -->
+  <div class="offer final" data-offer="end">
+    <h2>Enjoy every page — <span class="duo-text">and every night.</span></h2>
+    <p>Your copy of The Sex Bible and your 365 Positions bonus are in your inbox. Open the Seduction chapter tonight… and let the fun begin. 💋</p>
+  </div>
+</section>
+
+<footer>© APHRODITE · The Sex Bible · Adults only (18+)</footer>
+
+<script>
+  // Fill the buy buttons with the Chariow links (left on "#" until the products exist)
+  document.querySelectorAll('[data-buy]').forEach(a => {
+    const link = OFFER_LINKS[a.dataset.buy];
+    if (link) a.href = link;
+    a.addEventListener('click', e => {
+      if (!link) { e.preventDefault(); return; }
+      const values = { pack: 17, video: 8, ebook: 5 };
+      if (window.fbq) fbq('track', 'InitiateCheckout', { content_name: a.dataset.buy, value: values[a.dataset.buy], currency: 'USD' });
+    });
+  });
+
+  // One offer at a time: "No thanks" shows the next one
+  const offers = [...document.querySelectorAll('.offer')];
+  document.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => {
+    const i = offers.findIndex(o => o.classList.contains('active'));
+    offers[i].classList.remove('active');
+    offers[i + 1].classList.add('active');
+    document.querySelector('.offer-zone').scrollIntoView({ behavior: 'smooth' });
+  }));
+
+  // 15-minute countdown, kept per visitor
+  const KEY = 'sb-offer-deadline';
+  let deadline = 0;
+  try { deadline = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+  if (!deadline || deadline < Date.now()) {
+    deadline = Date.now() + 15 * 60 * 1000;
+    try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
+  }
+  const tick = () => {
+    const left = Math.max(0, deadline - Date.now());
+    const m = String(Math.floor(left / 60000)).padStart(2, '0');
+    const s = String(Math.floor(left % 60000 / 1000)).padStart(2, '0');
+    document.querySelectorAll('[data-offer-timer]').forEach(el => { el.textContent = m + ':' + s; });
+  };
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
