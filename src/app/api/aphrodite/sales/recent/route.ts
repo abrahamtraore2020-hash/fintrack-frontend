@@ -4,17 +4,15 @@ import { createClient } from '@supabase/supabase-js'
 // Get recent sales for social proof notifications on the sales page
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key'
+  return createClient(url, key)
 }
 
 export async function GET(req: NextRequest) {
-  const supabase = getSupabase()
-  const limit = parseInt(req.nextUrl.searchParams.get('limit') || '20')
-
   try {
+    const supabase = getSupabase()
+    const limit = parseInt(req.nextUrl.searchParams.get('limit') || '20')
     const { data: sales, error } = await supabase
       .from('aphrodite_customer_purchases')
       .select('id, customer_id, purchased_at, aphrodite_customers(first_name, country)')
