@@ -1,48 +1,43 @@
-// Brevo email service for APHRODITE relance system
-// Uses Brevo API (formerly Sendinblue) for email delivery
+// Chariow email service for APHRODITE relance system
+// Uses Chariow API to send emails (free, no need for Brevo)
 
-interface BrevoEmailParams {
+interface ChariowEmailParams {
   to: string
   subject: string
   html: string
   fromName?: string
   fromEmail?: string
-  replyTo?: string
 }
 
-interface BrevoResponse {
+interface ChariowEmailResponse {
   messageId: string
   error?: string
 }
 
-const BREVO_API_KEY = process.env.BREVO_API_KEY
-const BREVO_BASE = 'https://api.brevo.com/v3'
+const CHARIOW_API_KEY = process.env.CHARIOW_API_KEY
+const CHARIOW_BASE = 'https://api.chariow.com/v1'
 const DEFAULT_FROM_EMAIL = 'noreply@aphroditelove.com'
 const DEFAULT_FROM_NAME = 'APHRODITE'
 
-export async function sendBrevoEmail(params: BrevoEmailParams): Promise<BrevoResponse> {
-  if (!BREVO_API_KEY) {
-    console.error('[Brevo] API key not configured')
-    return { messageId: '', error: 'BREVO_API_KEY not configured' }
+export async function sendChariowEmail(params: ChariowEmailParams): Promise<ChariowEmailResponse> {
+  if (!CHARIOW_API_KEY) {
+    console.error('[Chariow Email] API key not configured')
+    return { messageId: '', error: 'CHARIOW_API_KEY not configured' }
   }
 
   const payload = {
-    sender: {
-      email: params.fromEmail || DEFAULT_FROM_EMAIL,
-      name: params.fromName || DEFAULT_FROM_NAME,
-    },
-    to: [{ email: params.to }],
+    recipient: params.to,
     subject: params.subject,
-    htmlContent: params.html,
-    replyTo: params.replyTo ? { email: params.replyTo } : undefined,
-    tags: ['aphrodite-relance'],
+    html_content: params.html,
+    from_name: params.fromName || DEFAULT_FROM_NAME,
+    from_email: params.fromEmail || DEFAULT_FROM_EMAIL,
   }
 
   try {
-    const response = await fetch(`${BREVO_BASE}/smtp/email`, {
+    const response = await fetch(`${CHARIOW_BASE}/emails/send`, {
       method: 'POST',
       headers: {
-        'api-key': BREVO_API_KEY,
+        'Authorization': `Bearer ${CHARIOW_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -51,18 +46,18 @@ export async function sendBrevoEmail(params: BrevoEmailParams): Promise<BrevoRes
     const json = await response.json()
 
     if (!response.ok) {
-      console.error('[Brevo] Error:', json)
+      console.error('[Chariow Email] Error:', json)
       return {
         messageId: '',
-        error: json?.message || `HTTP ${response.status}`,
+        error: json?.message || json?.error || `HTTP ${response.status}`,
       }
     }
 
     return {
-      messageId: json?.id || json?.messageId || '',
+      messageId: json?.id || json?.message_id || json?.email_id || '',
     }
   } catch (error: any) {
-    console.error('[Brevo] Exception:', error?.message)
+    console.error('[Chariow Email] Exception:', error?.message)
     return {
       messageId: '',
       error: error?.message || 'Network error',
@@ -70,7 +65,7 @@ export async function sendBrevoEmail(params: BrevoEmailParams): Promise<BrevoRes
   }
 }
 
-// Template builders for A/B/C workflows
+// Email template builders
 
 export function buildTemplateA1(firstName: string, checkoutUrl: string): string {
   return `

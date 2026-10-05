@@ -6,8 +6,8 @@ import {
   buildTemplateA3,
   buildTemplateB1,
   buildTemplateB3,
-  sendBrevoEmail,
-} from '@/lib/brevo'
+  sendChariowEmail,
+} from '@/lib/chariow-email'
 
 // Cron job to send scheduled relance emails
 // Call this every 5 minutes from a scheduled trigger (e.g., Vercel Cron)
@@ -125,7 +125,7 @@ async function sendEmailForCustomer(supabase: any, record: any) {
 
   console.log(`[Relance] Sending ${record.message_type} to ${customer.email}`)
 
-  const result = await sendBrevoEmail({
+  const result = await sendChariowEmail({
     to: customer.email,
     subject: emailContent.subject,
     html: emailContent.html,

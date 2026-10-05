@@ -7,7 +7,6 @@
 **Copier-coller ces variables:**
 
 ```
-BREVO_API_KEY=sk-...
 CHARIOW_API_KEY=...
 CHARIOW_PACK_17_URL=https://aphroditelove.mychariow.market/pack500
 CHARIOW_VIDEO_8_URL=https://aphroditelove.mychariow.market/video8
@@ -18,8 +17,8 @@ DASHBOARD_AUTH_TOKEN=dashboard-secret-789
 ```
 
 **Remplacer les valeurs:**
-- `BREVO_API_KEY` : Aller à https://brevo.com → Settings → API → copier la clé
 - `CHARIOW_API_KEY` : Chariow → Développeurs → API → copier la clé
+- **Les emails** : Utilisent la même API Chariow (gratuit, pas besoin de Brevo)
 - Les `*_SECRET` : garder n'importe quelle valeur (à utiliser dans les URLs)
 
 ---
