@@ -59,7 +59,7 @@ export default function ParametresPage() {
   useEffect(() => {
     if (!user?.id) { setLoading(false); return }
     setLoading(true)
-    supabase.from('users').select('*').eq('id', user.id).single().then(({ data }) => {
+    supabase.from('users').select('*').eq('id', user.id).single().then(({ data }: any) => {
       if (data) {
         setProfile({
           firstName: data.firstName || '',
@@ -643,7 +643,7 @@ function SecuritySection({ userId }: { userId: string }) {
   const [disabling, setDisabling] = useState(false)
 
   useEffect(() => {
-    supabase.auth.mfa.listFactors().then(({ data }) => {
+    supabase.auth.mfa.listFactors().then(({ data }: any) => {
       const totp = data?.totp?.[0]
       if (totp && totp.status === 'verified') {
         setMfaStatus('enabled'); setFactorId(totp.id)

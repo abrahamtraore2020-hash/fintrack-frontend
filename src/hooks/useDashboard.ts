@@ -20,9 +20,9 @@ export function useDashboard() {
       ])
 
       const transactions = txRes.data || []
-      const monthlyIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const monthlyExpenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-      const totalCoffres = (coffresRes.data || []).reduce((s, c) => s + c.current_amount, 0)
+      const monthlyIncome = transactions.filter((t: any) => t.type === 'income').reduce((s: number, t: any) => s + t.amount, 0)
+      const monthlyExpenses = transactions.filter((t: any) => t.type === 'expense').reduce((s: number, t: any) => s + t.amount, 0)
+      const totalCoffres = (coffresRes.data || []).reduce((s: number, c: any) => s + c.current_amount, 0)
 
       return {
         monthlyIncome, monthlyExpenses,

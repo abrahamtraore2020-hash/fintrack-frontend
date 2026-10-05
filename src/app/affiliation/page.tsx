@@ -68,7 +68,7 @@ export default function AffiliationPage() {
         .order('created_at', { ascending: false })
 
       if (refs) {
-        setFilleuls(refs.map(r => ({
+        setFilleuls(refs.map((r: any) => ({
           id: r.id,
           firstName: r.first_name || '',
           lastName: r.last_name || '',
@@ -86,7 +86,7 @@ export default function AffiliationPage() {
         .order('created_at', { ascending: false })
 
       if (earn) {
-        setEarnings(earn.map(e => ({
+        setEarnings(earn.map((e: any) => ({
           id: e.id,
           amount: e.amount,
           month: e.month,

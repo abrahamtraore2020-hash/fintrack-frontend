@@ -43,8 +43,8 @@ export default function AdminPage() {
 
   const filtered = useMemo(() => {
     return users
-      .filter(u => roleFilter === 'all' || (roleFilter === 'user' ? !u.role : u.role === roleFilter))
-      .filter(u => !search ||
+      .filter((u: any) => roleFilter === 'all' || (roleFilter === 'user' ? !u.role : u.role === roleFilter))
+      .filter((u: any) => !search ||
         `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
         u.email.toLowerCase().includes(search.toLowerCase())
       )
@@ -54,9 +54,9 @@ export default function AdminPage() {
     const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
     return {
       total: users.length,
-      newThisMonth: users.filter(u => new Date(u.createdAt) >= firstDay).length,
-      proPlusCount: users.filter(u => ['pro', 'business', 'enterprise'].includes(u.plan)).length,
-      teamCount: users.filter(u => u.role).length,
+      newThisMonth: users.filter((u: any) => new Date(u.createdAt) >= firstDay).length,
+      proPlusCount: users.filter((u: any) => ['pro', 'business', 'enterprise'].includes(u.plan)).length,
+      teamCount: users.filter((u: any) => u.role).length,
     }
   }, [users])
 
@@ -142,7 +142,7 @@ export default function AdminPage() {
           </div>
         ) : (
           <div>
-            {filtered.map((u, i) => (
+            {filtered.map((u: any, i: number) => (
               <div key={u.id}
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors border-b border-gray-50 dark:border-dark-border/40 last:border-0">
                 <span className="w-7 text-[11px] text-gray-400 font-medium flex-shrink-0">{i + 1}</span>
@@ -181,8 +181,8 @@ export default function AdminPage() {
                       <option value="support">💬 Support</option>
                     </select>
                   ) : u.role ? (
-                    <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-full', ROLE_CONFIG[u.role]?.bg)}>
-                      {ROLE_CONFIG[u.role]?.label}
+                    <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-full', ROLE_CONFIG[u.role as keyof typeof ROLE_CONFIG]?.bg)}>
+                      {ROLE_CONFIG[u.role as keyof typeof ROLE_CONFIG]?.label}
                     </span>
                   ) : (
                     <span className="text-[10px] text-gray-400">—</span>

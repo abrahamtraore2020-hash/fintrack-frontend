@@ -67,7 +67,7 @@ export function usePlanBudgetLines(planId: string | null | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase.from('plan_budget_lines').select('*').eq('plan_id', planId!)
       if (error) throw error
-      return (data || []).map(r => mapBudgetLine(r as Record<string, unknown>))
+      return (data || []).map((r: any) => mapBudgetLine(r as Record<string, unknown>))
     },
   })
 }
@@ -82,7 +82,7 @@ export function usePlanWeeklyGoals(planId: string | null | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase.from('plan_weekly_goals').select('*').eq('plan_id', planId!).order('week_number')
       if (error) throw error
-      return (data || []).map(r => mapWeeklyGoal(r as Record<string, unknown>))
+      return (data || []).map((r: any) => mapWeeklyGoal(r as Record<string, unknown>))
     },
   })
 
@@ -116,7 +116,7 @@ export function usePlanRoutineTasks(planId: string | null | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase.from('plan_routine_tasks').select('*').eq('plan_id', planId!).order('position')
       if (error) throw error
-      return (data || []).map(r => mapRoutineTask(r as Record<string, unknown>))
+      return (data || []).map((r: any) => mapRoutineTask(r as Record<string, unknown>))
     },
   })
 
@@ -197,7 +197,7 @@ export function usePlanTodos(planId: string | null | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase.from('plan_todos').select('*').eq('plan_id', planId!).order('created_at', { ascending: true })
       if (error) throw error
-      return (data || []).map(r => mapTodo(r as Record<string, unknown>))
+      return (data || []).map((r: any) => mapTodo(r as Record<string, unknown>))
     },
   })
 

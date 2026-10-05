@@ -1190,7 +1190,7 @@ export default function FuntwitPage() {
 
   const [profileSearch, setProfileSearch] = useState('')
   const suggestedMembers = allUsers
-    .filter(u => {
+    .filter((u: any) => {
       if (!profileSearch) return true
       const q = profileSearch.toLowerCase()
       return `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
@@ -1385,7 +1385,7 @@ export default function FuntwitPage() {
               {suggestedMembers.length === 0 && (
                 <p className="text-[11px] tt-muted text-center py-2">Aucun profil trouvé</p>
               )}
-              {suggestedMembers.map(u => {
+              {suggestedMembers.map((u: any) => {
                 const name = `${u.firstName} ${u.lastName}`.trim() || 'Utilisateur'
                 const initials = `${(u.firstName || '?')[0]}${(u.lastName || '')[0] || ''}`.toUpperCase()
                 return (

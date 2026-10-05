@@ -87,7 +87,7 @@ export default function InboxPage() {
     c.participantName.toLowerCase().includes(search.toLowerCase())
   )
 
-  const filteredUsers = allUsers.filter(u => {
+  const filteredUsers = allUsers.filter((u: any) => {
     const name = `${u.firstName} ${u.lastName}`.toLowerCase()
     const uname = (u.username || '').toLowerCase()
     const q = userSearch.toLowerCase().replace('@', '')
@@ -372,7 +372,7 @@ export default function InboxPage() {
                   {!userSearch && allUsers.length > 0 && (
                     <p className="px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Tous les utilisateurs</p>
                   )}
-                  {(userSearch ? filteredUsers : allUsers).map(u => {
+                  {(userSearch ? filteredUsers : allUsers).map((u: any) => {
                     const name = `${u.firstName} ${u.lastName}`.trim() || 'Utilisateur'
                     const initials = `${u.firstName?.[0] || '?'}${u.lastName?.[0] || ''}`.toUpperCase()
                     const existingConv = conversations.find(c => c.participantId === u.id)
