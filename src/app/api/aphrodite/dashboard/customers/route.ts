@@ -47,8 +47,8 @@ export async function GET(req: NextRequest) {
         `
       )
       .eq('status', status)
-      .order('abandoned_at', { ascending: false, nulls: 'last' })
-      .order('completed_at', { ascending: false, nulls: 'last' })
+      .order('abandoned_at', { ascending: false, nullsFirst: false })
+      .order('completed_at', { ascending: false, nullsFirst: false })
       .limit(limit)
 
     if (error) {

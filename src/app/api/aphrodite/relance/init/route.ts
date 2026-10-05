@@ -87,12 +87,14 @@ export async function POST(req: NextRequest) {
 
   try {
     for (const sql of sqls) {
-      const { error } = await supabase.rpc('exec_sql', { sql: sql.trim() }).catch(() => {
-        // Fallback si RPC n'existe pas — le SQL s'exécutera directement en Postgres
-        return { error: null }
-      })
-      if (error) {
-        console.error('SQL Error:', error)
+      try {
+        const { error } = await supabase.rpc('exec_sql', { sql: sql.trim() })
+        if (error) {
+          console.error('SQL Error:', error)
+        }
+      } catch (e: any) {
+        // RPC method may not exist — log but continue
+        console.log('RPC exec_sql not available, skipping:', e?.message)
       }
     }
 

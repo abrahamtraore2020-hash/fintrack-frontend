@@ -5,9 +5,9 @@ import { createClient } from '@supabase/supabase-js'
 // Extracts customer info and schedules relance emails
 
 interface ChariowPayload {
-  event: string
-  type: string
-  action: string
+  event?: string
+  type?: string
+  action?: string
   sale?: any
   customer?: any
   checkout?: any
