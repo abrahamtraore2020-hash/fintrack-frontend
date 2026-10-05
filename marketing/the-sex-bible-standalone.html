@@ -1225,11 +1225,12 @@
 <script>
   document.documentElement.classList.add('js');
 
-  // 48-hour offer countdown, starting from the visitor's first visit
+  // 48-hour offer countdown, renews every 2 days
   const KEY = 'sb_offer_deadline';
   let deadline = 0;
   try { deadline = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
-  if (!deadline) {
+  // Reset deadline if it's in the past
+  if (!deadline || deadline < Date.now()) {
     deadline = Date.now() + 48 * 3600 * 1000;
     try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
   }
@@ -1243,6 +1244,11 @@
     document.querySelectorAll('[data-s]').forEach(el => el.textContent = pad(s));
     const days = d ? `${d} day${d > 1 ? 's' : ''} ` : '';
     document.querySelectorAll('[data-timer-inline]').forEach(el => el.textContent = `${days}${pad(h)}:${pad(m)}:${pad(s)}`);
+    // Auto-renew countdown when expired
+    if (left === 0) {
+      deadline = Date.now() + 48 * 3600 * 1000;
+      try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
+    }
   }
   tick();
   setInterval(tick, 1000);
