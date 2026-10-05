@@ -249,6 +249,15 @@ export async function POST(req: NextRequest) {
     // Schedule post-purchase emails (B1, B3, B4)
     await schedulePostPurchaseEmails(supabase, customerId, customerInfo.email)
 
+    // Record the sale for social proof notifications
+    await supabase.from('aphrodite_customer_purchases').insert({
+      customer_id: customerId,
+      offer_name: 'the_sex_bible',
+      purchased_at: new Date().toISOString(),
+      amount: 8,
+      currency: 'USD',
+    })
+
     return ok({ status: 'purchase_scheduled' })
   }
 

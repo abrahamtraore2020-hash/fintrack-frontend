@@ -1361,8 +1361,8 @@
     setTimeout(() => { showNext(); setInterval(showNext, 18000); }, 7000);
   }
 
-  // Real sales are pulled automatically from Chariow by /api/aphrodite/recent-buyers
-  fetch('/api/aphrodite/recent-buyers')
+  // Real sales are pulled automatically from Chariow via /api/aphrodite/sales/recent
+  fetch('/api/aphrodite/sales/recent')
     .then(r => r.ok ? r.json() : { buyers: [] })
     .catch(() => ({ buyers: [] }))
     .then(d => {
