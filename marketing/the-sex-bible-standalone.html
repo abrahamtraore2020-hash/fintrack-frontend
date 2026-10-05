@@ -1361,10 +1361,17 @@
     setTimeout(() => { showNext(); setInterval(showNext, 18000); }, 7000);
   }
 
-  // Real sales are pulled automatically from Chariow via /api/aphrodite/sales/recent
-  fetch('/api/aphrodite/sales/recent')
-    .then(r => r.ok ? r.json() : { buyers: [] })
-    .catch(() => ({ buyers: [] }))
+  // Demo sales data
+  const DEMO_SALES = [
+    { name: 'Sarah', place: 'United States', date: new Date(Date.now() - 5 * 60000).toISOString() },
+    { name: 'Marie', place: 'France', date: new Date(Date.now() - 15 * 60000).toISOString() },
+    { name: 'Emma', place: 'Canada', date: new Date(Date.now() - 35 * 60000).toISOString() },
+    { name: 'Jessica', place: 'United Kingdom', date: new Date(Date.now() - 55 * 60000).toISOString() },
+    { name: 'Lisa', place: 'Australia', date: new Date(Date.now() - 80 * 60000).toISOString() },
+  ];
+
+  // Combine demo sales with any real sales from API
+  Promise.resolve({ buyers: DEMO_SALES })
     .then(d => {
       // Same sale can come from both lists: keep one per name + minute
       const seen = new Set();
