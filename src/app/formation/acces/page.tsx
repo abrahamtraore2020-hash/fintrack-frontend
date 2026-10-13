@@ -33,10 +33,11 @@ export default function AccesFormation() {
     else setErreur((await res.json().catch(() => ({}))).error || 'Erreur')
   }
 
-  const field = 'w-full rounded-md border border-gold/30 bg-transparent px-3 py-2'
+  const field = 'w-full rounded-md border border-lion-gold/30 bg-transparent px-3 py-2'
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-xl border border-gold/30 p-6">
+    <main className="flex min-h-[calc(100vh-81px)] flex-col items-center justify-center gap-6 px-4 py-10">
+      <img src="/lion-attitude-logo.webp" alt="Lion Attitude" className="w-48 rounded-xl" />
+      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-xl border border-lion-gold/30 bg-white p-6">
         <h1 className="text-xl font-bold">
           {configured === false ? 'Créer votre mot de passe formateur' : 'Accès formateur'}
         </h1>
@@ -79,10 +80,10 @@ export default function AccesFormation() {
               />
             )}
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="h-4 w-4 accent-gold" />
+              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="h-4 w-4 accent-lion-gold" />
               Se souvenir de moi (30 jours)
             </label>
-            <button className="w-full rounded-lg bg-gold px-4 py-2 font-semibold text-black">
+            <button className="w-full rounded-lg bg-lion-gold px-4 py-2 font-semibold text-black">
               {configured ? 'Entrer' : 'Créer et entrer'}
             </button>
           </>
