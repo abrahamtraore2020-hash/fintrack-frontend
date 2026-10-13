@@ -1,19 +1,22 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getFormation } from '@/lib/formationStore'
+import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: { formation: string } }) {
-  const f = await getFormation(params.formation)
-  return { title: f?.titre ?? 'Formation' }
+  const { formation } = await getFormation(params.formation)
+  return { title: formation?.titre ?? 'Formation' }
 }
 
 export default async function FormationPage({ params }: { params: { formation: string } }) {
-  const f = await getFormation(params.formation)
+  const { formation: f, erreur } = await getFormation(params.formation)
   if (!f) notFound()
   return (
+    <>
+    <ErreurBase message={erreur} />
     <main className="mx-auto max-w-3xl px-4 py-10">
       <Link href="/formation" className="text-sm text-lion-blue">← Mes formations</Link>
       <div className="mt-4 flex items-start justify-between gap-4">
@@ -53,5 +56,6 @@ export default async function FormationPage({ params }: { params: { formation: s
         </>
       )}
     </main>
+    </>
   )
 }

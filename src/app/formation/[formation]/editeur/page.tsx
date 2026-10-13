@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import type { Episode, Lecon } from '@/data/formation'
 import { slugify } from '@/lib/slug'
@@ -19,6 +20,7 @@ const move = <T,>(arr: T[], i: number, d: number) => {
 }
 
 export default function EditeurPage({ params }: { params: { formation: string } }) {
+  const router = useRouter()
   const [titre, setTitre] = useState('')
   const [sousTitre, setSousTitre] = useState('')
   const [theme, setTheme] = useState<Theme>(DEFAULT_THEME)
@@ -120,6 +122,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
       enregistre.current = JSON.stringify({ titre, sousTitre, theme, episodes: prepared })
       setEpisodes(prepared)
       setMessage('✅ Enregistré')
+      router.refresh() // les pages de la formation afficheront la nouvelle version
     } else setMessage(`❌ ${d.error || 'Erreur'}`)
     setSaving(false)
   }

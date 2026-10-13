@@ -10,7 +10,8 @@ type Params = { params: { formation: string } }
 export async function GET(req: NextRequest, { params }: Params) {
   const denied = await requireTrainer(req)
   if (denied) return denied
-  const formation = await getFormation(params.formation)
+  const { formation, erreur } = await getFormation(params.formation)
+  if (erreur) return fail(`La base de données n’a pas pu être lue (${erreur}). Rien n’a été chargé pour ne pas écraser votre contenu.`, 503)
   return formation ? NextResponse.json({ formation }) : fail('Formation introuvable', 404)
 }
 
@@ -22,7 +23,7 @@ function validEpisode(e: unknown): e is Episode {
     typeof x.resume === 'string' && Array.isArray(x.lecons) &&
     x.lecons.every(l =>
       typeof l.titre === 'string' && Array.isArray(l.points) && l.points.every(p => typeof p === 'string') &&
-      (l.images === undefined || (Array.isArray(l.images) && l.images.every(u => typeof u === 'string' && /^https:\/\//.test(u))))
+      (l.images === undefined || (Array.isArray(l.images) && l.images.every(u => typeof u === 'string' && /^https?:\/\//.test(u))))
     )
   )
 }

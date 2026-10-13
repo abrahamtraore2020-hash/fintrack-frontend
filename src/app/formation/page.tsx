@@ -1,13 +1,16 @@
 import Link from 'next/link'
-import { getFormations } from '@/lib/formationStore'
+import { lireFormations } from '@/lib/formationStore'
+import { ErreurBase } from '@/components/formation/ErreurBase'
 import { CreateFormation } from '@/components/formation/CreateFormation'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: { absolute: 'Mes formations | Lion Attitude' } }
 
 export default async function MesFormationsPage() {
-  const formations = await getFormations()
+  const { formations, erreur } = await lireFormations()
   return (
+    <>
+    <ErreurBase message={erreur} />
     <main className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-3xl font-bold text-lion-blue">Mes formations</h1>
       <div className="mt-6">
@@ -29,5 +32,6 @@ export default async function MesFormationsPage() {
         </ul>
       )}
     </main>
+    </>
   )
 }
