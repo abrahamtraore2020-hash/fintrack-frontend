@@ -49,3 +49,19 @@ export async function saveEpisodes(episodes: Episode[]): Promise<string | null> 
     .not('slug', 'in', `(${slugs.map(s => `"${s}"`).join(',')})`)
   return delError ? delError.message : null
 }
+
+export async function getPasswordRecord(): Promise<{ hash: string; salt: string } | null | 'error'> {
+  const db = admin()
+  if (!db) return 'error'
+  const { data, error } = await db.from('formation_settings').select('password_hash, salt').eq('id', 1).maybeSingle()
+  if (error) return 'error'
+  return data ? { hash: data.password_hash, salt: data.salt } : null
+}
+
+// Échoue si un mot de passe existe déjà (clé primaire id = 1) : impossible d'écraser.
+export async function createPasswordRecord(hash: string, salt: string): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  const { error } = await db.from('formation_settings').insert({ id: 1, password_hash: hash, salt })
+  return error ? error.message : null
+}
