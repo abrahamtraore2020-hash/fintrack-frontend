@@ -57,7 +57,7 @@ export default async function FormationPage({ params }: { params: { formation: s
           </Link>
         </>
       )}
-      <DirectsPanel formationSlug={f.slug} formationTitre={f.titre} directs={f.directs} modules={f.episodes.map(e => ({ slug: e.slug, titre: e.titre }))} />
+      <DirectsPanel formations={[{ slug: f.slug, titre: f.titre, directs: f.directs }]} fixe={f.slug} />
     </main>
     </>
   )
