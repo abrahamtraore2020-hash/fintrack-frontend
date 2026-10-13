@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getFormation } from '@/lib/formationStore'
+import { DownloadPptx } from '@/components/formation/DownloadPptx'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,7 +21,10 @@ export default async function FormationPage({ params }: { params: { formation: s
           <h1 className="text-3xl font-bold">{f.titre}</h1>
           {f.sousTitre && <p className="mt-2 text-lg text-lion-ink/75">{f.sousTitre}</p>}
         </div>
-        <Link href={`/formation/${f.slug}/editeur`} className="shrink-0 rounded-lg border border-lion-blue/30 px-3 py-1.5 text-sm text-lion-blue">✏️ Modifier</Link>
+        <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row">
+          <DownloadPptx formationTitre={f.titre} episodes={f.episodes} label="PowerPoint de la formation" />
+          <Link href={`/formation/${f.slug}/editeur`} className="rounded-lg border border-lion-blue/30 px-3 py-1.5 text-sm text-lion-blue">✏️ Modifier</Link>
+        </div>
       </div>
       {f.episodes.length === 0 ? (
         <div className="mt-8 rounded-xl border-2 border-dashed border-lion-gold p-8 text-center">
