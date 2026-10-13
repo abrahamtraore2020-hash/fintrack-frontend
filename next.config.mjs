@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Pages dynamiques jamais resservies depuis le cache du navigateur : une modification enregistrée est visible tout de suite.
+  experimental: {
+    staleTimes: { dynamic: 0 },
+  },
   images: {
     domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
   },

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fail, requireTrainer } from '@/lib/formationApi'
-import { createFormation, getFormations } from '@/lib/formationStore'
+import { createFormation, lireFormations } from '@/lib/formationStore'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   const denied = await requireTrainer(req)
   if (denied) return denied
-  return NextResponse.json({ formations: await getFormations() })
+  return NextResponse.json(await lireFormations())
 }
 
 export async function POST(req: NextRequest) {

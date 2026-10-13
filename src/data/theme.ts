@@ -62,7 +62,7 @@ export function normalizeTheme(t: unknown): Theme {
     accent: color('accent'),
     policeTitre: font('policeTitre'),
     policeTexte: font('policeTexte'),
-    logo: x.logo === null ? null : typeof x.logo === 'string' && (x.logo === LOGO_LION || /^https:\/\//.test(x.logo)) ? x.logo : DEFAULT_THEME.logo,
+    logo: x.logo === null ? null : typeof x.logo === 'string' && (x.logo === LOGO_LION || /^https?:\/\//.test(x.logo)) ? x.logo : DEFAULT_THEME.logo,
     animation: (['aucune', 'fondu', 'glissement', 'zoom'] as const).includes(x.animation as Animation) ? (x.animation as Animation) : DEFAULT_THEME.animation,
     autoSecondes: typeof x.autoSecondes === 'number' && x.autoSecondes >= 0 && x.autoSecondes <= 120 ? Math.round(x.autoSecondes) : 0,
   }

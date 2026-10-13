@@ -5,6 +5,7 @@ import { Whiteboard } from '@/components/formation/Whiteboard'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
 import { SlideViewer } from '@/components/formation/SlideViewer'
 import { ImageGallery } from '@/components/formation/Lightbox'
+import { ErreurBase } from '@/components/formation/ErreurBase'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string; episode: string } }
@@ -17,9 +18,11 @@ export async function generateMetadata({ params }: Params) {
 export default async function EpisodePage({ params }: Params) {
   const found = await getEpisode(params.formation, params.episode)
   if (!found) notFound()
-  const { formation, episode, suivant } = found
+  const { formation, episode, suivant, erreur } = found
 
   return (
+    <>
+    <ErreurBase message={erreur} />
     <main className="mx-auto max-w-7xl px-4 py-10">
       <Link href={`/formation/${formation.slug}`} className="text-sm text-lion-blue">← {formation.titre}</Link>
       <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
@@ -55,5 +58,6 @@ export default async function EpisodePage({ params }: Params) {
         </Link>
       )}
     </main>
+    </>
   )
 }

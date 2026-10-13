@@ -27,7 +27,11 @@ function admin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) return null
-  return createClient(url, key, { auth: { persistSession: false } })
+  // Jamais de cache : chaque page doit montrer ce qui vient d'être enregistré.
+  return createClient(url, key, {
+    auth: { persistSession: false },
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }) },
+  })
 }
 
 type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown }
@@ -39,25 +43,27 @@ const toFormation = (r: Row): Formation => ({
   theme: normalizeTheme(r.theme),
 })
 
-// En cas d'erreur (base indisponible, table pas encore créée), on affiche la formation de départ.
-export async function getFormations(): Promise<Formation[]> {
+// Si la base ne répond pas, on affiche la formation de départ AVEC la cause de l'erreur :
+// les pages l'annoncent et l'éditeur refuse d'enregistrer (pour ne pas écraser le vrai contenu).
+export async function lireFormations(): Promise<{ formations: Formation[]; erreur: string | null }> {
   const db = admin()
-  if (!db) return [DEFAULT_FORMATION]
+  if (!db) return { formations: [DEFAULT_FORMATION], erreur: 'Variables Supabase absentes dans Vercel' }
   const { data, error } = await db.from('formation_formations').select('*').order('position').order('created_at')
-  if (error || !data) return [DEFAULT_FORMATION]
-  return (data as Row[]).map(toFormation)
+  if (error || !data) return { formations: [DEFAULT_FORMATION], erreur: `Lecture impossible : ${error?.message ?? 'réponse vide'}` }
+  return { formations: (data as Row[]).map(toFormation), erreur: null }
 }
 
-export async function getFormation(slug: string): Promise<Formation | null> {
-  return (await getFormations()).find(f => f.slug === slug) ?? null
+export async function getFormation(slug: string): Promise<{ formation: Formation | null; erreur: string | null }> {
+  const { formations, erreur } = await lireFormations()
+  return { formation: formations.find(f => f.slug === slug) ?? null, erreur }
 }
 
 export async function getEpisode(formationSlug: string, episodeSlug: string) {
-  const formation = await getFormation(formationSlug)
+  const { formation, erreur } = await getFormation(formationSlug)
   if (!formation) return null
   const index = formation.episodes.findIndex(e => e.slug === episodeSlug)
   if (index === -1) return null
-  return { formation, episode: formation.episodes[index], suivant: formation.episodes[index + 1] ?? null }
+  return { formation, episode: formation.episodes[index], suivant: formation.episodes[index + 1] ?? null, erreur }
 }
 
 export async function createFormation(titre: string, sousTitre: string): Promise<{ slug: string } | { error: string }> {
