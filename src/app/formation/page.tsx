@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { lireFormations } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
+import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
 import { CreateFormation } from '@/components/formation/CreateFormation'
 
 export const dynamic = 'force-dynamic'
@@ -12,7 +13,8 @@ export default async function MesFormationsPage() {
     <>
     <ErreurBase message={erreur} />
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-3xl font-bold text-lion-blue">Mes formations</h1>
+      <LiveBanner directs={formations.flatMap(f => f.directs)} />
+      <h1 className="mt-4 text-3xl font-bold text-lion-blue">Mes formations</h1>
       <div className="mt-6">
         <CreateFormation />
       </div>
@@ -31,6 +33,7 @@ export default async function MesFormationsPage() {
           ))}
         </ul>
       )}
+      <DirectsPanel formations={formations.map(f => ({ slug: f.slug, titre: f.titre, directs: f.directs }))} />
     </main>
     </>
   )

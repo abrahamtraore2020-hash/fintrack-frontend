@@ -5,7 +5,7 @@ export interface Direct {
   debut: string // date et heure locales « AAAA-MM-JJTHH:MM » (heure du formateur)
   duree: number // minutes
   lien: string
-  module?: string // adresse du module présenté, facultatif
+  module?: string // ancien champ (module présenté), conservé pour les directs déjà enregistrés
 }
 
 const DEBUT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/

@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { PLATEFORME } from '@/data/formation'
 import { dateLongue, etat, heure, invitation, type Direct, type Etat } from '@/data/direct'
 
-type Module = { slug: string; titre: string }
-const VIDE = { titre: '', debut: '', duree: 60, lien: '', module: '' }
+type Groupe = { slug: string; titre: string; directs: Direct[] }
+type Ligne = Direct & { formation: string }
+const VIDE = { titre: '', debut: '', duree: 60, lien: '', formation: '' }
 
 // L'heure courante n'est connue qu'après le chargement (évite un décalage entre serveur et navigateur).
 export function useMaintenant() {
@@ -27,63 +28,82 @@ const BADGE: Record<Etat, { texte: string; cls: string }> = {
   termine: { texte: 'Terminé', cls: 'bg-gray-100 text-gray-500' },
 }
 
-export function DirectsPanel({ formationSlug, formationTitre, directs, modules }: { formationSlug: string; formationTitre: string; directs: Direct[]; modules: Module[] }) {
+// Directs d'une formation (fixe = son adresse) ou de toutes les formations, avec choix de la formation.
+export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?: string }) {
   const router = useRouter()
   const now = useMaintenant()
-  const [form, setForm] = useState<typeof VIDE & { id?: string } | null>(null)
+  const [form, setForm] = useState<typeof VIDE & { id?: string; origine?: string } | null>(null)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const [copie, setCopie] = useState<string | null>(null)
   const [voirPasses, setVoirPasses] = useState(false)
 
-  const enregistrer = async (liste: Direct[]) => {
-    setBusy(true)
-    setMessage('')
-    const res = await fetch(`/api/formation/formations/${formationSlug}/directs`, {
+  const groupes = fixe ? formations.filter(f => f.slug === fixe) : formations
+  const titreDe = (slug: string) => formations.find(f => f.slug === slug)?.titre ?? ''
+  const lignes: Ligne[] = groupes
+    .flatMap(g => g.directs.map(d => ({ ...d, formation: g.slug })))
+    .sort((a, b) => a.debut.localeCompare(b.debut))
+
+  const enregistrer = async (slug: string, liste: Direct[]) => {
+    const res = await fetch(`/api/formation/formations/${slug}/directs`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ directs: liste }),
     })
     const d = await res.json().catch(() => ({}))
-    setBusy(false)
-    if (!res.ok) {
-      setMessage(`❌ ${d.error || 'Erreur'}`)
-      return false
-    }
-    router.refresh()
-    return true
+    if (!res.ok) setMessage(`❌ ${d.error || 'Erreur'}`)
+    return res.ok
+  }
+  const directsDe = (slug: string) => formations.find(f => f.slug === slug)?.directs ?? []
+
+  const nouveau = () => {
+    setMessage('')
+    setForm({ ...VIDE, formation: fixe ?? (formations.length === 1 ? formations[0].slug : '') })
   }
 
   const valider = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form) return
+    if (!form.formation) return setMessage('❌ Choisissez la formation')
     if (!/^https:\/\//.test(form.lien.trim())) return setMessage('❌ Collez le lien de la réunion (il commence par https://meet.google.com/…)')
-    const direct: Direct = {
-      id: form.id ?? crypto.randomUUID(),
-      titre: form.titre.trim(),
-      debut: form.debut,
-      duree: Number(form.duree),
-      lien: form.lien.trim(),
-      ...(form.module ? { module: form.module } : {}),
+    const direct: Direct = { id: form.id ?? crypto.randomUUID(), titre: form.titre.trim(), debut: form.debut, duree: Number(form.duree), lien: form.lien.trim() }
+    setBusy(true)
+    setMessage('')
+    let ok: boolean
+    if (form.id && form.origine === form.formation) {
+      ok = await enregistrer(form.formation, directsDe(form.formation).map(d => (d.id === form.id ? direct : d)))
+    } else {
+      // Nouveau direct, ou direct déplacé vers une autre formation
+      ok = await enregistrer(form.formation, [...directsDe(form.formation), direct])
+      if (ok && form.id && form.origine) ok = await enregistrer(form.origine, directsDe(form.origine).filter(d => d.id !== form.id))
     }
-    const liste = form.id ? directs.map(d => (d.id === form.id ? direct : d)) : [...directs, direct]
-    if (await enregistrer(liste)) setForm(null)
+    setBusy(false)
+    if (ok) {
+      setForm(null)
+      router.refresh()
+    }
   }
 
-  const copier = async (d: Direct) => {
-    await navigator.clipboard.writeText(invitation(d, PLATEFORME.nom, formationTitre)).catch(() => {})
+  const supprimer = async (d: Ligne) => {
+    if (!confirm(`Supprimer le direct « ${d.titre} » ?`)) return
+    setBusy(true)
+    if (await enregistrer(d.formation, directsDe(d.formation).filter(x => x.id !== d.id))) router.refresh()
+    setBusy(false)
+  }
+
+  const copier = async (d: Ligne) => {
+    await navigator.clipboard.writeText(invitation(d, PLATEFORME.nom, titreDe(d.formation))).catch(() => {})
     setCopie(d.id)
     setTimeout(() => setCopie(null), 2500)
   }
 
-  const avenir = directs.filter(d => !now || etat(d, now) !== 'termine')
-  const passes = now ? directs.filter(d => etat(d, now) === 'termine').reverse() : []
+  const avenir = lignes.filter(d => !now || etat(d, now) !== 'termine')
+  const passes = now ? lignes.filter(d => etat(d, now) === 'termine').reverse() : []
   const field = 'w-full rounded-lg border border-lion-blue/20 bg-white px-3 py-2 focus:border-lion-blue focus:outline-none'
   const small = 'rounded-lg border border-lion-blue/20 bg-white px-3 py-1.5 text-sm hover:border-lion-blue'
 
-  const carte = (d: Direct) => {
+  const carte = (d: Ligne) => {
     const e = now ? etat(d, now) : 'a-venir'
-    const mod = modules.find(m => m.slug === d.module)
     const chaud = e === 'en-direct' || e === 'bientot'
     return (
       <li key={d.id} className={`rounded-xl border bg-white p-4 shadow-sm ${chaud ? 'border-red-300 ring-2 ring-red-100' : 'border-lion-blue/15'}`}>
@@ -94,9 +114,9 @@ export function DirectsPanel({ formationSlug, formationTitre, directs, modules }
             <p className="text-sm capitalize text-lion-ink/70">
               {dateLongue(d)} · {heure(d)} · {d.duree} min
             </p>
-            {mod && (
-              <Link href={`/formation/${formationSlug}/${mod.slug}`} className="text-sm text-lion-blue underline">
-                Module : {mod.titre}
+            {!fixe && (
+              <Link href={`/formation/${d.formation}`} className="text-sm text-lion-blue underline">
+                Formation : {titreDe(d.formation)}
               </Link>
             )}
           </div>
@@ -113,17 +133,13 @@ export function DirectsPanel({ formationSlug, formationTitre, directs, modules }
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <button className={small} onClick={() => copier(d)}>{copie === d.id ? '✅ Copiée' : '📋 Copier l’invitation'}</button>
-          <a className={small} href={`https://wa.me/?text=${encodeURIComponent(invitation(d, PLATEFORME.nom, formationTitre))}`} target="_blank" rel="noopener noreferrer">
+          <a className={small} href={`https://wa.me/?text=${encodeURIComponent(invitation(d, PLATEFORME.nom, titreDe(d.formation)))}`} target="_blank" rel="noopener noreferrer">
             💬 Envoyer sur WhatsApp
           </a>
-          <button className={small} onClick={() => setForm({ ...VIDE, ...d, module: d.module ?? '' })}>✏️ Modifier</button>
-          <button
-            className={`${small} text-red-600`}
-            disabled={busy}
-            onClick={() => confirm(`Supprimer le direct « ${d.titre} » ?`) && enregistrer(directs.filter(x => x.id !== d.id))}
-          >
-            🗑️
+          <button className={small} onClick={() => (setMessage(''), setForm({ titre: d.titre, debut: d.debut, duree: d.duree, lien: d.lien, formation: d.formation, id: d.id, origine: d.formation }))}>
+            ✏️ Modifier
           </button>
+          <button className={`${small} text-red-600`} disabled={busy} onClick={() => supprimer(d)} aria-label="Supprimer le direct">🗑️</button>
         </div>
       </li>
     )
@@ -132,9 +148,9 @@ export function DirectsPanel({ formationSlug, formationTitre, directs, modules }
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-bold text-lion-blue">🔴 Directs</h2>
-        {!form && (
-          <button className="rounded-lg bg-lion-blue px-4 py-2 font-semibold text-white" onClick={() => (setForm({ ...VIDE }), setMessage(''))}>
+        <h2 className="text-2xl font-bold text-lion-blue">{fixe ? '🔴 Directs' : '🔴 Mes directs'}</h2>
+        {!form && formations.length > 0 && (
+          <button className="rounded-lg bg-lion-blue px-4 py-2 font-semibold text-white" onClick={nouveau}>
             + Programmer un direct
           </button>
         )}
@@ -143,6 +159,15 @@ export function DirectsPanel({ formationSlug, formationTitre, directs, modules }
       {form && (
         <form onSubmit={valider} className="mt-4 space-y-3 rounded-xl border-2 border-lion-gold bg-white p-4">
           <h3 className="font-semibold">{form.id ? 'Modifier le direct' : 'Nouveau direct'}</h3>
+          {!fixe && (
+            <label className="block space-y-1">
+              <span className="text-sm text-lion-ink/70">Formation</span>
+              <select className={field} required value={form.formation} onChange={e => setForm({ ...form, formation: e.target.value })}>
+                <option value="">— Choisissez la formation —</option>
+                {formations.map(f => <option key={f.slug} value={f.slug}>{f.titre}</option>)}
+              </select>
+            </label>
+          )}
           <input className={field} required value={form.titre} onChange={e => setForm({ ...form, titre: e.target.value })} placeholder="Titre (ex. Séance 1 : Qui suis-je ?)" />
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="space-y-1 sm:col-span-2">
@@ -152,19 +177,10 @@ export function DirectsPanel({ formationSlug, formationTitre, directs, modules }
             <label className="space-y-1">
               <span className="text-sm text-lion-ink/70">Durée</span>
               <select className={field} value={form.duree} onChange={e => setForm({ ...form, duree: Number(e.target.value) })}>
-                {[30, 45, 60, 90, 120, 180].map(m => <option key={m} value={m}>{m < 60 ? `${m} min` : `${m / 60} h${m % 60 ? ' 30' : ''}`}</option>)}
+                {[30, 45, 60, 90, 120, 180].map(m => <option key={m} value={m}>{m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' 30' : ''}`}</option>)}
               </select>
             </label>
           </div>
-          {modules.length > 0 && (
-            <label className="block space-y-1">
-              <span className="text-sm text-lion-ink/70">Module présenté (facultatif)</span>
-              <select className={field} value={form.module} onChange={e => setForm({ ...form, module: e.target.value })}>
-                <option value="">—</option>
-                {modules.map(m => <option key={m.slug} value={m.slug}>{m.titre}</option>)}
-              </select>
-            </label>
-          )}
           <div className="space-y-1">
             <span className="text-sm text-lion-ink/70">Lien Google Meet</span>
             <div className="flex flex-col gap-2 sm:flex-row">
