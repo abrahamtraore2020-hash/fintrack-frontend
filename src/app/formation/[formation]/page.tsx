@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getFormation } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
+import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,7 +19,8 @@ export default async function FormationPage({ params }: { params: { formation: s
     <>
     <ErreurBase message={erreur} />
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <Link href="/formation" className="text-sm text-lion-blue">← Mes formations</Link>
+      <LiveBanner directs={f.directs} />
+      <Link href="/formation" className="mt-4 inline-block text-sm text-lion-blue">← Mes formations</Link>
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">{f.titre}</h1>
@@ -55,6 +57,7 @@ export default async function FormationPage({ params }: { params: { formation: s
           </Link>
         </>
       )}
+      <DirectsPanel formationSlug={f.slug} formationTitre={f.titre} directs={f.directs} modules={f.episodes.map(e => ({ slug: e.slug, titre: e.titre }))} />
     </main>
     </>
   )
