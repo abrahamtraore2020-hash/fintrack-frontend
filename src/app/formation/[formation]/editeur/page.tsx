@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Episode, Lecon } from '@/data/formation'
 import { slugify } from '@/lib/slug'
 import { uploadImage } from '@/lib/resizeImage'
@@ -26,6 +26,18 @@ export default function EditeurPage({ params }: { params: { formation: string } 
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState<string | null>(null)
+  // Dernier état connu du formulaire (lu par save, même appelé après un envoi d'image) et dernier état enregistré
+  const form = useRef({ titre, sousTitre, theme, episodes })
+  form.current = { titre, sousTitre, theme, episodes }
+  const enregistre = useRef('')
+  const modifie = episodes !== null && JSON.stringify(form.current) !== enregistre.current
+
+  useEffect(() => {
+    if (!modifie) return
+    const avertir = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener('beforeunload', avertir)
+    return () => window.removeEventListener('beforeunload', avertir)
+  }, [modifie])
 
   useEffect(() => {
     // Ignore une réponse arrivée après coup : elle écraserait les modifications en cours
@@ -43,6 +55,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
         if (new URLSearchParams(window.location.search).has('nouveau')) {
           eps.push({ slug: `${NOUVEAU}-${Date.now()}`, numero: eps.length + 1, titre: '', resume: '', lecons: [{ titre: '', points: [] }] })
         }
+        enregistre.current = JSON.stringify({ titre: d.formation.titre, sousTitre: d.formation.sousTitre, theme: d.formation.theme ?? DEFAULT_THEME, episodes: d.formation.episodes })
         setEpisodes(eps)
       })
       .catch(() => actif && setMessage('Impossible de charger la formation'))
@@ -57,10 +70,18 @@ export default function EditeurPage({ params }: { params: { formation: string } 
   const updateLecon = (i: number, j: number, patch: Partial<Lecon>) =>
     update(i, { lecons: episodes[i].lecons.map((l, k) => (k === j ? { ...l, ...patch } : l)) })
 
+  // Remplace les images d'une leçon et enregistre aussitôt, pour ne jamais les perdre en quittant la page.
+  const changerImages = (i: number, j: number, images: (prev: string[]) => string[]) => {
+    const next = form.current.episodes!.map((e, k) =>
+      k !== i ? e : { ...e, lecons: e.lecons.map((l, m) => (m !== j ? l : { ...l, images: images(l.images ?? []) })) },
+    )
+    setEpisodes(next)
+    save({ episodes: next })
+  }
+
   const addImages = async (i: number, j: number, files: FileList | null) => {
     if (!files?.length) return
-    const key = `${i}-${j}`
-    setUploading(key)
+    setUploading(`${i}-${j}`)
     setMessage('')
     const urls: string[] = []
     for (const f of Array.from(files)) {
@@ -70,18 +91,14 @@ export default function EditeurPage({ params }: { params: { formation: string } 
         setMessage(`❌ ${f.name} : ${(err as Error).message}`)
       }
     }
-    // Lecture fraîche de l'état : l'envoi peut prendre du temps
-    setEpisodes(prev =>
-      prev!.map((e, k) =>
-        k !== i ? e : { ...e, lecons: e.lecons.map((l, m) => (m !== j ? l : { ...l, images: [...(l.images ?? []), ...urls] })) },
-      ),
-    )
     setUploading(null)
-    if (urls.length) setMessage('📷 Image ajoutée : pensez à Enregistrer')
+    if (urls.length) changerImages(i, j, prev => [...prev, ...urls])
   }
 
-  const save = async () => {
-    if (episodes.some(e => !e.titre.trim())) return setMessage('❌ Chaque module doit avoir un titre')
+  const save = async (changes: Partial<typeof form.current> = {}) => {
+    const { titre, sousTitre, theme, episodes } = { ...form.current, ...changes }
+    if (!episodes) return
+    if (episodes.some(e => !e.titre.trim())) return setMessage('❌ Donnez un titre à chaque module, puis cliquez sur Enregistrer')
     setSaving(true)
     setMessage('')
     // Les modules créés ici prennent une adresse dérivée de leur titre.
@@ -100,6 +117,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
     })
     const d = await res.json().catch(() => ({}))
     if (res.ok) {
+      enregistre.current = JSON.stringify({ titre, sousTitre, theme, episodes: prepared })
       setEpisodes(prepared)
       setMessage('✅ Enregistré')
     } else setMessage(`❌ ${d.error || 'Erreur'}`)
@@ -115,7 +133,13 @@ export default function EditeurPage({ params }: { params: { formation: string } 
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 pb-28">
-      <Link href={`/formation/${params.formation}`} className="text-sm text-lion-blue">← Retour à la formation</Link>
+      <Link
+        href={`/formation/${params.formation}`}
+        onClick={e => modifie && !confirm('Vos modifications ne sont pas enregistrées. Quitter quand même ?') && e.preventDefault()}
+        className="text-sm text-lion-blue"
+      >
+        ← Retour à la formation
+      </Link>
       <h1 className="mt-4 text-2xl font-bold text-lion-blue">Modifier la formation</h1>
 
       <section className="mt-6 space-y-3 rounded-xl border-2 border-lion-gold bg-white p-4">
@@ -164,7 +188,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
                         <img src={src} alt="" className="h-20 w-28 rounded-md border border-lion-blue/15 object-cover" />
                         <button
                           aria-label="Retirer l’image"
-                          onClick={() => updateLecon(i, j, { images: l.images!.filter((_, m) => m !== k) })}
+                          onClick={() => changerImages(i, j, prev => prev.filter((_, m) => m !== k))}
                           className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-red-600 text-xs text-white"
                         >
                           ✕
@@ -204,10 +228,10 @@ export default function EditeurPage({ params }: { params: { formation: string } 
       </div>
 
       <div className="fixed inset-x-0 bottom-0 flex items-center justify-center gap-4 border-t-2 border-lion-gold bg-white/95 p-3 backdrop-blur">
-        <button className="rounded-lg bg-lion-blue px-6 py-2 font-semibold text-white disabled:opacity-50" disabled={saving} onClick={save}>
+        <button className="rounded-lg bg-lion-blue px-6 py-2 font-semibold text-white disabled:opacity-50" disabled={saving} onClick={() => save()}>
           {saving ? 'Enregistrement…' : 'Enregistrer'}
         </button>
-        {message && <span>{message}</span>}
+        {modifie && !message.startsWith('❌') ? <span className="text-sm text-lion-ink/60">Modifications non enregistrées</span> : message && <span>{message}</span>}
       </div>
     </main>
   )
