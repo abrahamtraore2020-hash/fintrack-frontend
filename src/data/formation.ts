@@ -1,6 +1,7 @@
 export interface Lecon {
   titre: string
   points: string[]
+  images?: string[] // adresses des images (captures, preuves sociales…)
 }
 
 export interface Episode {

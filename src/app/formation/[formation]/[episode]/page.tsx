@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { getEpisode } from '@/lib/formationStore'
 import { Whiteboard } from '@/components/formation/Whiteboard'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
+import { SlideViewer } from '@/components/formation/SlideViewer'
+import { ImageGallery } from '@/components/formation/Lightbox'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string; episode: string } }
@@ -18,27 +20,31 @@ export default async function EpisodePage({ params }: Params) {
   const { formation, episode, suivant } = found
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="mx-auto max-w-7xl px-4 py-10">
       <Link href={`/formation/${formation.slug}`} className="text-sm text-lion-blue">← {formation.titre}</Link>
-      <div className="mt-4 flex items-start justify-between gap-4">
+      <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
         <div>
           <p className="text-sm font-medium text-lion-blue">Module {episode.numero}</p>
           <h1 className="text-3xl font-bold">{episode.titre}</h1>
+          {episode.resume && <p className="mt-2 text-lion-ink/75">{episode.resume}</p>}
         </div>
         <DownloadPptx formationTitre={formation.titre} episodes={[episode]} label="PowerPoint du module" />
       </div>
-      {episode.resume && <p className="mt-2 text-lion-ink/75">{episode.resume}</p>}
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_28rem]">
-        <ol className="space-y-4">
-          {episode.lecons.map((l, i) => (
-            <li key={i} className="rounded-xl border border-lion-blue/15 border-l-4 border-l-lion-gold bg-white p-5 shadow-sm">
-              <h2 className="font-semibold">{i + 1}. {l.titre}</h2>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-lion-ink/80">
-                {l.points.map((p, k) => <li key={k}>{p}</li>)}
-              </ul>
-            </li>
-          ))}
-        </ol>
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_26rem]">
+        <div className="min-w-0 space-y-6">
+          <SlideViewer formationTitre={formation.titre} episode={episode} />
+          <ol className="space-y-4">
+            {episode.lecons.map((l, i) => (
+              <li key={i} className="rounded-xl border border-lion-blue/15 border-l-4 border-l-lion-gold bg-white p-5 shadow-sm">
+                <h2 className="font-semibold">{i + 1}. {l.titre}</h2>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-lion-ink/80">
+                  {l.points.map((p, k) => <li key={k}>{p}</li>)}
+                </ul>
+                <ImageGallery images={l.images ?? []} />
+              </li>
+            ))}
+          </ol>
+        </div>
         <aside className="self-start lg:sticky lg:top-4">
           <Whiteboard />
         </aside>

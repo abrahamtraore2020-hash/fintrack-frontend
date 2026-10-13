@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import type { Episode, Lecon } from '@/data/formation'
 import { slugify } from '@/lib/slug'
+import { uploadImage } from '@/lib/resizeImage'
 
 const input = 'w-full rounded-lg border border-lion-blue/20 bg-white px-3 py-2 focus:border-lion-blue focus:outline-none'
 const small = 'rounded-md border border-lion-blue/20 px-2 py-1 text-sm disabled:opacity-30'
@@ -21,6 +22,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
   const [episodes, setEpisodes] = useState<Episode[] | null>(null)
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/formation/formations/${params.formation}`)
@@ -44,6 +46,29 @@ export default function EditeurPage({ params }: { params: { formation: string } 
   const update = (i: number, patch: Partial<Episode>) => setEpisodes(episodes.map((e, k) => (k === i ? { ...e, ...patch } : e)))
   const updateLecon = (i: number, j: number, patch: Partial<Lecon>) =>
     update(i, { lecons: episodes[i].lecons.map((l, k) => (k === j ? { ...l, ...patch } : l)) })
+
+  const addImages = async (i: number, j: number, files: FileList | null) => {
+    if (!files?.length) return
+    const key = `${i}-${j}`
+    setUploading(key)
+    setMessage('')
+    const urls: string[] = []
+    for (const f of Array.from(files)) {
+      try {
+        urls.push(await uploadImage(f))
+      } catch (err) {
+        setMessage(`❌ ${f.name} : ${(err as Error).message}`)
+      }
+    }
+    // Lecture fraîche de l'état : l'envoi peut prendre du temps
+    setEpisodes(prev =>
+      prev!.map((e, k) =>
+        k !== i ? e : { ...e, lecons: e.lecons.map((l, m) => (m !== j ? l : { ...l, images: [...(l.images ?? []), ...urls] })) },
+      ),
+    )
+    setUploading(null)
+    if (urls.length) setMessage('📷 Image ajoutée : pensez à Enregistrer')
+  }
 
   const save = async () => {
     if (episodes.some(e => !e.titre.trim())) return setMessage('❌ Chaque module doit avoir un titre')
@@ -117,6 +142,37 @@ export default function EditeurPage({ params }: { params: { formation: string } 
                   onChange={ev => updateLecon(i, j, { points: ev.target.value.split('\n') })}
                   placeholder="Un point par ligne"
                 />
+                {!!l.images?.length && (
+                  <div className="flex flex-wrap gap-2">
+                    {l.images.map((src, k) => (
+                      <div key={src} className="relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={src} alt="" className="h-20 w-28 rounded-md border border-lion-blue/15 object-cover" />
+                        <button
+                          aria-label="Retirer l’image"
+                          onClick={() => updateLecon(i, j, { images: l.images!.filter((_, m) => m !== k) })}
+                          className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-red-600 text-xs text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <label className={`${small} inline-block cursor-pointer`}>
+                  {uploading === `${i}-${j}` ? 'Envoi…' : '📷 Ajouter des images'}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    multiple
+                    hidden
+                    disabled={uploading !== null}
+                    onChange={ev => {
+                      addImages(i, j, ev.target.files)
+                      ev.target.value = ''
+                    }}
+                  />
+                </label>
               </div>
             ))}
             <button className={small} onClick={() => update(i, { lecons: [...e.lecons, { titre: '', points: [] }] })}>+ Ajouter une leçon</button>

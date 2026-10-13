@@ -19,7 +19,10 @@ function validEpisode(e: unknown): e is Episode {
     !!x && typeof x.slug === 'string' && /^[a-z0-9-]+$/.test(x.slug) &&
     typeof x.titre === 'string' && x.titre.trim() !== '' &&
     typeof x.resume === 'string' && Array.isArray(x.lecons) &&
-    x.lecons.every(l => typeof l.titre === 'string' && Array.isArray(l.points) && l.points.every(p => typeof p === 'string'))
+    x.lecons.every(l =>
+      typeof l.titre === 'string' && Array.isArray(l.points) && l.points.every(p => typeof p === 'string') &&
+      (l.images === undefined || (Array.isArray(l.images) && l.images.every(u => typeof u === 'string' && /^https:\/\//.test(u))))
+    )
   )
 }
 

@@ -7,8 +7,12 @@ const INK = '0F172A'
 const FONT = 'Calibri'
 
 async function logoData(): Promise<string | null> {
+  return toDataUrl('/lion-attitude-head.png')
+}
+
+async function toDataUrl(url: string): Promise<string | null> {
   try {
-    const blob = await (await fetch('/lion-attitude-head.png')).blob()
+    const blob = await (await fetch(url)).blob()
     return await new Promise(resolve => {
       const r = new FileReader()
       r.onload = () => resolve(r.result as string)
@@ -18,6 +22,19 @@ async function logoData(): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+// Charge une image et calcule sa taille pour la faire tenir dans la case (w x h) sans la déformer.
+async function fitImage(url: string, x: number, y: number, w: number, h: number) {
+  const data = await toDataUrl(url)
+  if (!data) return null
+  const img = new Image()
+  await new Promise(r => ((img.onload = r), (img.onerror = r), (img.src = data)))
+  if (!img.naturalWidth) return null
+  const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight)
+  const iw = img.naturalWidth * scale
+  const ih = img.naturalHeight * scale
+  return { data, x: x + (w - iw) / 2, y: y + (h - ih) / 2, w: iw, h: ih }
 }
 
 // Construit et télécharge un .pptx (16:9) aux couleurs Lion Attitude à partir des modules.
@@ -76,18 +93,30 @@ export async function downloadPptx(formationTitre: string, episodes: Episode[], 
     if (logo) sec.addImage({ data: logo, x: 12.1, y: 6.3, w: 0.8, h: 0.93 })
 
     // Une diapositive par leçon
-    e.lecons.forEach((l, i) => {
+    for (let i = 0; i < e.lecons.length; i++) {
+      const l = e.lecons[i]
       const s = pptx.addSlide({ masterName: 'CONTENU' })
       s.addText(`Module ${e.numero} · Leçon ${i + 1}`, { x: 0.6, y: 0.35, w: 10, h: 0.4, fontSize: 12, color: '64748B', fontFace: FONT })
       s.addText(l.titre || 'Leçon', { x: 0.6, y: 0.75, w: 11.4, h: 0.9, fontSize: 32, bold: true, color: BLUE, fontFace: FONT, fit: 'shrink' })
       s.addShape('rect', { x: 0.6, y: 1.7, w: 1.2, h: 0.07, fill: { color: YELLOW } })
       const points = l.points.filter(p => p.trim())
+      const images = (l.images ?? []).slice(0, 4)
       if (points.length)
         s.addText(
           points.map(p => ({ text: p, options: { bullet: { code: '25CF' }, breakLine: true } })),
-          { x: 0.8, y: 2.1, w: 11.5, h: 4.5, fontSize: 24, color: INK, fontFace: FONT, valign: 'top', paraSpaceAfter: 14, fit: 'shrink' },
+          { x: 0.8, y: 2.1, w: images.length ? 5.9 : 11.5, h: 4.5, fontSize: images.length ? 20 : 24, color: INK, fontFace: FONT, valign: 'top', paraSpaceAfter: 14, fit: 'shrink' },
         )
-    })
+      // Images à droite : 1 grande, ou une grille de 2 x 2
+      const cols = images.length > 1 ? 2 : 1
+      const rows = images.length > 2 ? 2 : 1
+      const cw = (5.6 - (cols - 1) * 0.2) / cols
+      const ch = (4.5 - (rows - 1) * 0.2) / rows
+      for (let k = 0; k < images.length; k++) {
+        const url = images[k]
+        const fitted = await fitImage(url, 7.0 + (k % cols) * (cw + 0.2), 2.1 + Math.floor(k / cols) * (ch + 0.2), cw, ch)
+        if (fitted) s.addImage(fitted)
+      }
+    }
   }
 
   // Fin
