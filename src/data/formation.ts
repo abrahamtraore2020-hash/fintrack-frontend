@@ -41,7 +41,7 @@ export const EPISODES: Episode[] = [
     resume: 'Comprendre, trouver, créer et vendre un produit digital que le marché demande.',
     lecons: [
       { titre: 'Définition du produit digital', points: ['C’est quoi un produit digital', 'Exemples : ebook, formation, template, application, coaching'] },
-      { titre: 'Où vendre et où trouver des produits digitaux', points: ['Les plateformes de vente', 'Créer le sien ou revendre celui des autres'], images: ['/lion-attitude-logo.webp', '/lion-attitude-head.png'] },
+      { titre: 'Où vendre et où trouver des produits digitaux', points: ['Les plateformes de vente', 'Créer le sien ou revendre celui des autres'] },
       { titre: 'Produit passion ou produit qui résout un problème', points: ['Les deux approches', 'La logique problème → solution'] },
       { titre: 'Créer un produit que le marché demande', points: ['Trouver les vrais problèmes', 'Vérifier la demande avant de se lancer'] },
       { titre: 'Création du produit et ses composantes', points: ['Format, contenu, outils'] },
