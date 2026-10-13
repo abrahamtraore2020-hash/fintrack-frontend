@@ -1,33 +1,33 @@
 import Link from 'next/link'
-import { FORMATION } from '@/data/formation'
-import { getEpisodes } from '@/lib/formationStore'
+import { getFormations } from '@/lib/formationStore'
+import { CreateFormation } from '@/components/formation/CreateFormation'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: { absolute: `${FORMATION.titre} | Lion Attitude` } }
+export const metadata = { title: { absolute: 'Mes formations | Lion Attitude' } }
 
-export default async function FormationPage() {
-  const episodes = await getEpisodes()
+export default async function MesFormationsPage() {
+  const formations = await getFormations()
   return (
-    <main className="max-w-3xl mx-auto px-4 py-10">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{FORMATION.titre}</h1>
-          <p className="mt-2 text-lg opacity-80">{FORMATION.sousTitre}</p>
-        </div>
-        <Link href="/formation/editeur" className="rounded-lg border border-lion-gold/50 px-3 py-1.5 text-sm">✏️ Modifier</Link>
+    <main className="mx-auto max-w-3xl px-4 py-10">
+      <h1 className="text-3xl font-bold text-lion-blue">Mes formations</h1>
+      <div className="mt-6">
+        <CreateFormation />
       </div>
-      <ul className="mt-8 space-y-4">
-        {episodes.map(e => (
-          <li key={e.slug}>
-            <Link href={`/formation/${e.slug}`} className="block rounded-xl border border-lion-gold/30 bg-white p-5 hover:border-lion-gold transition">
-              <span className="text-sm text-lion-gold">Épisode {e.numero}</span>
-              <h2 className="text-xl font-semibold">{e.titre}</h2>
-              <p className="mt-1 opacity-80">{e.resume}</p>
-              <p className="mt-2 text-sm opacity-60">{e.lecons.length} leçon{e.lecons.length > 1 ? 's' : ''}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {formations.length === 0 ? (
+        <p className="mt-8 text-lion-ink/70">Vous n’avez pas encore de formation. Créez la première ci-dessus.</p>
+      ) : (
+        <ul className="mt-8 space-y-4">
+          {formations.map(f => (
+            <li key={f.slug}>
+              <Link href={`/formation/${f.slug}`} className="block rounded-xl border border-lion-blue/15 border-l-4 border-l-lion-gold bg-white p-5 shadow-sm transition hover:shadow-md">
+                <h2 className="text-xl font-semibold">{f.titre}</h2>
+                {f.sousTitre && <p className="mt-1 text-lion-ink/75">{f.sousTitre}</p>}
+                <p className="mt-2 text-sm font-medium text-lion-blue">{f.episodes.length} module{f.episodes.length > 1 ? 's' : ''}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   )
 }

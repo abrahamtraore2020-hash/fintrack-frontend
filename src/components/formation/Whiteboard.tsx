@@ -10,7 +10,7 @@ interface Stroke {
   points: [number, number][] // normalisés 0..1, pour survivre au redimensionnement
 }
 
-const COLORS = ['#111111', '#E11D48', '#2563EB', '#06D6A0', '#EAB308']
+const COLORS = ['#111111', '#1D4ED8', '#F2B705', '#E11D48', '#16A34A']
 const SIZES = [3, 6, 12]
 
 export function Whiteboard() {
@@ -99,7 +99,7 @@ export function Whiteboard() {
   }
 
   const btn = (active: boolean) =>
-    `rounded-md border px-2 py-1 text-sm ${active ? 'border-lion-gold bg-lion-gold/20 font-semibold' : 'border-lion-gold/30'}`
+    `rounded-md border px-2 py-1 text-sm ${active ? 'border-lion-blue bg-lion-blue/10 font-semibold text-lion-blue' : 'border-lion-blue/20'}`
 
   return (
     <div
@@ -107,7 +107,7 @@ export function Whiteboard() {
       className={
         expanded
           ? 'fixed inset-0 z-50 flex flex-col bg-white p-3 text-black'
-          : 'flex flex-col rounded-xl border border-lion-gold/30 bg-white p-2 text-black'
+          : 'flex flex-col rounded-xl border border-lion-blue/15 bg-white p-2 shadow-sm text-black'
       }
     >
       <div className="flex flex-wrap items-center gap-2 pb-2">
