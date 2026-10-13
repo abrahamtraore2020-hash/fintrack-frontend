@@ -30,12 +30,15 @@ export async function isFormationAuthorized(token: string | undefined): Promise<
   return sig === (await hmac(`formation:${exp}`, key))
 }
 
-export const sessionCookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
-  path: '/',
-  maxAge: SESSION_SECONDS,
+// remember = true : l'appareil reste connecté 30 jours ; sinon jusqu'à la fermeture du navigateur.
+export function sessionCookieOptions(remember: boolean) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+    ...(remember ? { maxAge: SESSION_SECONDS } : {}),
+  }
 }
 
 export function randomSalt(): string {

@@ -7,6 +7,8 @@ export default function AccesFormation() {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [erreur, setErreur] = useState('')
+  const [visible, setVisible] = useState(false)
+  const [remember, setRemember] = useState(true)
 
   useEffect(() => {
     fetch('/api/formation/status')
@@ -25,7 +27,7 @@ export default function AccesFormation() {
     const res = await fetch(configured ? '/api/formation/login' : '/api/formation/setup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ password, remember }),
     })
     if (res.ok) window.location.href = '/formation'
     else setErreur((await res.json().catch(() => ({}))).error || 'Erreur')
@@ -43,10 +45,43 @@ export default function AccesFormation() {
         )}
         {configured !== null && (
           <>
-            <input type="password" className={field} value={password} onChange={e => setPassword(e.target.value)} placeholder="Mot de passe" autoFocus />
+            {/* Identifiant caché : permet au navigateur de proposer d'enregistrer le mot de passe */}
+            <input type="text" name="username" autoComplete="username" value="formateur" readOnly hidden />
+            <div className="relative">
+              <input
+                type={visible ? 'text' : 'password'}
+                name="password"
+                autoComplete={configured ? 'current-password' : 'new-password'}
+                className={`${field} pr-12`}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Mot de passe"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => setVisible(v => !v)}
+                aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                className="absolute inset-y-0 right-0 px-3 text-lg"
+              >
+                {visible ? '🙈' : '👁️'}
+              </button>
+            </div>
             {!configured && (
-              <input type="password" className={field} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Confirmer le mot de passe" />
+              <input
+                type={visible ? 'text' : 'password'}
+                name="confirm"
+                autoComplete="new-password"
+                className={field}
+                value={confirm}
+                onChange={e => setConfirm(e.target.value)}
+                placeholder="Confirmer le mot de passe"
+              />
             )}
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="h-4 w-4 accent-gold" />
+              Se souvenir de moi (30 jours)
+            </label>
             <button className="w-full rounded-lg bg-gold px-4 py-2 font-semibold text-black">
               {configured ? 'Entrer' : 'Créer et entrer'}
             </button>
