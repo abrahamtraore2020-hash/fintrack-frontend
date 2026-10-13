@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getEpisode } from '@/lib/formationStore'
 import { Whiteboard } from '@/components/formation/Whiteboard'
+import { DownloadPptx } from '@/components/formation/DownloadPptx'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string; episode: string } }
@@ -19,8 +20,13 @@ export default async function EpisodePage({ params }: Params) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <Link href={`/formation/${formation.slug}`} className="text-sm text-lion-blue">← {formation.titre}</Link>
-      <p className="mt-4 text-sm font-medium text-lion-blue">Module {episode.numero}</p>
-      <h1 className="text-3xl font-bold">{episode.titre}</h1>
+      <div className="mt-4 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-lion-blue">Module {episode.numero}</p>
+          <h1 className="text-3xl font-bold">{episode.titre}</h1>
+        </div>
+        <DownloadPptx formationTitre={formation.titre} episodes={[episode]} label="PowerPoint du module" />
+      </div>
       {episode.resume && <p className="mt-2 text-lion-ink/75">{episode.resume}</p>}
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_28rem]">
         <ol className="space-y-4">
