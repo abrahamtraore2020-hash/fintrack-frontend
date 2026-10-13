@@ -2,12 +2,14 @@ import { createClient } from '@supabase/supabase-js'
 import { EPISODES, FORMATION, type Episode } from '@/data/formation'
 import { hashPassword, randomSalt } from '@/lib/formationAuth'
 import { slugify } from '@/lib/slug'
+import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
 
 export interface Formation {
   slug: string
   titre: string
   sousTitre: string
   episodes: Episode[]
+  theme: Theme
 }
 
 // Adresses déjà prises par des pages fixes de /formation
@@ -18,6 +20,7 @@ const DEFAULT_FORMATION: Formation = {
   titre: FORMATION.titre,
   sousTitre: FORMATION.sousTitre,
   episodes: EPISODES,
+  theme: DEFAULT_THEME,
 }
 
 function admin() {
@@ -27,12 +30,13 @@ function admin() {
   return createClient(url, key, { auth: { persistSession: false } })
 }
 
-type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[] }
+type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown }
 const toFormation = (r: Row): Formation => ({
   slug: r.slug,
   titre: r.titre,
   sousTitre: r.sous_titre,
   episodes: (r.episodes ?? []).map((e, i) => ({ ...e, numero: i + 1 })),
+  theme: normalizeTheme(r.theme),
 })
 
 // En cas d'erreur (base indisponible, table pas encore créée), on affiche la formation de départ.
@@ -76,9 +80,11 @@ export async function saveFormation(slug: string, f: Omit<Formation, 'slug'>): P
   const episodes = f.episodes.map(({ slug, titre, resume, lecons }) => ({ slug, titre, resume, lecons }))
   const { data, error } = await db
     .from('formation_formations')
-    .update({ titre: f.titre, sous_titre: f.sousTitre, episodes, updated_at: new Date().toISOString() })
+    .update({ titre: f.titre, sous_titre: f.sousTitre, episodes, theme: normalizeTheme(f.theme), updated_at: new Date().toISOString() })
     .eq('slug', slug)
     .select('slug')
+  if (error && /theme/.test(error.message))
+    return 'Il manque la colonne « theme » : exécutez le SQL 008_formation_theme.sql dans Supabase'
   if (error) return error.message
   return data.length === 0 ? 'Formation introuvable' : null
 }

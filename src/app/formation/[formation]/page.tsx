@@ -22,7 +22,7 @@ export default async function FormationPage({ params }: { params: { formation: s
           {f.sousTitre && <p className="mt-2 text-lg text-lion-ink/75">{f.sousTitre}</p>}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row">
-          <DownloadPptx formationTitre={f.titre} episodes={f.episodes} label="PowerPoint de la formation" />
+          <DownloadPptx formationTitre={f.titre} episodes={f.episodes} theme={f.theme} label="PowerPoint de la formation" />
           <Link href={`/formation/${f.slug}/editeur`} className="rounded-lg border border-lion-blue/30 px-3 py-1.5 text-sm text-lion-blue">✏️ Modifier</Link>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Episode } from '@/data/formation'
 import { fail, requireTrainer } from '@/lib/formationApi'
 import { deleteFormation, getFormation, saveFormation } from '@/lib/formationStore'
+import { normalizeTheme } from '@/data/theme'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string } }
@@ -29,11 +30,11 @@ function validEpisode(e: unknown): e is Episode {
 export async function PUT(req: NextRequest, { params }: Params) {
   const denied = await requireTrainer(req)
   if (denied) return denied
-  const { titre, sousTitre, episodes } = await req.json().catch(() => ({}))
+  const { titre, sousTitre, episodes, theme } = await req.json().catch(() => ({}))
   if (typeof titre !== 'string' || !titre.trim()) return fail('Donnez un nom à la formation')
   if (typeof sousTitre !== 'string' || !Array.isArray(episodes) || !episodes.every(validEpisode)) return fail('Données invalides')
   if (new Set(episodes.map((e: Episode) => e.slug)).size !== episodes.length) return fail('Deux modules ont le même identifiant')
-  const error = await saveFormation(params.formation, { titre: titre.trim(), sousTitre: sousTitre.trim(), episodes })
+  const error = await saveFormation(params.formation, { titre: titre.trim(), sousTitre: sousTitre.trim(), episodes, theme: normalizeTheme(theme) })
   return error ? fail(error, 500) : NextResponse.json({ ok: true })
 }
 

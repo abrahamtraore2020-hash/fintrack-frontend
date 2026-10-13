@@ -3,15 +3,16 @@
 import { useState } from 'react'
 import type { Episode } from '@/data/formation'
 import { slugify } from '@/lib/slug'
+import type { Theme } from '@/data/theme'
 
-export function DownloadPptx({ formationTitre, episodes, label }: { formationTitre: string; episodes: Episode[]; label: string }) {
+export function DownloadPptx({ formationTitre, episodes, theme, label }: { formationTitre: string; episodes: Episode[]; theme: Theme; label: string }) {
   const [busy, setBusy] = useState(false)
   const download = async () => {
     setBusy(true)
     try {
       const { downloadPptx } = await import('@/lib/formationPptx')
       const nom = episodes.length === 1 ? `${formationTitre} - Module ${episodes[0].numero} - ${episodes[0].titre}` : formationTitre
-      await downloadPptx(formationTitre, episodes, `${slugify(nom)}.pptx`)
+      await downloadPptx(formationTitre, episodes, theme, `${slugify(nom)}.pptx`)
     } catch {
       alert('Impossible de créer le PowerPoint. Réessayez.')
     }

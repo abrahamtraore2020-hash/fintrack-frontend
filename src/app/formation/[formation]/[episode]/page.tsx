@@ -28,11 +28,11 @@ export default async function EpisodePage({ params }: Params) {
           <h1 className="text-3xl font-bold">{episode.titre}</h1>
           {episode.resume && <p className="mt-2 text-lion-ink/75">{episode.resume}</p>}
         </div>
-        <DownloadPptx formationTitre={formation.titre} episodes={[episode]} label="PowerPoint du module" />
+        <DownloadPptx formationTitre={formation.titre} episodes={[episode]} theme={formation.theme} label="PowerPoint du module" />
       </div>
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_26rem]">
         <div className="min-w-0 space-y-6">
-          <SlideViewer formationTitre={formation.titre} episode={episode} />
+          <SlideViewer formationTitre={formation.titre} episode={episode} theme={formation.theme} />
           <ol className="space-y-4">
             {episode.lecons.map((l, i) => (
               <li key={i} className="rounded-xl border border-lion-blue/15 border-l-4 border-l-lion-gold bg-white p-5 shadow-sm">
