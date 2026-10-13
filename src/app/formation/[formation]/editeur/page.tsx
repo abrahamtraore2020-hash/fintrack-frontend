@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import type { Episode, Lecon } from '@/data/formation'
 import { slugify } from '@/lib/slug'
 import { uploadImage } from '@/lib/resizeImage'
+import { DEFAULT_THEME, type Theme } from '@/data/theme'
+import { ThemeEditor } from '@/components/formation/ThemeEditor'
 
 const input = 'w-full rounded-lg border border-lion-blue/20 bg-white px-3 py-2 focus:border-lion-blue focus:outline-none'
 const small = 'rounded-md border border-lion-blue/20 px-2 py-1 text-sm disabled:opacity-30'
@@ -19,18 +21,23 @@ const move = <T,>(arr: T[], i: number, d: number) => {
 export default function EditeurPage({ params }: { params: { formation: string } }) {
   const [titre, setTitre] = useState('')
   const [sousTitre, setSousTitre] = useState('')
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME)
   const [episodes, setEpisodes] = useState<Episode[] | null>(null)
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState<string | null>(null)
 
   useEffect(() => {
+    // Ignore une réponse arrivée après coup : elle écraserait les modifications en cours
+    let actif = true
     fetch(`/api/formation/formations/${params.formation}`)
       .then(r => r.json())
       .then(d => {
+        if (!actif) return
         if (!d.formation) return setMessage(d.error || 'Formation introuvable')
         setTitre(d.formation.titre)
         setSousTitre(d.formation.sousTitre)
+        setTheme(d.formation.theme ?? DEFAULT_THEME)
         const eps: Episode[] = d.formation.episodes
         // Arrivée par « Ajouter un module » : un module vide est prêt à remplir
         if (new URLSearchParams(window.location.search).has('nouveau')) {
@@ -38,7 +45,10 @@ export default function EditeurPage({ params }: { params: { formation: string } 
         }
         setEpisodes(eps)
       })
-      .catch(() => setMessage('Impossible de charger la formation'))
+      .catch(() => actif && setMessage('Impossible de charger la formation'))
+    return () => {
+      actif = false
+    }
   }, [params.formation])
 
   if (!episodes) return <main className="p-10">{message || 'Chargement…'}</main>
@@ -86,7 +96,7 @@ export default function EditeurPage({ params }: { params: { formation: string } 
     const res = await fetch(`/api/formation/formations/${params.formation}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ titre, sousTitre, episodes: prepared }),
+      body: JSON.stringify({ titre, sousTitre, episodes: prepared, theme }),
     })
     const d = await res.json().catch(() => ({}))
     if (res.ok) {
@@ -112,6 +122,10 @@ export default function EditeurPage({ params }: { params: { formation: string } 
         <input className={input} value={titre} onChange={e => setTitre(e.target.value)} placeholder="Nom de la formation" />
         <textarea className={input} rows={2} value={sousTitre} onChange={e => setSousTitre(e.target.value)} placeholder="Description" />
       </section>
+
+      <div className="mt-6">
+        <ThemeEditor theme={theme} onChange={setTheme} formationTitre={titre} episode={episodes.find(e => e.lecons.length > 0)} />
+      </div>
 
       <div className="mt-6 space-y-6">
         {episodes.map((e, i) => (
