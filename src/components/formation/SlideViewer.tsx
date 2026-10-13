@@ -130,10 +130,11 @@ export function SlideViewer({ formationTitre, episode, theme }: { formationTitre
                   <button
                     key={src}
                     onClick={() => setZoom({ images: s.lecon.images!, start: k })}
-                    className="min-h-0 overflow-hidden rounded-[0.8cqw] bg-white shadow-lg ring-1 ring-black/5"
+                    className="relative min-h-0 cursor-zoom-in overflow-hidden rounded-[0.8cqw] bg-white shadow-lg ring-1 ring-black/5"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" className="h-full w-full object-contain" />
+                    <span className="absolute bottom-[0.6cqw] right-[0.6cqw] rounded-full bg-black/60 px-[0.8cqw] py-[0.2cqw] text-[1cqw] text-white">🔍</span>
                   </button>
                 ))}
               </div>
