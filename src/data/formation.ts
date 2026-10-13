@@ -11,6 +11,11 @@ export interface Episode {
   lecons: Lecon[]
 }
 
+export const PLATEFORME = {
+  nom: 'Lion Attitude',
+  sousTitre: 'Académie de formation de produits digitaux et de transformation de la jeunesse ambitieuse',
+}
+
 export const FORMATION = {
   titre: 'Lance ton produit digital',
   sousTitre: 'Du problème à la solution, en 1 mois maximum',

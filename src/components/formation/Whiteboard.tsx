@@ -99,7 +99,7 @@ export function Whiteboard() {
   }
 
   const btn = (active: boolean) =>
-    `rounded-md border px-2 py-1 text-sm ${active ? 'border-gold bg-gold/20 font-semibold' : 'border-gold/30'}`
+    `rounded-md border px-2 py-1 text-sm ${active ? 'border-lion-gold bg-lion-gold/20 font-semibold' : 'border-lion-gold/30'}`
 
   return (
     <div
@@ -107,7 +107,7 @@ export function Whiteboard() {
       className={
         expanded
           ? 'fixed inset-0 z-50 flex flex-col bg-white p-3 text-black'
-          : 'flex flex-col rounded-xl border border-gold/30 bg-white p-2 text-black'
+          : 'flex flex-col rounded-xl border border-lion-gold/30 bg-white p-2 text-black'
       }
     >
       <div className="flex flex-wrap items-center gap-2 pb-2">
