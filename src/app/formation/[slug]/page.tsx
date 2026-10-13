@@ -1,17 +1,14 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { EPISODES, getEpisode } from '@/data/formation'
+import { getEpisodeBySlug } from '@/lib/formationStore'
 import { Whiteboard } from '@/components/formation/Whiteboard'
 
-export function generateStaticParams() {
-  return EPISODES.map(e => ({ slug: e.slug }))
-}
+export const dynamic = 'force-dynamic'
 
-export default function EpisodePage({ params }: { params: { slug: string } }) {
-  const episode = getEpisode(params.slug)
-  if (!episode) notFound()
-  const index = EPISODES.indexOf(episode)
-  const suivant = EPISODES[index + 1]
+export default async function EpisodePage({ params }: { params: { slug: string } }) {
+  const found = await getEpisodeBySlug(params.slug)
+  if (!found) notFound()
+  const { episode, suivant } = found
 
   return (
     <main className="min-h-screen max-w-6xl mx-auto px-4 py-10">

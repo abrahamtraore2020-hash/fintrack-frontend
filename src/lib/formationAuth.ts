@@ -6,3 +6,9 @@ export async function formationToken(password: string): Promise<string> {
   const hash = await crypto.subtle.digest('SHA-256', data)
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
 }
+
+// Vérifie le cookie d'accès formateur (routes API).
+export async function isFormationAuthorized(cookieValue: string | undefined): Promise<boolean> {
+  const password = process.env.FORMATION_PASSWORD
+  return !!password && cookieValue === (await formationToken(password))
+}
