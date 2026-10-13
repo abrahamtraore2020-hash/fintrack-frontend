@@ -14,7 +14,7 @@ const config: Config = {
       },
       colors: {
         // Charte Lion Attitude (plateforme /formation)
-        lion: { gold: '#C9A23F', ink: '#111111', cream: '#FBF8F1' },
+        lion: { gold: '#F2B705', blue: '#1D4ED8', ink: '#0F172A' },
         gold: {
           50:  '#F0FEFA',
           100: '#CCFBF1',
