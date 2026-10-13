@@ -50,11 +50,13 @@ export async function saveEpisodes(episodes: Episode[]): Promise<string | null> 
   return delError ? delError.message : null
 }
 
-export async function getPasswordRecord(): Promise<{ hash: string; salt: string } | null | 'error'> {
-  const db = admin()
-  if (!db) return 'error'
+export async function getPasswordRecord(): Promise<{ hash: string; salt: string } | null | { error: string }> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!url) return { error: 'Variable NEXT_PUBLIC_SUPABASE_URL absente dans Vercel' }
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return { error: 'Variable SUPABASE_SERVICE_ROLE_KEY absente dans Vercel (environnement Production)' }
+  const db = admin()!
   const { data, error } = await db.from('formation_settings').select('password_hash, salt').eq('id', 1).maybeSingle()
-  if (error) return 'error'
+  if (error) return { error: `Supabase répond : ${error.message}` }
   return data ? { hash: data.password_hash, salt: data.salt } : null
 }
 

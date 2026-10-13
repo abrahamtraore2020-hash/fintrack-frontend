@@ -8,8 +8,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Le mot de passe doit contenir au moins 8 caractères' }, { status: 400 })
   }
   const existing = await getPasswordRecord()
-  if (existing === 'error') return NextResponse.json({ error: 'Base de données indisponible ou table manquante' }, { status: 503 })
-  if (existing) return NextResponse.json({ error: 'Un mot de passe existe déjà' }, { status: 409 })
+  if (existing && 'error' in existing) return NextResponse.json({ error: existing.error }, { status: 503 })
+  if (existing && 'hash' in existing) return NextResponse.json({ error: 'Un mot de passe existe déjà' }, { status: 409 })
 
   const salt = randomSalt()
   const err = await createPasswordRecord(await hashPassword(password, salt), salt)
