@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getFormation } from '@/lib/formationStore'
+import { compterInscriptions, getFormation } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
 import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: { params: { formation: string
 export default async function FormationPage({ params }: { params: { formation: string } }) {
   const { formation: f, erreur } = await getFormation(params.formation)
   if (!f) notFound()
+  const inscrits = await compterInscriptions()
   return (
     <>
     <ErreurBase message={erreur} />
@@ -57,7 +58,7 @@ export default async function FormationPage({ params }: { params: { formation: s
           </Link>
         </>
       )}
-      <DirectsPanel formations={[{ slug: f.slug, titre: f.titre, directs: f.directs }]} fixe={f.slug} />
+      <DirectsPanel formations={[{ slug: f.slug, titre: f.titre, directs: f.directs }]} fixe={f.slug} inscrits={inscrits} />
     </main>
     </>
   )
