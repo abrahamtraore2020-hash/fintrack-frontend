@@ -6,6 +6,7 @@ import { DownloadPptx } from '@/components/formation/DownloadPptx'
 import { SlideViewer } from '@/components/formation/SlideViewer'
 import { ImageGallery } from '@/components/formation/Lightbox'
 import { ErreurBase } from '@/components/formation/ErreurBase'
+import { LiveBanner } from '@/components/formation/DirectsPanel'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string; episode: string } }
@@ -24,7 +25,8 @@ export default async function EpisodePage({ params }: Params) {
     <>
     <ErreurBase message={erreur} />
     <main className="mx-auto max-w-7xl px-4 py-10">
-      <Link href={`/formation/${formation.slug}`} className="text-sm text-lion-blue">← {formation.titre}</Link>
+      <LiveBanner directs={formation.directs} />
+      <Link href={`/formation/${formation.slug}`} className="mt-4 inline-block text-sm text-lion-blue">← {formation.titre}</Link>
       <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
         <div>
           <p className="text-sm font-medium text-lion-blue">Module {episode.numero}</p>

@@ -3,6 +3,7 @@ import { EPISODES, FORMATION, type Episode } from '@/data/formation'
 import { hashPassword, randomSalt } from '@/lib/formationAuth'
 import { slugify } from '@/lib/slug'
 import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
+import { normalizeDirects, type Direct } from '@/data/direct'
 
 export interface Formation {
   slug: string
@@ -10,6 +11,7 @@ export interface Formation {
   sousTitre: string
   episodes: Episode[]
   theme: Theme
+  directs: Direct[]
 }
 
 // Adresses déjà prises par des pages fixes de /formation
@@ -21,6 +23,7 @@ const DEFAULT_FORMATION: Formation = {
   sousTitre: FORMATION.sousTitre,
   episodes: EPISODES,
   theme: DEFAULT_THEME,
+  directs: [],
 }
 
 function admin() {
@@ -34,13 +37,14 @@ function admin() {
   })
 }
 
-type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown }
+type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown; directs?: unknown }
 const toFormation = (r: Row): Formation => ({
   slug: r.slug,
   titre: r.titre,
   sousTitre: r.sous_titre,
   episodes: (r.episodes ?? []).map((e, i) => ({ ...e, numero: i + 1 })),
   theme: normalizeTheme(r.theme),
+  directs: normalizeDirects(r.directs),
 })
 
 // Si la base ne répond pas, on affiche la formation de départ AVEC la cause de l'erreur :
@@ -80,7 +84,7 @@ export async function createFormation(titre: string, sousTitre: string): Promise
   return insError ? { error: insError.message } : { slug }
 }
 
-export async function saveFormation(slug: string, f: Omit<Formation, 'slug'>): Promise<string | null> {
+export async function saveFormation(slug: string, f: Omit<Formation, 'slug' | 'directs'>): Promise<string | null> {
   const db = admin()
   if (!db) return 'Supabase n’est pas configuré'
   const episodes = f.episodes.map(({ slug, titre, resume, lecons }) => ({ slug, titre, resume, lecons }))
@@ -91,6 +95,16 @@ export async function saveFormation(slug: string, f: Omit<Formation, 'slug'>): P
     .select('slug')
   if (error && /theme/.test(error.message))
     return 'Il manque la colonne « theme » : exécutez le SQL 008_formation_theme.sql dans Supabase'
+  if (error) return error.message
+  return data.length === 0 ? 'Formation introuvable' : null
+}
+
+export async function saveDirects(slug: string, directs: Direct[]): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  const { data, error } = await db.from('formation_formations').update({ directs: normalizeDirects(directs) }).eq('slug', slug).select('slug')
+  if (error && /directs/.test(error.message))
+    return 'Il manque la colonne « directs » : exécutez le SQL 009_formation_directs.sql dans Supabase'
   if (error) return error.message
   return data.length === 0 ? 'Formation introuvable' : null
 }
