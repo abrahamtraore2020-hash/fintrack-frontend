@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { lireFormations } from '@/lib/formationStore'
+import { compterInscriptions, lireFormations } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
 import { CreateFormation } from '@/components/formation/CreateFormation'
@@ -9,6 +9,7 @@ export const metadata = { title: { absolute: 'Mes formations | Lion Attitude' } 
 
 export default async function MesFormationsPage() {
   const { formations, erreur } = await lireFormations()
+  const inscrits = await compterInscriptions()
   return (
     <>
     <ErreurBase message={erreur} />
@@ -33,7 +34,7 @@ export default async function MesFormationsPage() {
           ))}
         </ul>
       )}
-      <DirectsPanel formations={formations.map(f => ({ slug: f.slug, titre: f.titre, directs: f.directs }))} />
+      <DirectsPanel formations={formations.map(f => ({ slug: f.slug, titre: f.titre, directs: f.directs }))} inscrits={inscrits} />
     </main>
     </>
   )

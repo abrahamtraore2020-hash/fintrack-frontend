@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { PLATEFORME } from '@/data/formation'
-import { dateLongue, etat, heure, invitation, type Direct, type Etat } from '@/data/direct'
+import { dateLongue, etat, heure, invitation, type Direct, type Etat, type Inscription } from '@/data/direct'
 
 type Groupe = { slug: string; titre: string; directs: Direct[] }
 type Ligne = Direct & { formation: string }
@@ -29,7 +29,7 @@ const BADGE: Record<Etat, { texte: string; cls: string }> = {
 }
 
 // Directs d'une formation (fixe = son adresse) ou de toutes les formations, avec choix de la formation.
-export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?: string }) {
+export function DirectsPanel({ formations, fixe, inscrits = {} }: { formations: Groupe[]; fixe?: string; inscrits?: Record<string, number> }) {
   const router = useRouter()
   const now = useMaintenant()
   const [form, setForm] = useState<typeof VIDE & { id?: string; origine?: string } | null>(null)
@@ -37,6 +37,8 @@ export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?
   const [busy, setBusy] = useState(false)
   const [copie, setCopie] = useState<string | null>(null)
   const [voirPasses, setVoirPasses] = useState(false)
+  const [ouvert, setOuvert] = useState<string | null>(null)
+  const [liste, setListe] = useState<Record<string, Inscription[] | string>>({})
 
   const groupes = fixe ? formations.filter(f => f.slug === fixe) : formations
   const titreDe = (slug: string) => formations.find(f => f.slug === slug)?.titre ?? ''
@@ -66,7 +68,14 @@ export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?
     if (!form) return
     if (!form.formation) return setMessage('❌ Choisissez la formation')
     if (!/^https:\/\//.test(form.lien.trim())) return setMessage('❌ Collez le lien de la réunion (il commence par https://meet.google.com/…)')
-    const direct: Direct = { id: form.id ?? crypto.randomUUID(), titre: form.titre.trim(), debut: form.debut, duree: Number(form.duree), lien: form.lien.trim() }
+    const direct: Direct = {
+      id: form.id ?? crypto.randomUUID(),
+      titre: form.titre.trim(),
+      debut: form.debut,
+      fuseau: Intl.DateTimeFormat().resolvedOptions().timeZone, // l'heure saisie est celle de votre appareil
+      duree: Number(form.duree),
+      lien: form.lien.trim(),
+    }
     setBusy(true)
     setMessage('')
     let ok: boolean
@@ -91,8 +100,23 @@ export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?
     setBusy(false)
   }
 
+  const [origine, setOrigine] = useState('')
+  useEffect(() => setOrigine(window.location.origin), [])
+  const pageDe = (d: Direct) => `${origine}/direct/${d.id}`
+
+  const voirInscrits = async (d: Ligne) => {
+    if (ouvert === d.id) return setOuvert(null)
+    setOuvert(d.id)
+    const res = await fetch(`/api/formation/directs/${d.id}/inscriptions`)
+    const j = await res.json().catch(() => ({}))
+    setListe(l => ({ ...l, [d.id]: res.ok ? j.inscriptions : j.error || 'Erreur' }))
+  }
+
+  const rappel = (d: Ligne, i: Inscription) =>
+    `Bonjour ${i.nom.split(' ')[0]} 👋\nRappel : ${d.titre} commence à ${heure(d)}.\nRejoignez la salle ici : ${pageDe(d)}`
+
   const copier = async (d: Ligne) => {
-    await navigator.clipboard.writeText(invitation(d, PLATEFORME.nom, titreDe(d.formation))).catch(() => {})
+    await navigator.clipboard.writeText(invitation(d, PLATEFORME.nom, titreDe(d.formation), pageDe(d))).catch(() => {})
     setCopie(d.id)
     setTimeout(() => setCopie(null), 2500)
   }
@@ -111,7 +135,7 @@ export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?
           <div>
             <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE[e].cls}`}>{BADGE[e].texte}</span>
             <h3 className="mt-1.5 text-lg font-semibold">{d.titre}</h3>
-            <p className="text-sm capitalize text-lion-ink/70">
+            <p className="text-sm first-letter:uppercase text-lion-ink/70">
               {dateLongue(d)} · {heure(d)} · {d.duree} min
             </p>
             {!fixe && (
@@ -133,13 +157,64 @@ export function DirectsPanel({ formations, fixe }: { formations: Groupe[]; fixe?
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <button className={small} onClick={() => copier(d)}>{copie === d.id ? '✅ Copiée' : '📋 Copier l’invitation'}</button>
-          <a className={small} href={`https://wa.me/?text=${encodeURIComponent(invitation(d, PLATEFORME.nom, titreDe(d.formation)))}`} target="_blank" rel="noopener noreferrer">
+          <a className={small} href={`https://wa.me/?text=${encodeURIComponent(invitation(d, PLATEFORME.nom, titreDe(d.formation), pageDe(d)))}`} target="_blank" rel="noopener noreferrer">
             💬 Envoyer sur WhatsApp
           </a>
           <button className={small} onClick={() => (setMessage(''), setForm({ titre: d.titre, debut: d.debut, duree: d.duree, lien: d.lien, formation: d.formation, id: d.id, origine: d.formation }))}>
             ✏️ Modifier
           </button>
           <button className={`${small} text-red-600`} disabled={busy} onClick={() => supprimer(d)} aria-label="Supprimer le direct">🗑️</button>
+        </div>
+        {e !== 'termine' && (
+          <div className="mt-3 rounded-lg bg-lion-blue/[0.04] p-3 text-sm">
+            <p className="font-semibold text-lion-blue">✍️ Page d’inscription à envoyer à vos participants</p>
+            <p className="mt-1 break-all text-lion-ink/70">{pageDe(d)}</p>
+            <p className="mt-1 text-xs text-lion-ink/60">Le lien Meet y reste caché : il apparaît seulement 15 minutes avant le début.</p>
+          </div>
+        )}
+        <div className="mt-3">
+          <button className="text-sm font-medium text-lion-blue underline" onClick={() => voirInscrits(d)}>
+            👥 {inscrits[d.id] ?? 0} inscrit{(inscrits[d.id] ?? 0) > 1 ? 's' : ''} {ouvert === d.id ? '(masquer)' : '(voir la liste)'}
+          </button>
+          {ouvert === d.id && (
+            <div className="mt-2">
+              {typeof liste[d.id] === 'string' ? (
+                <p className="text-sm text-red-600">{liste[d.id] as string}</p>
+              ) : !liste[d.id] ? (
+                <p className="text-sm text-lion-ink/60">Chargement…</p>
+              ) : (liste[d.id] as Inscription[]).length === 0 ? (
+                <p className="text-sm text-lion-ink/60">Personne ne s’est encore inscrit. Envoyez la page d’inscription ci-dessus.</p>
+              ) : (
+                <>
+                  <ul className="divide-y divide-lion-blue/10 rounded-lg border border-lion-blue/10 bg-white">
+                    {(liste[d.id] as Inscription[]).map(i => (
+                      <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
+                        <span>
+                          <span className="font-medium">{i.nom}</span>{' '}
+                          <span className="text-lion-ink/60">{i.canal === 'whatsapp' ? `+${i.contact}` : i.contact}</span>
+                        </span>
+                        {i.canal === 'whatsapp' ? (
+                          <a className={small} target="_blank" rel="noopener noreferrer" href={`https://wa.me/${i.contact}?text=${encodeURIComponent(rappel(d, i))}`}>
+                            💬 Rappel WhatsApp
+                          </a>
+                        ) : (
+                          <a className={small} href={`mailto:${i.contact}?subject=${encodeURIComponent(`Rappel : ${d.titre}`)}&body=${encodeURIComponent(rappel(d, i))}`}>
+                            ✉️ Rappel email
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    className={`${small} mt-2`}
+                    onClick={() => navigator.clipboard.writeText((liste[d.id] as Inscription[]).map(i => `${i.nom};${i.canal === 'whatsapp' ? '+' : ''}${i.contact}`).join('\n')).catch(() => {})}
+                  >
+                    📋 Copier la liste
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </li>
     )

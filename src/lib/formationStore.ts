@@ -3,7 +3,7 @@ import { EPISODES, FORMATION, type Episode } from '@/data/formation'
 import { hashPassword, randomSalt } from '@/lib/formationAuth'
 import { slugify } from '@/lib/slug'
 import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
-import { normalizeDirects, type Direct } from '@/data/direct'
+import { normalizeDirects, type Direct, type Inscription } from '@/data/direct'
 
 export interface Formation {
   slug: string
@@ -158,4 +158,46 @@ export async function setDisplayName(nom: string): Promise<string | null> {
   if (!db) return 'Supabase n’est pas configuré'
   const { error } = await db.from('formation_settings').update({ display_name: nom }).eq('id', 1)
   return error ? error.message : null
+}
+
+// ---- Directs : page publique et inscriptions ----
+
+export async function trouverDirect(id: string): Promise<{ direct: Direct; formation: string } | null | { erreur: string }> {
+  const { formations, erreur } = await lireFormations()
+  if (erreur) return { erreur }
+  for (const f of formations) {
+    const direct = f.directs.find(d => d.id === id)
+    if (direct) return { direct, formation: f.titre }
+  }
+  return null
+}
+
+const MAX_INSCRITS = 1000
+
+export async function inscrire(directId: string, nom: string, contact: string, canal: 'whatsapp' | 'email'): Promise<{ ok: true } | { ok: false; erreur: string; doublon?: boolean }> {
+  const db = admin()
+  if (!db) return { ok: false, erreur: 'Service indisponible' }
+  const { count, error: errCount } = await db.from('formation_inscriptions').select('id', { count: 'exact', head: true }).eq('direct_id', directId)
+  if (errCount) return { ok: false, erreur: /formation_inscriptions/.test(errCount.message) ? 'Les inscriptions ne sont pas encore activées' : 'Service indisponible' }
+  if ((count ?? 0) >= MAX_INSCRITS) return { ok: false, erreur: 'Les inscriptions sont complètes' }
+  const { error } = await db.from('formation_inscriptions').insert({ direct_id: directId, nom, contact, canal })
+  if (error?.code === '23505') return { ok: false, erreur: 'Vous êtes déjà inscrit(e)', doublon: true }
+  return error ? { ok: false, erreur: 'Inscription impossible, réessayez' } : { ok: true }
+}
+
+export async function listerInscriptions(directId: string): Promise<{ inscriptions: Inscription[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { inscriptions: [], erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_inscriptions').select('id, nom, contact, canal, created_at').eq('direct_id', directId).order('created_at')
+  if (error) return { inscriptions: [], erreur: /formation_inscriptions/.test(error.message) ? 'Exécutez le SQL 010_formation_inscriptions.sql dans Supabase' : error.message }
+  return { inscriptions: (data ?? []) as Inscription[], erreur: null }
+}
+
+export async function compterInscriptions(): Promise<Record<string, number>> {
+  const db = admin()
+  if (!db) return {}
+  const { data } = await db.from('formation_inscriptions').select('direct_id')
+  const n: Record<string, number> = {}
+  for (const r of data ?? []) n[r.direct_id] = (n[r.direct_id] ?? 0) + 1
+  return n
 }
