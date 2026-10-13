@@ -5,8 +5,8 @@ import { getPasswordRecord } from '@/lib/formationStore'
 export async function POST(req: Request) {
   const { password } = await req.json().catch(() => ({ password: '' }))
   const rec = await getPasswordRecord()
-  if (rec === 'error') return NextResponse.json({ error: 'Base de données indisponible' }, { status: 503 })
-  if (!rec || typeof password !== 'string' || (await hashPassword(password, rec.salt)) !== rec.hash) {
+  if (rec && 'error' in rec) return NextResponse.json({ error: rec.error }, { status: 503 })
+  if (!rec || 'error' in rec || typeof password !== 'string' || (await hashPassword(password, rec.salt)) !== rec.hash) {
     return NextResponse.json({ error: 'Mot de passe incorrect' }, { status: 401 })
   }
   const token = await createSessionToken()
