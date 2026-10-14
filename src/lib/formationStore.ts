@@ -4,6 +4,7 @@ import { hashPassword, randomSalt } from '@/lib/formationAuth'
 import { slugify } from '@/lib/slug'
 import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
 import { normalizeDirects, type Direct, type Inscription } from '@/data/direct'
+import { normalizeQuestions, type Exercice, type Resultat } from '@/data/exercice'
 
 export interface Formation {
   slug: string
@@ -113,6 +114,7 @@ export async function deleteFormation(slug: string): Promise<string | null> {
   const db = admin()
   if (!db) return 'Supabase n’est pas configuré'
   const { error } = await db.from('formation_formations').delete().eq('slug', slug)
+  await db.from('formation_exercices').delete().eq('formation_slug', slug) // et leurs résultats (cascade) ; ignoré si la table n'existe pas encore
   return error ? error.message : null
 }
 
@@ -200,4 +202,87 @@ export async function compterInscriptions(): Promise<Record<string, number>> {
   const n: Record<string, number> = {}
   for (const r of data ?? []) n[r.direct_id] = (n[r.direct_id] ?? 0) + 1
   return n
+}
+
+// ---- Exercices ----
+
+type LigneExercice = { id: string; formation_slug: string; titre: string; modules: unknown; questions: unknown; ouvert: boolean; created_at: string }
+const versExercice = (r: LigneExercice): Exercice => ({
+  id: r.id,
+  formation: r.formation_slug,
+  titre: r.titre,
+  modules: Array.isArray(r.modules) ? r.modules.filter((m): m is string => typeof m === 'string') : [],
+  questions: normalizeQuestions(r.questions),
+  ouvert: r.ouvert,
+  created_at: r.created_at,
+})
+const messageTable = (m: string) => (/formation_(exercices|resultats)/.test(m) ? 'Exécutez le SQL 011_formation_exercices.sql dans Supabase' : m)
+
+export async function listerExercices(formation: string): Promise<{ exercices: (Exercice & { passages: number })[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { exercices: [], erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_exercices').select('*').eq('formation_slug', formation).order('created_at', { ascending: false })
+  if (error) return { exercices: [], erreur: messageTable(error.message) }
+  const ids = (data ?? []).map(r => r.id)
+  const passages: Record<string, number> = {}
+  if (ids.length) {
+    const { data: res } = await db.from('formation_resultats').select('exercice_id').in('exercice_id', ids)
+    for (const r of res ?? []) passages[r.exercice_id] = (passages[r.exercice_id] ?? 0) + 1
+  }
+  return { exercices: (data as LigneExercice[]).map(r => ({ ...versExercice(r), passages: passages[r.id] ?? 0 })), erreur: null }
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+export async function lireExercice(id: string): Promise<{ exercice: Exercice | null; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { exercice: null, erreur: 'Supabase n’est pas configuré' }
+  if (!UUID.test(id)) return { exercice: null, erreur: null }
+  const { data, error } = await db.from('formation_exercices').select('*').eq('id', id).maybeSingle()
+  if (error) return { exercice: null, erreur: messageTable(error.message) }
+  return { exercice: data ? versExercice(data as LigneExercice) : null, erreur: null }
+}
+
+export async function creerExercice(formation: string, titre: string): Promise<{ id: string } | { erreur: string }> {
+  const db = admin()
+  if (!db) return { erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_exercices').insert({ formation_slug: formation, titre }).select('id').single()
+  return error || !data ? { erreur: messageTable(error?.message ?? 'Création impossible') } : { id: data.id }
+}
+
+export async function sauverExercice(id: string, e: { titre: string; modules: string[]; questions: unknown; ouvert: boolean }): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  if (!UUID.test(id)) return 'Exercice introuvable'
+  const { data, error } = await db
+    .from('formation_exercices')
+    .update({ titre: e.titre, modules: e.modules, questions: normalizeQuestions(e.questions), ouvert: e.ouvert, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select('id')
+  if (error) return messageTable(error.message)
+  return data.length === 0 ? 'Exercice introuvable' : null
+}
+
+export async function supprimerExercice(id: string): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  if (!UUID.test(id)) return 'Exercice introuvable'
+  const { error } = await db.from('formation_exercices').delete().eq('id', id)
+  return error ? messageTable(error.message) : null
+}
+
+export async function listerResultats(exerciceId: string): Promise<{ resultats: Resultat[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { resultats: [], erreur: 'Supabase n’est pas configuré' }
+  if (!UUID.test(exerciceId)) return { resultats: [], erreur: null }
+  const { data, error } = await db.from('formation_resultats').select('id, nom, email, score, total, note, created_at').eq('exercice_id', exerciceId).order('created_at', { ascending: false })
+  if (error) return { resultats: [], erreur: messageTable(error.message) }
+  return { resultats: (data ?? []).map(r => ({ ...r, note: Number(r.note) })) as Resultat[], erreur: null }
+}
+
+export async function enregistrerResultat(exerciceId: string, nom: string, email: string, score: number, total: number, note: number, reponses: unknown): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Service indisponible'
+  const { error } = await db.from('formation_resultats').insert({ exercice_id: exerciceId, nom, email, score, total, note, reponses })
+  return error ? messageTable(error.message) : null
 }
