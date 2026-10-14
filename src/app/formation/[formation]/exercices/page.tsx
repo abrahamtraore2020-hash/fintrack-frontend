@@ -14,7 +14,7 @@ export default async function ExercicesPage({ params }: { params: { formation: s
     <main className="mx-auto max-w-3xl px-4 py-10">
       <Link href={`/formation/${formation.slug}`} className="text-sm text-lion-blue">← {formation.titre}</Link>
       <h1 className="mt-4 text-3xl font-bold text-lion-blue">🎯 Exercices</h1>
-      <p className="mt-1 text-lion-ink/70">Des questions à 3 réponses, façon « Qui veut gagner des millions », pour tester vos élèves.</p>
+      <p className="mt-1 text-lion-ink/70">Des questions à 3 réponses, une seule est juste, pour tester vos élèves avec une note sur 20.</p>
       <div className="mt-6">
         <NouvelExercice formation={formation.slug} />
       </div>

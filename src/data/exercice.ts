@@ -68,13 +68,7 @@ export const questionVide = (): Question => ({
   reponses: [{ texte: '', juste: true }, { texte: '', juste: false }, { texte: '', juste: false }],
 })
 
-// ---- Note et gain fictif façon « Qui veut gagner des millions » ----
-export const PALIERS = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 250000, 500000, 1000000]
-
-export function gainPour(bonnes: number, total: number): number {
-  if (bonnes <= 0 || total <= 0) return 0
-  return PALIERS[Math.min(PALIERS.length - 1, Math.max(0, Math.round((bonnes * (PALIERS.length - 1)) / total)))]
-}
+// ---- Note ----
 export const note20 = (bonnes: number, total: number) => (total > 0 ? Math.round((bonnes / total) * 200) / 10 : 0)
 
 export function mention(note: number): string {
@@ -91,7 +85,7 @@ export function corriger(questions: Question[], reponses: { qid: string; choix: 
     const r = reponses.find(x => x.qid === q.id)
     if (r && Number.isInteger(r.choix) && q.reponses[r.choix]?.juste) bonnes++
   }
-  return { score: bonnes, total: questions.length, note: note20(bonnes, questions.length), gain: gainPour(bonnes, questions.length) }
+  return { score: bonnes, total: questions.length, note: note20(bonnes, questions.length) }
 }
 
 // ---- Génération automatique simple (sans IA) à partir des leçons ----
@@ -160,7 +154,7 @@ export function consigneIA(episodes: Episode[], nombre: number): string {
   const cours = episodes
     .map(e => `MODULE « ${e.titre} »${e.resume ? ` : ${e.resume}` : ''}\n` + e.lecons.map(l => `- Leçon « ${l.titre} » : ${l.points.filter(p => p.trim()).join(' ; ')}`).join('\n'))
     .join('\n\n')
-  return `Tu es formateur. À partir du cours ci-dessous, rédige ${nombre} questions à choix multiple en français, dans l'esprit du jeu « Qui veut gagner des millions », pour tester des débutants sur la création d'un produit digital.
+  return `Tu es formateur. À partir du cours ci-dessous, rédige ${nombre} questions à choix multiple en français, dans l'esprit d'un jeu-quiz, pour tester des débutants sur la création d'un produit digital. Le ton doit être simple et rassurant : évite les montants chiffrés et toute promesse de gains.
 
 Règles :
 - Chaque question a UNE bonne réponse et DEUX fausses réponses plausibles, de longueur et de style comparables.

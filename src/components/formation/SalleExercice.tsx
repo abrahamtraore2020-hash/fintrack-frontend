@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { LETTRES, gainPour, melanger, mention, PALIERS, verifierEleve } from '@/data/exercice'
+import { LETTRES, melanger, mention, verifierEleve } from '@/data/exercice'
 
 type QPublique = { id: string; texte: string; reponses: { i: number; texte: string }[] }
 type Info = { titre: string; formation: string; ouvert: boolean; questions: QPublique[] }
 type Verdict = { juste: boolean; bonne: number; explication: string | null }
-type Fin = { score: number; total: number; note: number; gain: number }
+type Fin = { score: number; total: number; note: number }
 
-const fcfa = (n: number) => n.toLocaleString('fr-FR').replace(/ | /g, ' ') + ' FCFA'
 
 export function SalleExercice({ id }: { id: string }) {
   const [info, setInfo] = useState<Info | null>(null)
@@ -37,7 +36,6 @@ export function SalleExercice({ id }: { id: string }) {
   // L'ordre des réponses est mélangé pour chaque élève et chaque question.
   const ordre = useMemo(() => (q ? melanger(q.reponses) : []), [q])
   const total = info?.questions.length ?? 0
-  const gainEnJeu = (j: number) => gainPour(j, total)
 
   const commencer = (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,7 +96,7 @@ export function SalleExercice({ id }: { id: string }) {
         <h1 className="mt-1 text-3xl font-bold">{info.titre}</h1>
         <div className="mt-5 rounded-2xl bg-lion-blue p-5 text-white">
           <p className="text-lg font-semibold">{total} question{total > 1 ? 's' : ''} · 3 réponses possibles, une seule est juste</p>
-          <p className="mt-1 text-sm opacity-85">Répondez, découvrez la bonne réponse, et grimpez jusqu’à <b>{fcfa(PALIERS[PALIERS.length - 1])}</b> (virtuels !). Vous recevrez une note sur 20 à la fin.</p>
+          <p className="mt-1 text-sm opacity-85">Répondez à votre rythme et découvrez la bonne réponse après chaque question. Vous recevrez une note sur 20 à la fin.</p>
         </div>
         <form onSubmit={commencer} className="mt-6 space-y-3 rounded-2xl border-2 border-lion-gold p-5">
           <p className="text-sm text-lion-ink/70">Avant d’entrer dans la salle, présentez-vous :</p>
@@ -116,7 +114,7 @@ export function SalleExercice({ id }: { id: string }) {
     return (
       <main className="mx-auto max-w-xl px-4 py-10 text-center">
         <p className="text-sm font-medium uppercase tracking-wider text-lion-blue">🎯 {info.titre}</p>
-        <h1 className="mt-1 text-2xl font-bold">Bravo {nom.split(' ')[0]} !</h1>
+        <h1 className="mt-1 text-2xl font-bold">{fin.note >= 10 ? 'Bravo' : 'Merci'} {nom.split(' ')[0]} !</h1>
         <div className="mx-auto mt-6 flex h-44 w-44 flex-col items-center justify-center rounded-full border-8 border-lion-gold bg-lion-blue text-white shadow-xl">
           <span className="text-5xl font-extrabold">{fin.note.toString().replace('.', ',')}</span>
           <span className="text-sm opacity-80">sur 20</span>
@@ -124,7 +122,6 @@ export function SalleExercice({ id }: { id: string }) {
         <p className="mt-5 text-lg">
           <b>{fin.score}</b> bonne{fin.score > 1 ? 's' : ''} réponse{fin.score > 1 ? 's' : ''} sur <b>{fin.total}</b>
         </p>
-        <p className="mt-2 text-2xl font-bold text-lion-blue">🏆 {fcfa(fin.gain)} gagnés (virtuels)</p>
         <p className="mt-3 text-lion-ink/80">{mention(fin.note)}</p>
         <button
           className="mt-6 rounded-xl border-2 border-lion-blue px-6 py-2.5 font-semibold text-lion-blue"
@@ -144,14 +141,14 @@ export function SalleExercice({ id }: { id: string }) {
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <span className="font-semibold text-lion-blue">🎯 {info.titre}</span>
         <span className="text-lion-ink/70">
-          Question {k + 1} / {total} · en jeu : <b>{fcfa(gainEnJeu(k + 1))}</b>
+          Question {k + 1} / {total}
         </span>
       </div>
       <div className="mt-2 h-2 overflow-hidden rounded-full bg-lion-blue/10">
         <div className="h-full bg-lion-gold transition-all" style={{ width: `${(k / total) * 100}%` }} />
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-[1fr_11rem]">
+      <div className="mt-6 grid gap-6 md:grid-cols-[1fr_9rem]">
         <section>
           <div className="rounded-2xl bg-lion-blue px-5 py-6 text-center text-xl font-semibold leading-snug text-white shadow-lg sm:text-2xl">{q!.texte}</div>
           <ul className="mt-5 space-y-3">
@@ -199,8 +196,8 @@ export function SalleExercice({ id }: { id: string }) {
           <ol className="flex flex-col-reverse gap-1 text-sm">
             {Array.from({ length: total }, (_, j) => (
               <li key={j} className={`flex justify-between rounded-md px-2.5 py-1 ${j === k ? 'bg-lion-gold font-bold text-lion-ink' : j < k ? 'bg-lion-blue/10 text-lion-blue' : 'text-lion-ink/50'}`}>
-                <span>{j + 1}</span>
-                <span>{gainEnJeu(j + 1).toLocaleString('fr-FR')}</span>
+                <span>Niveau {j + 1}</span>
+                <span>{j < k ? '✓' : j === k ? '●' : ''}</span>
               </li>
             ))}
           </ol>

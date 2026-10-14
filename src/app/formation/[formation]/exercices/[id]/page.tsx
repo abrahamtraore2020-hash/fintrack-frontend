@@ -170,7 +170,7 @@ export default function EditeurExercicePage({ params }: { params: { formation: s
                 <button className={small} onClick={() => setQuestions(questions.filter((_, k) => k !== i))} aria-label="Supprimer la question">🗑️</button>
               </span>
             </div>
-            <textarea className={field} rows={2} value={q.texte} onChange={e => majQuestion(i, { texte: e.target.value })} placeholder="La question (ex. Qui veut gagner des millions ?)" />
+            <textarea className={field} rows={2} value={q.texte} onChange={e => majQuestion(i, { texte: e.target.value })} placeholder="La question (ex. Quel est le premier pas pour créer un produit digital ?)" />
             <div className="space-y-2">
               {q.reponses.map((r, j) => (
                 <label key={j} className={`flex items-center gap-2 rounded-lg border p-2 ${r.juste ? 'border-green-500 bg-green-50' : 'border-lion-blue/15'}`}>
