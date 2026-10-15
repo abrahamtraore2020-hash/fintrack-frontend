@@ -7,21 +7,37 @@ export const maxDuration = 60
 
 const MODELE = 'claude-sonnet-5-5'
 
+type Reponse = { texte: string | null; detail: string }
+
+async function lireErreur(res: Response): Promise<string> {
+  const d = await res.json().catch(() => null)
+  const msg = d?.error?.message ?? d?.error?.type ?? ''
+  return `HTTP ${res.status}${msg ? ` – ${String(msg).slice(0, 160)}` : ''}`
+}
+
 // Deux fournisseurs possibles : Google Gemini (offre gratuite) ou Anthropic (payant). Gemini est utilisé s'il est configuré.
-async function demanderIA(consigne: string): Promise<string | null> {
-  const gem = process.env.GEMINI_API_KEY
+async function demanderIA(consigne: string): Promise<Reponse> {
+  const gem = process.env.GEMINI_API_KEY?.trim()
   if (gem) {
     const base = process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com'
-    const modele = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
-    const res = await fetch(`${base}/v1beta/models/${modele}:generateContent`, {
-      method: 'POST',
-      headers: { 'x-goog-api-key': gem, 'content-type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: consigne }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.7 } }),
-      signal: AbortSignal.timeout(50_000),
-    })
-    if (!res.ok) return null
-    const d = await res.json().catch(() => null)
-    return d?.candidates?.[0]?.content?.parts?.find((x: { text?: string }) => x.text)?.text ?? null
+    const modeles = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash']
+    let detail = ''
+    for (const modele of modeles) {
+      const res = await fetch(`${base}/v1beta/models/${modele}:generateContent`, {
+        method: 'POST',
+        headers: { 'x-goog-api-key': gem, 'content-type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: consigne }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.7 } }),
+        signal: AbortSignal.timeout(25_000),
+      })
+      if (res.ok) {
+        const d = await res.json().catch(() => null)
+        const t = d?.candidates?.[0]?.content?.parts?.find((x: { text?: string }) => x.text)?.text ?? null
+        return { texte: t, detail: t ? '' : `Google n’a rien renvoyé (${modele})` }
+      }
+      detail = `Google (${modele}) ${await lireErreur(res)}`
+      if (res.status !== 404 && res.status !== 400) break // clé refusée, quota… : inutile d'essayer un autre modèle
+    }
+    return { texte: null, detail }
   }
   const base = process.env.ANTHROPIC_API_URL || 'https://api.anthropic.com'
   const res = await fetch(`${base}/v1/messages`, {
@@ -30,9 +46,9 @@ async function demanderIA(consigne: string): Promise<string | null> {
     body: JSON.stringify({ model: MODELE, max_tokens: 2000, messages: [{ role: 'user', content: consigne }] }),
     signal: AbortSignal.timeout(50_000),
   })
-  if (!res.ok) return null
+  if (!res.ok) return { texte: null, detail: `Anthropic ${await lireErreur(res)}` }
   const d = await res.json().catch(() => null)
-  return d?.content?.find((c: { type: string }) => c.type === 'text')?.text ?? null
+  return { texte: d?.content?.find((c: { type: string }) => c.type === 'text')?.text ?? null, detail: '' }
 }
 
 // Public (clé secrète de l'étudiant) : propose la solution / le produit, ou l'avatar, à partir de ce que l'étudiant a écrit.
@@ -48,15 +64,16 @@ export async function POST(req: Request, { params }: { params: { fid: string } }
   if (!process.env.GEMINI_API_KEY && !process.env.ANTHROPIC_API_KEY) return NextResponse.json({ mode: 'manuel' })
   if (fiche.generations >= MAX_GENERATIONS) return NextResponse.json({ error: 'Vous avez utilisé toutes vos propositions automatiques. Complétez ou modifiez la fiche à la main.' }, { status: 429 })
 
-  let texte: string | null = null
+  let rep: Reponse = { texte: null, detail: 'Pas de réponse' }
   try {
-    texte = await demanderIA(etape === 'solution' ? consigneSolution(f) : consigneAvatar(f))
-  } catch {
-    texte = null
+    rep = await demanderIA(etape === 'solution' ? consigneSolution(f) : consigneAvatar(f))
+  } catch (e) {
+    rep = { texte: null, detail: `Connexion impossible (${e instanceof Error ? e.message.slice(0, 80) : 'erreur'})` }
   }
+  const texte = rep.texte
   const suivi = etape === 'solution' ? lireSolution(texte ?? '') : lireAvatar(texte ?? '')
   const idee = etape === 'solution' && suivi ? completerIdee(f, suivi as Partial<Fiche>) : null
-  if (!suivi || (idee && ideeManquante(idee).length > 0)) return NextResponse.json({ error: 'La proposition automatique n’a pas fonctionné cette fois. Réessayez, ou complétez à la main.' }, { status: 502 })
+  if (!suivi || (idee && ideeManquante(idee).length > 0)) return NextResponse.json({ error: 'La proposition automatique n’a pas fonctionné cette fois. Réessayez, ou complétez à la main.', detail: rep.detail || 'Réponse illisible de l’IA' }, { status: 502 })
 
   const nouvelle = idee ? idee : { ...f, avatar: { ...f.avatar, ...(suivi as object) } }
   await sauverFiche(params.fid, cle, normaliserFiche(nouvelle), fiche.generations + 1)

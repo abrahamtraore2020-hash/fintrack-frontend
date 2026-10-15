@@ -109,7 +109,7 @@ export function PersonaWizard({ id }: { id: string }) {
       const res = await fetch(`/api/persona-fiche/${acces.current.fid}/generer`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cle: acces.current.cle, etape: quoi, data: fiche }) })
       const d = await res.json().catch(() => ({}))
       setBusy(false)
-      if (!res.ok) return setErreur(d.error || 'Erreur, réessayez.')
+      if (!res.ok) return setErreur((d.error || 'Erreur, réessayez.') + (d.detail ? ` [${d.detail}]` : ''))
       if (d.mode === 'manuel') {
         setNote('La proposition automatique n’est pas activée pour le moment : complétez les cases à la main, avec les aides sous chaque titre.')
         return
