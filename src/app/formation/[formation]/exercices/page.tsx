@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getTrainerServer } from '@/lib/formationApi'
 import { getFormation, listerExercices } from '@/lib/formationStore'
 import { NouvelExercice } from '@/components/formation/NouvelExercice'
 
@@ -7,7 +8,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Exercices' }
 
 export default async function ExercicesPage({ params }: { params: { formation: string } }) {
-  const { formation } = await getFormation(params.formation)
+  const trainer = await getTrainerServer()
+  if (!trainer) redirect('/formation/acces')
+  const { formation } = await getFormation(params.formation, trainer.id)
   if (!formation) notFound()
   const { exercices, erreur } = await listerExercices(params.formation)
   return (

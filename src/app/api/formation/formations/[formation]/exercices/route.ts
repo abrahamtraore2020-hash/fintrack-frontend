@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fail, requireTrainer } from '@/lib/formationApi'
+import { fail, requireFormation } from '@/lib/formationApi'
 import { creerExercice, getFormation, listerExercices } from '@/lib/formationStore'
 
 export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string } }
 
 export async function GET(req: NextRequest, { params }: Params) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
+  const auth = await requireFormation(req, params.formation)
+  if ('denied' in auth) return auth.denied
   const { exercices, erreur } = await listerExercices(params.formation)
   return erreur ? fail(erreur, 500) : NextResponse.json({ exercices })
 }
 
 export async function POST(req: NextRequest, { params }: Params) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
+  const auth = await requireFormation(req, params.formation)
+  if ('denied' in auth) return auth.denied
   const { titre } = await req.json().catch(() => ({}))
   if (typeof titre !== 'string' || !titre.trim()) return fail('Donnez un titre à l’exercice')
   const { formation } = await getFormation(params.formation)

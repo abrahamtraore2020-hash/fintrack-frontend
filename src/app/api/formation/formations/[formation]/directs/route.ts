@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fail, requireTrainer } from '@/lib/formationApi'
+import { fail, requireFormation } from '@/lib/formationApi'
 import { saveDirects } from '@/lib/formationStore'
 import { normalizeDirects } from '@/data/direct'
 
 export async function PUT(req: NextRequest, { params }: { params: { formation: string } }) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
+  const auth = await requireFormation(req, params.formation)
+  if ('denied' in auth) return auth.denied
   const { directs } = await req.json().catch(() => ({}))
   if (!Array.isArray(directs)) return fail('Données invalides')
   const propres = normalizeDirects(directs)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fail, requireTrainer } from '@/lib/formationApi'
+import { fail, requireFormation } from '@/lib/formationApi'
 import { getFormation } from '@/lib/formationStore'
 import { consigneIA, lireReponseIA, questionsSimples } from '@/data/exercice'
 
@@ -22,10 +22,10 @@ async function genererParIA(consigne: string, cle: string): Promise<string | nul
 
 // Génère des questions à partir des modules choisis : par IA si la clé est configurée, sinon version simple.
 export async function POST(req: NextRequest) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
   const { formation: slug, modules, nombre } = await req.json().catch(() => ({}))
   if (typeof slug !== 'string' || !Array.isArray(modules) || modules.length === 0) return fail('Choisissez au moins un module')
+  const auth = await requireFormation(req, slug)
+  if ('denied' in auth) return auth.denied
   const n = Math.min(20, Math.max(1, Number(nombre) || 5))
   const { formation } = await getFormation(slug)
   if (!formation) return fail('Formation introuvable', 404)

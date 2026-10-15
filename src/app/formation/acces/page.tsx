@@ -9,6 +9,8 @@ export default function AccesFormation() {
   const [erreur, setErreur] = useState('')
   const [visible, setVisible] = useState(false)
   const [remember, setRemember] = useState(true)
+  const [parEmail, setParEmail] = useState(false) // formateur invité : connexion avec son email
+  const [email, setEmail] = useState('')
 
   useEffect(() => {
     fetch('/api/formation/status')
@@ -23,11 +25,11 @@ export default function AccesFormation() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErreur('')
-    if (!configured && password !== confirm) return setErreur('Les deux mots de passe sont différents')
-    const res = await fetch(configured ? '/api/formation/login' : '/api/formation/setup', {
+    if (!parEmail && !configured && password !== confirm) return setErreur('Les deux mots de passe sont différents')
+    const res = await fetch(configured || parEmail ? '/api/formation/login' : '/api/formation/setup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, remember }),
+      body: JSON.stringify({ password, remember, ...(parEmail ? { email } : {}) }),
     })
     if (res.ok) window.location.href = '/formation'
     else setErreur((await res.json().catch(() => ({}))).error || 'Erreur')
@@ -39,25 +41,29 @@ export default function AccesFormation() {
       <img src="/lion-attitude-logo.webp" alt="Lion Attitude" className="w-48 rounded-xl" />
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-xl border border-lion-blue/15 border-t-4 border-t-lion-gold bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-lion-blue">
-          {configured === false ? 'Créer votre mot de passe formateur' : 'Accès formateur'}
+          {parEmail ? 'Connexion formateur' : configured === false ? 'Créer votre mot de passe formateur' : 'Accès formateur'}
         </h1>
-        {configured === false && (
+        {!parEmail && configured === false && (
           <p className="text-sm opacity-70">Première utilisation : choisissez un mot de passe (8 caractères minimum). Il vous sera demandé ensuite.</p>
         )}
         {configured !== null && (
           <>
             {/* Identifiant caché : permet au navigateur de proposer d'enregistrer le mot de passe */}
-            <input type="text" name="username" autoComplete="username" value="formateur" readOnly hidden />
+            {parEmail ? (
+              <input type="email" name="username" autoComplete="username" className={field} value={email} onChange={e => setEmail(e.target.value)} placeholder="Votre email" autoFocus />
+            ) : (
+              <input type="text" name="username" autoComplete="username" value="formateur" readOnly hidden />
+            )}
             <div className="relative">
               <input
                 type={visible ? 'text' : 'password'}
                 name="password"
-                autoComplete={configured ? 'current-password' : 'new-password'}
+                autoComplete={configured || parEmail ? 'current-password' : 'new-password'}
                 className={`${field} pr-12`}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Mot de passe"
-                autoFocus
+                autoFocus={!parEmail}
               />
               <button
                 type="button"
@@ -68,7 +74,7 @@ export default function AccesFormation() {
                 {visible ? '🙈' : '👁️'}
               </button>
             </div>
-            {!configured && (
+            {!parEmail && !configured && (
               <input
                 type={visible ? 'text' : 'password'}
                 name="confirm"
@@ -84,9 +90,14 @@ export default function AccesFormation() {
               Se souvenir de moi (30 jours)
             </label>
             <button className="w-full rounded-lg bg-lion-blue px-4 py-2 font-semibold text-white">
-              {configured ? 'Entrer' : 'Créer et entrer'}
+              {configured || parEmail ? 'Entrer' : 'Créer et entrer'}
             </button>
           </>
+        )}
+        {configured !== null && (
+          <button type="button" onClick={() => { setParEmail(v => !v); setErreur('') }} className="block w-full text-center text-sm text-lion-blue underline">
+            {parEmail ? '← Je suis le propriétaire (mot de passe seul)' : 'Je suis un formateur invité (connexion par email)'}
+          </button>
         )}
         {configured === null && !erreur && <p className="text-sm opacity-70">Chargement…</p>}
         {erreur && <p className="text-sm text-red-500">{erreur}</p>}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getTrainerServer } from '@/lib/formationApi'
 import { compterInscriptions, getFormation } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
@@ -8,12 +9,15 @@ import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: { formation: string } }) {
-  const { formation } = await getFormation(params.formation)
+  const trainer = await getTrainerServer()
+  const { formation } = await getFormation(params.formation, trainer?.id)
   return { title: formation?.titre ?? 'Formation' }
 }
 
 export default async function FormationPage({ params }: { params: { formation: string } }) {
-  const { formation: f, erreur } = await getFormation(params.formation)
+  const trainer = await getTrainerServer()
+  if (!trainer) redirect('/formation/acces')
+  const { formation: f, erreur } = await getFormation(params.formation, trainer.id)
   if (!f) notFound()
   const inscrits = await compterInscriptions()
   return (

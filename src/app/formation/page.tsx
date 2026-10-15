@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getTrainerServer } from '@/lib/formationApi'
 import { compterInscriptions, lireFormations } from '@/lib/formationStore'
 import { ErreurBase } from '@/components/formation/ErreurBase'
 import { DirectsPanel, LiveBanner } from '@/components/formation/DirectsPanel'
@@ -8,7 +10,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: { absolute: 'Mes formations | Lion Attitude' } }
 
 export default async function MesFormationsPage() {
-  const { formations, erreur } = await lireFormations()
+  const trainer = await getTrainerServer()
+  if (!trainer) redirect('/formation/acces')
+  const { formations, erreur } = await lireFormations(trainer.id)
   const inscrits = await compterInscriptions()
   return (
     <>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-export function FormationMenu() {
+export function FormationMenu({ admin = false }: { admin?: boolean }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -34,6 +34,7 @@ export function FormationMenu() {
       {open && (
         <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-xl border border-lion-blue/15 bg-white shadow-lg">
           <Link href="/formation" className={item} onClick={() => setOpen(false)}>📚 Mes formations</Link>
+          {admin && <Link href="/formation/formateurs" className={item} onClick={() => setOpen(false)}>👥 Formateurs</Link>}
           <Link href="/formation/profil" className={item} onClick={() => setOpen(false)}>👤 Mon profil</Link>
           <button onClick={logout} className={`${item} border-t border-lion-blue/10 text-red-600`}>🚪 Se déconnecter</button>
         </div>
