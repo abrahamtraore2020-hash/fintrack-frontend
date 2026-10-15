@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { consigneAvatar, consigneSolution, lireAvatar, lireSolution, normaliserFiche } from '@/data/persona'
+import { type Fiche, completerIdee, consigneAvatar, consigneSolution, ideeAUnPoint, ideeManquante, lireAvatar, lireSolution, normaliserFiche } from '@/data/persona'
 import { MAX_GENERATIONS, lireFiche, sauverFiche } from '@/lib/formationStore'
 
 export const dynamic = 'force-dynamic'
@@ -27,8 +27,8 @@ export async function POST(req: Request, { params }: { params: { fid: string } }
   if (!fiche) return NextResponse.json({ error: 'Fiche introuvable' }, { status: 404 })
   const f = normaliserFiche(data)
   if (etape !== 'solution' && etape !== 'avatar') return NextResponse.json({ error: 'Étape inconnue' }, { status: 400 })
-  if (etape === 'solution' && f.probleme.length < 10) return NextResponse.json({ error: 'Décrivez d’abord le problème que vous avez remarqué (une ou deux phrases).' }, { status: 400 })
-  if (etape === 'avatar' && (!f.avatar.nom || !f.solution)) return NextResponse.json({ error: 'Choisissez le prénom de votre avatar, et complétez la solution avant.' }, { status: 400 })
+  if (etape === 'solution' && !ideeAUnPoint(f)) return NextResponse.json({ error: 'Écrivez d’abord au moins un point : le problème, la solution, le bénéfice, la promesse ou le nom du produit.' }, { status: 400 })
+  if (etape === 'avatar' && (!f.avatar.nom || ideeManquante(f).length > 0)) return NextResponse.json({ error: 'Choisissez le prénom de votre avatar, et complétez d’abord votre idée (problème, solution, bénéfice, promesse, nom).' }, { status: 400 })
 
   const cleIA = process.env.ANTHROPIC_API_KEY
   if (!cleIA) return NextResponse.json({ mode: 'manuel' })
@@ -41,9 +41,10 @@ export async function POST(req: Request, { params }: { params: { fid: string } }
     texte = null
   }
   const suivi = etape === 'solution' ? lireSolution(texte ?? '') : lireAvatar(texte ?? '')
-  if (!suivi) return NextResponse.json({ error: 'La proposition automatique n’a pas fonctionné cette fois. Réessayez, ou complétez à la main.' }, { status: 502 })
+  const idee = etape === 'solution' && suivi ? completerIdee(f, suivi as Partial<Fiche>) : null
+  if (!suivi || (idee && ideeManquante(idee).length > 0)) return NextResponse.json({ error: 'La proposition automatique n’a pas fonctionné cette fois. Réessayez, ou complétez à la main.' }, { status: 502 })
 
-  const nouvelle = etape === 'solution' ? { ...f, ...suivi } : { ...f, avatar: { ...f.avatar, ...suivi } }
+  const nouvelle = idee ? idee : { ...f, avatar: { ...f.avatar, ...(suivi as object) } }
   await sauverFiche(params.fid, cle, normaliserFiche(nouvelle), fiche.generations + 1)
   return NextResponse.json({ mode: 'ia', data: normaliserFiche(nouvelle), restantes: MAX_GENERATIONS - fiche.generations - 1 })
 }

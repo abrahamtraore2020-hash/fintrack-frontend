@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { verifierEleve } from '@/data/exercice'
-import { AVATAR_CHAMPS, FORMATS, PRENOMS, ficheVide, promptConversation, promptEbook, resumeFiche, type Fiche } from '@/data/persona'
+import { AVATAR_CHAMPS, FORMATS, PRENOMS, ficheVide, ideeAUnPoint, ideeManquante, promptConversation, promptEbook, resumeFiche, type Fiche } from '@/data/persona'
 
 type Info = { titre: string; ouvert: boolean; formation: string }
-type Etape = 'accueil' | 'probleme' | 'produit' | 'avatar' | 'prompts'
+type Etape = 'accueil' | 'idee' | 'avatar' | 'prompts'
 const ETAPES: { cle: Etape; court: string }[] = [
-  { cle: 'probleme', court: 'Problème' },
-  { cle: 'produit', court: 'Solution & produit' },
+  { cle: 'idee', court: 'Mon idée' },
   { cle: 'avatar', court: 'Avatar' },
   { cle: 'prompts', court: 'Prompts IA' },
 ]
@@ -38,7 +37,7 @@ export function PersonaWizard({ id }: { id: string }) {
   const [pret, setPret] = useState(false)
 
   const cleStock = `persona:${id}`
-  const etapeSelon = (f: Fiche): Etape => (f.avatar.situation ? 'avatar' : f.solution ? 'produit' : 'probleme')
+  const etapeSelon = (f: Fiche): Etape => (f.avatar.situation ? 'avatar' : 'idee')
 
   // Chargement de l'atelier, puis reprise de la fiche si cet appareil en a déjà une.
   useEffect(() => {
@@ -98,7 +97,7 @@ export function PersonaWizard({ id }: { id: string }) {
     try {
       localStorage.setItem(cleStock, JSON.stringify({ fid: d.id, cle: d.cle }))
     } catch {}
-    setEtape('probleme')
+    setEtape('idee')
   }
 
   const generer = useCallback(
@@ -113,11 +112,10 @@ export function PersonaWizard({ id }: { id: string }) {
       if (!res.ok) return setErreur(d.error || 'Erreur, réessayez.')
       if (d.mode === 'manuel') {
         setNote('La proposition automatique n’est pas activée pour le moment : complétez les cases à la main, avec les aides sous chaque titre.')
-        return quoi === 'solution' ? setEtape('produit') : undefined
+        return
       }
       setFiche(d.data)
       derniere.current = JSON.stringify(d.data)
-      if (quoi === 'solution') setEtape('produit')
     },
     [fiche],
   )
@@ -138,7 +136,7 @@ export function PersonaWizard({ id }: { id: string }) {
       {ETAPES.map((e, i) => (
         <li key={e.cle} className="flex flex-1 items-center gap-1">
           <button
-            disabled={i > 0 && !fiche.solution}
+            disabled={i > 0 && ideeManquante(fiche).length > 0}
             onClick={() => setEtape(e.cle)}
             className={`flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-left font-semibold ${i === idx ? 'bg-lion-blue text-white' : i < idx ? 'bg-lion-blue/10 text-lion-blue' : 'bg-gray-100 text-gray-400'}`}
           >
@@ -157,10 +155,10 @@ export function PersonaWizard({ id }: { id: string }) {
       <main className="mx-auto max-w-xl px-4 py-8">
         <p className="text-sm font-medium uppercase tracking-wider text-lion-blue">🧭 Atelier{info.formation ? ` · ${info.formation}` : ''}</p>
         <h1 className="mt-1 text-3xl font-bold">{info.titre}</h1>
-        <p className="mt-3 text-lg text-lion-ink/80">Un guide en 4 étapes pour <b>trouver votre produit digital</b> et <b>comprendre votre client idéal</b>. Ce n’est pas un test : il n’y a pas de note.</p>
+        <p className="mt-3 text-lg text-lion-ink/80">Un guide en 3 étapes pour <b>trouver votre produit digital</b> et <b>comprendre votre client idéal</b>. Ce n’est pas un test : il n’y a pas de note.</p>
         <div className="mt-5 rounded-2xl bg-lion-blue p-5 text-white">
-          <p className="font-semibold">Pourquoi on commence par le problème ?</p>
-          <p className="mt-1 text-sm opacity-90">Beaucoup de débutants mélangent <b>problème</b>, <b>solution</b> et <b>bénéfice</b>. Ici, on les remet dans l’ordre : vous écrivez d’abord le problème, et le reste en découle.</p>
+          <p className="font-semibold">Une méthode simple : partez de ce que vous avez</p>
+          <p className="mt-1 text-sm opacity-90">Beaucoup de débutants mélangent <b>problème</b>, <b>solution</b> et <b>bénéfice</b>. Ici, on les remet en ordre. Vous partez de ce que vous avez déjà (un problème, une solution, un bénéfice, une promesse ou un nom de produit) et la plateforme complète le reste.</p>
         </div>
         <form onSubmit={demarrer} className="mt-6 space-y-3 rounded-2xl border-2 border-lion-gold p-5">
           <p className="text-sm text-lion-ink/70">Avant de commencer, présentez-vous :</p>
@@ -178,68 +176,43 @@ export function PersonaWizard({ id }: { id: string }) {
     <main className="mx-auto max-w-3xl px-4 py-6">
       {stepper}
 
-      {/* ---------- 1. Problème ---------- */}
-      {etape === 'probleme' && (
+      {/* ---------- 1. Mon idée (on peut partir de n'importe quel point) ---------- */}
+      {etape === 'idee' && (
         <section className="space-y-4">
           <div>
-            <h1 className="text-2xl font-bold">1. Quel problème avez-vous remarqué ?</h1>
-            <p className="mt-1 text-lion-ink/70">Pensez à une difficulté que vous avez observée chez des personnes. Écrivez-la simplement, avec des mots de tous les jours.</p>
+            <h1 className="text-2xl font-bold">1. Votre idée de produit digital</h1>
+            <p className="mt-1 text-lion-ink/70">Chacun part d’un point différent. <b>Écrivez ce que vous savez déjà, dans la case qui correspond</b>, puis laissez la plateforme compléter le reste. Vous pouvez tout modifier.</p>
           </div>
-          <div className="grid gap-2 text-sm sm:grid-cols-3">
-            {[['Problème', 'Ce qui coince, ce qui fait souffrir ou perdre du temps.'], ['Solution', 'Le moyen de le résoudre. (Elle viendra à l’étape 2.)'], ['Bénéfice', 'Ce que la personne y gagne. (Aussi à l’étape 2.)']].map(([t, d], i) => (
-              <div key={t} className={`rounded-xl border p-3 ${i === 0 ? 'border-lion-gold bg-lion-gold/15' : 'border-lion-blue/10 bg-gray-50 text-lion-ink/60'}`}>
-                <p className="font-bold">{i === 0 ? '👉 ' : ''}{t}</p>
-                <p className="text-xs">{d}</p>
-              </div>
-            ))}
+          <div className="rounded-xl border border-lion-gold bg-lion-gold/15 p-3 text-sm">
+            <p className="font-bold">Par où commencer ?</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-5">
+              <li>Vous avez remarqué <b>un problème</b> chez des gens → écrivez-le (case 1).</li>
+              <li>Vous avez déjà <b>une solution</b> ou une compétence → écrivez-la (case 2), la plateforme trouve le problème.</li>
+              <li>Vous pensez au <b>bénéfice</b> ou à la <b>promesse</b> → écrivez-le (cases 3 ou 4).</li>
+              <li>Vous avez déjà <b>un nom de produit</b> → écrivez-le (case 5).</li>
+              <li>Vous avez déjà tout ? Remplissez tout, puis passez à l’avatar.</li>
+            </ul>
           </div>
+          {note && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{note}</p>}
           <label className="block space-y-1">
-            <span className="text-sm font-medium">Qui vit ce problème ? <span className="font-normal text-lion-ink/60">(votre cible)</span></span>
+            <span className="text-sm font-medium">Qui est concerné ? <span className="font-normal text-lion-ink/60">(votre cible, facultatif)</span></span>
             <input className={field} value={fiche.concerne} onChange={e => maj({ concerne: e.target.value })} placeholder="Ex. des petites commerçantes qui vendent sur WhatsApp" />
           </label>
-          <label className="block space-y-1">
-            <span className="text-sm font-medium">Le problème</span>
-            <textarea className={field} rows={4} value={fiche.probleme} onChange={e => maj({ probleme: e.target.value })} placeholder="Ex. elles n’arrivent pas à faire des affiches professionnelles et perdent beaucoup de temps." />
-          </label>
-          <div className="text-sm">
-            <p className="mb-1 text-lion-ink/60">Besoin d’inspiration ? Touchez un exemple :</p>
-            <div className="flex flex-wrap gap-2">
-              {EXEMPLES.map(x => (
-                <button key={x} onClick={() => maj({ probleme: x })} className="rounded-full border border-lion-blue/25 px-3 py-1 text-left text-xs hover:bg-lion-blue/5">{x}</button>
-              ))}
-            </div>
-          </div>
-          {erreur && <p className="text-sm text-red-600">{erreur}</p>}
-          <div className="flex flex-wrap gap-2">
-            <button className={btn} disabled={busy || fiche.probleme.trim().length < 10} onClick={() => generer('solution')}>{busy ? 'Réflexion en cours…' : '✨ Trouver la solution et le produit'}</button>
-            {fiche.solution && <button className={btn2} onClick={() => setEtape('produit')}>Voir ma solution →</button>}
-          </div>
-        </section>
-      )}
-
-      {/* ---------- 2. Solution et produit ---------- */}
-      {etape === 'produit' && (
-        <section className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-bold">2. Votre solution et votre produit digital</h1>
-            <p className="mt-1 text-lion-ink/70">À partir de votre problème, voici une proposition. <b>Relisez et modifiez</b> ce qui ne vous convient pas : c’est votre idée.</p>
-          </div>
-          <div className="rounded-xl border border-lion-blue/15 bg-lion-blue/[0.04] p-3 text-sm"><b>Problème :</b> {fiche.probleme}</div>
-          {note && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{note}</p>}
           {([
-            ['solution', '💡 La solution', 'Le moyen de résoudre le problème, en 1 ou 2 phrases.'],
-            ['benefice', '🎁 Le bénéfice', 'Ce que la personne y gagne : sa situation avant / après.'],
-            ['promesse', '🤝 La promesse', 'Une phrase claire sur ce que votre produit aide à faire. Sans promettre de ventes ni d’argent.'],
-          ] as const).map(([cle, titre, aide]) => (
+            ['probleme', '1. ⚠️ Le problème', 'Ce qui coince, ce qui fait souffrir ou perdre du temps.', 'Ex. elles n’arrivent pas à faire des affiches professionnelles et perdent beaucoup de temps.', 3],
+            ['solution', '2. 💡 La solution', 'Le moyen de résoudre le problème, en 1 ou 2 phrases.', 'Ex. un guide avec des modèles d’affiches prêts à modifier sur téléphone.', 3],
+            ['benefice', '3. 🎁 Le bénéfice', 'Ce que la personne y gagne : sa situation avant / après.', 'Ex. elles font de belles affiches en 10 minutes au lieu de 2 heures.', 3],
+            ['promesse', '4. 🤝 La promesse', 'Une phrase claire sur ce que le produit aide à faire. Sans promettre de ventes ni d’argent.', 'Ex. apprendre à créer vos affiches pro depuis votre téléphone.', 2],
+          ] as const).map(([cle, titre, aide, ex, rows]) => (
             <label key={cle} className="block space-y-1">
               <span className="font-semibold">{titre}</span>
               <span className="block text-xs text-lion-ink/60">{aide}</span>
-              <textarea className={field} rows={cle === 'promesse' ? 2 : 3} value={fiche[cle]} onChange={e => maj({ [cle]: e.target.value })} />
+              <textarea className={field} rows={rows} value={fiche[cle]} onChange={e => maj({ [cle]: e.target.value })} placeholder={ex} />
             </label>
           ))}
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block space-y-1">
-              <span className="font-semibold">📦 Le nom du produit digital</span>
+              <span className="font-semibold">5. 📦 Le nom du produit digital</span>
               <input className={field} value={fiche.produit_nom} onChange={e => maj({ produit_nom: e.target.value })} placeholder="Un nom court et clair" />
             </label>
             <label className="block space-y-1">
@@ -250,12 +223,22 @@ export function PersonaWizard({ id }: { id: string }) {
               </select>
             </label>
           </div>
+          <div className="text-sm">
+            <p className="mb-1 text-lion-ink/60">Besoin d’inspiration pour le problème ? Touchez un exemple :</p>
+            <div className="flex flex-wrap gap-2">
+              {EXEMPLES.map(x => (
+                <button key={x} onClick={() => maj({ probleme: x })} className="rounded-full border border-lion-blue/25 px-3 py-1 text-left text-xs hover:bg-lion-blue/5">{x}</button>
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-lion-ink/60">La plateforme ne remplit que les cases <b>vides</b> et ne touche jamais à ce que vous avez écrit. Pour qu’elle refasse une case, videz-la puis relancez.</p>
           {erreur && <p className="text-sm text-red-600">{erreur}</p>}
           <div className="flex flex-wrap gap-2">
-            {retour('probleme')}
-            <button className={btn2} disabled={busy} onClick={() => generer('solution')}>{busy ? 'Réflexion…' : '🔄 Proposer autre chose'}</button>
-            <button className={btn} disabled={!fiche.solution.trim() || !fiche.produit_nom.trim()} onClick={() => setEtape('avatar')}>Suivant : mon avatar →</button>
+            <button className={btn} disabled={busy || !ideeAUnPoint(fiche) || ideeManquante(fiche).length === 0} onClick={() => generer('solution')}>{busy ? 'Réflexion en cours…' : '✨ Compléter le reste pour moi'}</button>
+            <button className={btn2} disabled={busy} onClick={() => { if (confirm('Vider toutes les cases de votre idée ?')) setFiche(f => ({ ...f, concerne: '', probleme: '', solution: '', benefice: '', promesse: '', produit_nom: '', produit_format: '' })) }}>🗑️ Vider les cases</button>
+            <button className={btn} disabled={ideeManquante(fiche).length > 0} onClick={() => setEtape('avatar')}>Suivant : mon avatar →</button>
           </div>
+          {ideeManquante(fiche).length > 0 && <p className="text-xs text-lion-ink/60">Pour passer à l’avatar, il faut que les 5 cases soient remplies (à la main ou avec ✨).</p>}
         </section>
       )}
 
@@ -296,7 +279,7 @@ export function PersonaWizard({ id }: { id: string }) {
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
-            {retour('produit')}
+            {retour('idee')}
             <button className={btn} onClick={() => setEtape('prompts')}>Suivant : mes prompts IA →</button>
           </div>
         </section>
