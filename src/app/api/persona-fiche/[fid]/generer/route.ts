@@ -20,22 +20,35 @@ async function demanderIA(consigne: string): Promise<Reponse> {
   const gem = process.env.GEMINI_API_KEY?.trim()
   if (gem) {
     const base = process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com'
-    const modeles = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash']
+    const modeles = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
+    const fin = Date.now() + 48_000 // la route est limitée à 60 s
     let detail = ''
     for (const modele of modeles) {
-      const res = await fetch(`${base}/v1beta/models/${modele}:generateContent`, {
-        method: 'POST',
-        headers: { 'x-goog-api-key': gem, 'content-type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: consigne }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.7 } }),
-        signal: AbortSignal.timeout(25_000),
-      })
-      if (res.ok) {
-        const d = await res.json().catch(() => null)
-        const t = d?.candidates?.[0]?.content?.parts?.find((x: { text?: string }) => x.text)?.text ?? null
-        return { texte: t, detail: t ? '' : `Google n’a rien renvoyé (${modele})` }
+      for (let essai = 0; essai < 2; essai++) {
+        const reste = fin - Date.now()
+        if (reste < 4000) return { texte: null, detail: detail || 'Délai dépassé' }
+        const res = await fetch(`${base}/v1beta/models/${modele}:generateContent`, {
+          method: 'POST',
+          headers: { 'x-goog-api-key': gem, 'content-type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: consigne }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.7 } }),
+          signal: AbortSignal.timeout(Math.min(20_000, reste)),
+        }).catch(() => null)
+        if (!res) {
+          detail = `Google (${modele}) ne répond pas`
+          break
+        }
+        if (res.ok) {
+          const d = await res.json().catch(() => null)
+          const t = d?.candidates?.[0]?.content?.parts?.find((x: { text?: string }) => x.text)?.text ?? null
+          if (t) return { texte: t, detail: '' }
+          detail = `Google n’a rien renvoyé (${modele})`
+          break
+        }
+        detail = `Google (${modele}) ${await lireErreur(res)}`
+        if (res.status === 401 || res.status === 403) return { texte: null, detail } // clé refusée : inutile d'insister
+        if (res.status === 503 || res.status === 429) await new Promise(r => setTimeout(r, 1500)) // surcharge : on réessaie une fois, puis autre modèle
+        else break
       }
-      detail = `Google (${modele}) ${await lireErreur(res)}`
-      if (res.status !== 404 && res.status !== 400) break // clé refusée, quota… : inutile d'essayer un autre modèle
     }
     return { texte: null, detail }
   }
