@@ -73,21 +73,47 @@ export function normaliserFiche(v: unknown): Fiche {
 
 // ---- Consignes envoyées à l'IA (génération automatique) ----
 
-export function consigneSolution(f: Pick<Fiche, 'probleme' | 'concerne'>): string {
-  return `Tu aides un débutant francophone (Afrique) à transformer un problème observé en idée de produit digital.
+export const CHAMPS_IDEE: { cle: 'probleme' | 'solution' | 'benefice' | 'promesse' | 'produit_nom'; nom: string }[] = [
+  { cle: 'probleme', nom: 'Problème' },
+  { cle: 'solution', nom: 'Solution' },
+  { cle: 'benefice', nom: 'Bénéfice' },
+  { cle: 'promesse', nom: 'Promesse' },
+  { cle: 'produit_nom', nom: 'Nom du produit' },
+]
 
-PROBLÈME OBSERVÉ : ${f.probleme}
-PERSONNES CONCERNÉES : ${f.concerne || 'non précisé'}
+export const ideeManquante = (f: Fiche) => CHAMPS_IDEE.filter(c => !f[c.cle].trim()).map(c => c.cle)
+export const ideeAUnPoint = (f: Fiche) => CHAMPS_IDEE.some(c => f[c.cle].trim().length >= 4)
 
-À partir de ce problème, propose :
-- "solution" : la solution en 1 à 2 phrases simples (le moyen de réduire le problème) ;
-- "benefice" : le bénéfice concret pour la personne, en 1 à 2 phrases (situation avant / après), sans exagération ;
-- "promesse" : une promesse claire en UNE phrase, réaliste, qui porte sur ce que le produit aide à faire. Interdit : promettre des ventes, de l'argent ou un résultat garanti ;
+// Le débutant peut partir de n'importe quel point (problème, solution, bénéfice, promesse ou nom) : l'IA complète le reste, sans toucher à ce qu'il a écrit.
+export function consigneSolution(f: Fiche): string {
+  const connus = [
+    ['PERSONNES CONCERNÉES', f.concerne],
+    ['PROBLÈME', f.probleme],
+    ['SOLUTION', f.solution],
+    ['BÉNÉFICE', f.benefice],
+    ['PROMESSE', f.promesse],
+    ['NOM DU PRODUIT', f.produit_nom],
+    ['FORMAT', f.produit_format],
+  ]
+    .filter(([, v]) => v.trim())
+    .map(([t, v]) => `${t} : ${v}`)
+    .join('\n')
+  return `Tu aides un débutant francophone (Afrique) à construire une idée de produit digital cohérente. Il est parti d'un point de départ de son choix ; tu complètes le reste.
+
+CE QUE L'ÉTUDIANT A DÉJÀ ÉCRIT (à respecter, ne le contredis pas) :
+${connus}
+
+Complète tous les éléments ci-dessous pour que l'ensemble soit logique (le problème appelle la solution, qui apporte le bénéfice, résumé par la promesse). Reprends tels quels les éléments déjà écrits :
+- "concerne" : les personnes qui vivent le problème, en une courte phrase ;
+- "probleme" : le problème, en 1 à 2 phrases simples (s'il manque, déduis-le de la solution ou du bénéfice) ;
+- "solution" : la solution en 1 à 2 phrases simples ;
+- "benefice" : le bénéfice concret pour la personne, en 1 à 2 phrases (avant / après), sans exagération ;
+- "promesse" : une promesse claire en UNE phrase, réaliste, sur ce que le produit aide à faire. Interdit : promettre des ventes, de l'argent ou un résultat garanti ;
 - "produit_nom" : un nom court et clair pour le produit digital ;
 - "produit_format" : le format le plus adapté parmi exactement : ${FORMATS.join(' | ')}.
 
 Réponds UNIQUEMENT par un objet JSON, sans autre texte :
-{"solution":"…","benefice":"…","promesse":"…","produit_nom":"…","produit_format":"…"}`
+{"concerne":"…","probleme":"…","solution":"…","benefice":"…","promesse":"…","produit_nom":"…","produit_format":"…"}`
 }
 
 export function consigneAvatar(f: Fiche): string {
@@ -121,8 +147,14 @@ function extraireJson(texte: string): Record<string, unknown> | null {
 export function lireSolution(texte: string): Partial<Fiche> | null {
   const o = extraireJson(texte)
   if (!o) return null
-  const r = { solution: txt(o.solution), benefice: txt(o.benefice), promesse: txt(o.promesse, 400), produit_nom: txt(o.produit_nom, 150), produit_format: txt(o.produit_format, 60) }
-  return r.solution && r.benefice && r.promesse && r.produit_nom ? r : null
+  return { concerne: txt(o.concerne, 300), probleme: txt(o.probleme), solution: txt(o.solution), benefice: txt(o.benefice), promesse: txt(o.promesse, 400), produit_nom: txt(o.produit_nom, 150), produit_format: txt(o.produit_format, 60) }
+}
+
+// Ne remplit que les cases vides : ce que l'étudiant a écrit n'est jamais écrasé.
+export function completerIdee(f: Fiche, ia: Partial<Fiche>): Fiche {
+  const r = { ...f }
+  for (const k of ['concerne', 'probleme', 'solution', 'benefice', 'promesse', 'produit_nom', 'produit_format'] as const) if (!r[k].trim() && ia[k]) r[k] = ia[k] as string
+  return r
 }
 
 export function lireAvatar(texte: string): Omit<Avatar, 'nom'> | null {
