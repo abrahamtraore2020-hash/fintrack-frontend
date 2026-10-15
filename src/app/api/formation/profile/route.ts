@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fail, requireTrainer } from '@/lib/formationApi'
+import { fail, getTrainer } from '@/lib/formationApi'
 import { getDisplayName, setDisplayName } from '@/lib/formationStore'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
-  return NextResponse.json({ nom: await getDisplayName() })
+  const trainer = await getTrainer(req)
+  if (!trainer) return fail('Non autorisé', 401)
+  return NextResponse.json({ nom: await getDisplayName(trainer.id) })
 }
 
 export async function PUT(req: NextRequest) {
-  const denied = await requireTrainer(req)
-  if (denied) return denied
+  const trainer = await getTrainer(req)
+  if (!trainer) return fail('Non autorisé', 401)
   const { nom } = await req.json().catch(() => ({}))
   if (typeof nom !== 'string') return fail('Nom invalide')
-  const error = await setDisplayName(nom.trim())
+  const error = await setDisplayName(nom.trim(), trainer.id)
   return error ? fail(error, 500) : NextResponse.json({ ok: true })
 }

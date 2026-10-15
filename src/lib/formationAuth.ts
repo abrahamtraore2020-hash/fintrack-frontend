@@ -14,20 +14,32 @@ async function hmac(message: string, key: string): Promise<string> {
   return hex(await crypto.subtle.sign('HMAC', k, enc.encode(message)))
 }
 
-// Cookie de session signé : "<expiration>.<signature>"
-export async function createSessionToken(): Promise<string | null> {
+// Identifiant fixe du formateur « administrateur » (le propriétaire de la plateforme, connecté par le mot de passe historique).
+export const ADMIN_ID = '00000000-0000-0000-0000-000000000001'
+
+// Cookie de session signé : "<expiration>.<identifiant du formateur>.<signature>"
+export async function createSessionToken(formateurId: string = ADMIN_ID): Promise<string | null> {
   const key = secret()
   if (!key) return null
   const exp = String(Math.floor(Date.now() / 1000) + SESSION_SECONDS)
-  return `${exp}.${await hmac(`formation:${exp}`, key)}`
+  return `${exp}.${formateurId}.${await hmac(`formation:${exp}:${formateurId}`, key)}`
+}
+
+// Renvoie le formateur de la session, ou null si le cookie est absent, expiré ou falsifié.
+// (Les anciens cookies « <expiration>.<signature> » restent valables : ils désignent l'administrateur.)
+export async function readSession(token: string | undefined): Promise<{ id: string } | null> {
+  const key = secret()
+  if (!key || !token) return null
+  const parts = token.split('.')
+  const [exp] = parts
+  if (!exp || Number(exp) < Date.now() / 1000) return null
+  if (parts.length === 2) return parts[1] === (await hmac(`formation:${exp}`, key)) ? { id: ADMIN_ID } : null
+  if (parts.length !== 3 || !/^[0-9a-f-]{36}$/i.test(parts[1])) return null
+  return parts[2] === (await hmac(`formation:${exp}:${parts[1]}`, key)) ? { id: parts[1] } : null
 }
 
 export async function isFormationAuthorized(token: string | undefined): Promise<boolean> {
-  const key = secret()
-  if (!key || !token) return false
-  const [exp, sig] = token.split('.')
-  if (!exp || !sig || Number(exp) < Date.now() / 1000) return false
-  return sig === (await hmac(`formation:${exp}`, key))
+  return (await readSession(token)) !== null
 }
 
 // remember = true : l'appareil reste connecté 30 jours ; sinon jusqu'à la fermeture du navigateur.

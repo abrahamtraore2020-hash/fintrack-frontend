@@ -1,9 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import { PLATEFORME } from '@/data/formation'
-import { FORMATION_COOKIE, isFormationAuthorized } from '@/lib/formationAuth'
+import { getTrainerServer } from '@/lib/formationApi'
 import { FormationMenu } from '@/components/formation/FormationMenu'
 
 export const metadata: Metadata = {
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default async function FormationLayout({ children }: { children: React.ReactNode }) {
-  const connecte = await isFormationAuthorized(cookies().get(FORMATION_COOKIE)?.value)
+  const trainer = await getTrainerServer()
   return (
     <div className="min-h-screen bg-white text-lion-ink">
       <header className="border-b-2 border-lion-gold bg-white">
@@ -26,7 +25,7 @@ export default async function FormationLayout({ children }: { children: React.Re
               <span className="block text-xs text-lion-ink/70 sm:text-sm">{PLATEFORME.sousTitre}</span>
             </span>
           </Link>
-          {connecte && <FormationMenu />}
+          {trainer && <FormationMenu admin={trainer.admin} />}
         </div>
       </header>
       {children}

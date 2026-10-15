@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getTrainerServer } from '@/lib/formationApi'
 import { getFormation, listerAteliers } from '@/lib/formationStore'
 import { NouvelAtelier } from '@/components/formation/NouvelAtelier'
 
@@ -7,7 +8,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Persona' }
 
 export default async function PersonaListePage({ params }: { params: { formation: string } }) {
-  const { formation } = await getFormation(params.formation)
+  const trainer = await getTrainerServer()
+  if (!trainer) redirect('/formation/acces')
+  const { formation } = await getFormation(params.formation, trainer.id)
   if (!formation) notFound()
   const { ateliers, erreur } = await listerAteliers(params.formation)
   return (

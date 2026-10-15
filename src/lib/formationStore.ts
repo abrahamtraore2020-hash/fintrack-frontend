@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { EPISODES, FORMATION, type Episode } from '@/data/formation'
-import { hashPassword, randomSalt } from '@/lib/formationAuth'
+import { ADMIN_ID, hashPassword, randomSalt } from '@/lib/formationAuth'
 import { slugify } from '@/lib/slug'
 import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
 import { normalizeDirects, type Direct, type Inscription } from '@/data/direct'
@@ -14,6 +14,7 @@ export interface Formation {
   episodes: Episode[]
   theme: Theme
   directs: Direct[]
+  proprietaire: string // identifiant du formateur propriétaire
 }
 
 // Adresses déjà prises par des pages fixes de /formation
@@ -26,6 +27,7 @@ const DEFAULT_FORMATION: Formation = {
   episodes: EPISODES,
   theme: DEFAULT_THEME,
   directs: [],
+  proprietaire: ADMIN_ID,
 }
 
 function admin() {
@@ -39,7 +41,7 @@ function admin() {
   })
 }
 
-type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown; directs?: unknown }
+type Row = { slug: string; titre: string; sous_titre: string; episodes: Omit<Episode, 'numero'>[]; theme?: unknown; directs?: unknown; formateur_id?: string }
 const toFormation = (r: Row): Formation => ({
   slug: r.slug,
   titre: r.titre,
@@ -47,32 +49,35 @@ const toFormation = (r: Row): Formation => ({
   episodes: (r.episodes ?? []).map((e, i) => ({ ...e, numero: i + 1 })),
   theme: normalizeTheme(r.theme),
   directs: normalizeDirects(r.directs),
+  proprietaire: r.formateur_id ?? ADMIN_ID, // sans colonne (avant le SQL 013) tout appartient à l'administrateur
 })
 
 // Si la base ne répond pas, on affiche la formation de départ AVEC la cause de l'erreur :
 // les pages l'annoncent et l'éditeur refuse d'enregistrer (pour ne pas écraser le vrai contenu).
-export async function lireFormations(): Promise<{ formations: Formation[]; erreur: string | null }> {
+export async function lireFormations(proprietaire?: string): Promise<{ formations: Formation[]; erreur: string | null }> {
   const db = admin()
   if (!db) return { formations: [DEFAULT_FORMATION], erreur: 'Variables Supabase absentes dans Vercel' }
   const { data, error } = await db.from('formation_formations').select('*').order('position').order('created_at')
   if (error || !data) return { formations: [DEFAULT_FORMATION], erreur: `Lecture impossible : ${error?.message ?? 'réponse vide'}` }
-  return { formations: (data as Row[]).map(toFormation), erreur: null }
+  const toutes = (data as Row[]).map(toFormation)
+  return { formations: proprietaire ? toutes.filter(f => f.proprietaire === proprietaire) : toutes, erreur: null }
 }
 
-export async function getFormation(slug: string): Promise<{ formation: Formation | null; erreur: string | null }> {
-  const { formations, erreur } = await lireFormations()
+// Avec « proprietaire », ne trouve que les formations de ce formateur (espaces séparés).
+export async function getFormation(slug: string, proprietaire?: string): Promise<{ formation: Formation | null; erreur: string | null }> {
+  const { formations, erreur } = await lireFormations(proprietaire)
   return { formation: formations.find(f => f.slug === slug) ?? null, erreur }
 }
 
-export async function getEpisode(formationSlug: string, episodeSlug: string) {
-  const { formation, erreur } = await getFormation(formationSlug)
+export async function getEpisode(formationSlug: string, episodeSlug: string, proprietaire?: string) {
+  const { formation, erreur } = await getFormation(formationSlug, proprietaire)
   if (!formation) return null
   const index = formation.episodes.findIndex(e => e.slug === episodeSlug)
   if (index === -1) return null
   return { formation, episode: formation.episodes[index], suivant: formation.episodes[index + 1] ?? null, erreur }
 }
 
-export async function createFormation(titre: string, sousTitre: string): Promise<{ slug: string } | { error: string }> {
+export async function createFormation(titre: string, sousTitre: string, proprietaire: string = ADMIN_ID): Promise<{ slug: string } | { error: string }> {
   const db = admin()
   if (!db) return { error: 'Supabase n’est pas configuré' }
   const { data, error } = await db.from('formation_formations').select('slug, position')
@@ -82,11 +87,11 @@ export async function createFormation(titre: string, sousTitre: string): Promise
   let slug = base
   for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`
   const position = data.reduce((m, r) => Math.max(m, r.position + 1), 0)
-  const { error: insError } = await db.from('formation_formations').insert({ slug, position, titre, sous_titre: sousTitre, episodes: [] })
+  const { error: insError } = await db.from('formation_formations').insert({ slug, position, titre, sous_titre: sousTitre, episodes: [], ...(proprietaire === ADMIN_ID ? {} : { formateur_id: proprietaire }) })
   return insError ? { error: insError.message } : { slug }
 }
 
-export async function saveFormation(slug: string, f: Omit<Formation, 'slug' | 'directs'>): Promise<string | null> {
+export async function saveFormation(slug: string, f: Omit<Formation, 'slug' | 'directs' | 'proprietaire'>): Promise<string | null> {
   const db = admin()
   if (!db) return 'Supabase n’est pas configuré'
   const episodes = f.episodes.map(({ slug, titre, resume, lecons }) => ({ slug, titre, resume, lecons }))
@@ -138,11 +143,18 @@ export async function createPasswordRecord(hash: string, salt: string): Promise<
   return error ? error.message : null
 }
 
-export async function changePassword(actuel: string, nouveau: string): Promise<string | null> {
+export async function changePassword(actuel: string, nouveau: string, formateurId: string = ADMIN_ID): Promise<string | null> {
+  const salt = randomSalt()
+  if (formateurId !== ADMIN_ID) {
+    const f = await lireFormateur(formateurId)
+    if (!f || !f.salt || !f.hash) return 'Compte introuvable'
+    if ((await hashPassword(actuel, f.salt)) !== f.hash) return 'Mot de passe actuel incorrect'
+    const { error } = await admin()!.from('formation_formateurs').update({ password_hash: await hashPassword(nouveau, salt), salt }).eq('id', formateurId)
+    return error ? error.message : null
+  }
   const rec = await getPasswordRecord()
   if (!rec || 'error' in rec) return rec && 'error' in rec ? rec.error : 'Aucun mot de passe défini'
   if ((await hashPassword(actuel, rec.salt)) !== rec.hash) return 'Mot de passe actuel incorrect'
-  const salt = randomSalt()
   const { error } = await admin()!
     .from('formation_settings')
     .update({ password_hash: await hashPassword(nouveau, salt), salt, updated_at: new Date().toISOString() })
@@ -150,18 +162,172 @@ export async function changePassword(actuel: string, nouveau: string): Promise<s
   return error ? error.message : null
 }
 
-export async function getDisplayName(): Promise<string> {
+export async function getDisplayName(formateurId: string = ADMIN_ID): Promise<string> {
   const db = admin()
   if (!db) return ''
+  if (formateurId !== ADMIN_ID) return (await lireFormateur(formateurId))?.nom ?? ''
   const { data } = await db.from('formation_settings').select('display_name').eq('id', 1).maybeSingle()
   return data?.display_name ?? ''
 }
 
-export async function setDisplayName(nom: string): Promise<string | null> {
+export async function setDisplayName(nom: string, formateurId: string = ADMIN_ID): Promise<string | null> {
   const db = admin()
   if (!db) return 'Supabase n’est pas configuré'
+  if (formateurId !== ADMIN_ID) {
+    const { error } = await db.from('formation_formateurs').update({ nom }).eq('id', formateurId)
+    return error ? error.message : null
+  }
   const { error } = await db.from('formation_settings').update({ display_name: nom }).eq('id', 1)
   return error ? error.message : null
+}
+
+// ---- Formateurs (chacun son espace) et invitations ----
+
+export interface Formateur {
+  id: string
+  email: string | null
+  nom: string
+  slug: string
+  admin: boolean
+  actif: boolean
+  hash: string | null
+  salt: string | null
+  created_at: string
+}
+type LigneFormateur = { id: string; email: string | null; nom: string; slug: string; est_admin: boolean; actif: boolean; password_hash: string | null; salt: string | null; created_at: string }
+const versFormateur = (r: LigneFormateur): Formateur => ({ id: r.id, email: r.email, nom: r.nom, slug: r.slug, admin: r.est_admin, actif: r.actif, hash: r.password_hash, salt: r.salt, created_at: r.created_at })
+const messageFormateurs = (m: string) => (/formation_(formateurs|invitations)|formateur_id/.test(m) ? 'Exécutez le SQL 013_formation_formateurs.sql dans Supabase' : m)
+
+export async function lireFormateur(id: string): Promise<Formateur | null> {
+  const db = admin()
+  if (!db || !UUID.test(id)) return null
+  const { data } = await db.from('formation_formateurs').select('*').eq('id', id).maybeSingle()
+  return data ? versFormateur(data as LigneFormateur) : null
+}
+
+export async function lireFormateurParEmail(email: string): Promise<Formateur | null> {
+  const db = admin()
+  if (!db) return null
+  const { data } = await db.from('formation_formateurs').select('*').eq('email', email.trim().toLowerCase()).maybeSingle()
+  return data ? versFormateur(data as LigneFormateur) : null
+}
+
+export async function lireFormateurParSlug(slug: string): Promise<Formateur | null> {
+  const db = admin()
+  if (!db) return null
+  const { data } = await db.from('formation_formateurs').select('*').eq('slug', slug).maybeSingle()
+  return data ? versFormateur(data as LigneFormateur) : null
+}
+
+export async function listerFormateurs(): Promise<{ formateurs: (Omit<Formateur, 'hash' | 'salt'> & { formations: number })[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { formateurs: [], erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_formateurs').select('*').order('created_at')
+  if (error) return { formateurs: [], erreur: messageFormateurs(error.message) }
+  const { formations } = await lireFormations()
+  return {
+    formateurs: (data as LigneFormateur[]).map(r => {
+      const { hash: _h, salt: _s, ...f } = versFormateur(r)
+      return { ...f, formations: formations.filter(x => x.proprietaire === r.id).length }
+    }),
+    erreur: null,
+  }
+}
+
+export async function creerFormateur(email: string, nom: string, hash: string, salt: string): Promise<{ id: string } | { erreur: string; doublon?: boolean }> {
+  const db = admin()
+  if (!db) return { erreur: 'Supabase n’est pas configuré' }
+  const base = slugify(nom || email.split('@')[0])
+  for (let n = 1; n <= 20; n++) {
+    const slug = n === 1 ? base : `${base}-${n}`
+    const { data, error } = await db.from('formation_formateurs').insert({ email, nom, password_hash: hash, salt, slug }).select('id').single()
+    if (!error && data) return { id: data.id }
+    if (error?.code === '23505' && /email/.test(error.message)) return { erreur: 'Cette adresse email a déjà un compte', doublon: true }
+    if (error?.code !== '23505') return { erreur: messageFormateurs(error?.message ?? 'Création impossible') }
+  }
+  return { erreur: 'Impossible de créer l’adresse de votre espace, réessayez' }
+}
+
+export async function changerActifFormateur(id: string, actif: boolean): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  if (id === ADMIN_ID) return 'L’administrateur ne peut pas être désactivé'
+  const { error } = await db.from('formation_formateurs').update({ actif }).eq('id', id)
+  return error ? error.message : null
+}
+
+export interface Invitation { code: string; nom: string; created_at: string; utilisee_le: string | null }
+
+export async function creerInvitation(nom: string): Promise<{ code: string } | { erreur: string }> {
+  const db = admin()
+  if (!db) return { erreur: 'Supabase n’est pas configuré' }
+  const code = crypto.randomUUID().replace(/-/g, '')
+  const { error } = await db.from('formation_invitations').insert({ code, nom })
+  return error ? { erreur: messageFormateurs(error.message) } : { code }
+}
+
+export async function listerInvitations(): Promise<{ invitations: Invitation[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { invitations: [], erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_invitations').select('code, nom, created_at, utilisee_le').order('created_at', { ascending: false })
+  return error ? { invitations: [], erreur: messageFormateurs(error.message) } : { invitations: (data ?? []) as Invitation[], erreur: null }
+}
+
+export async function lireInvitation(code: string): Promise<Invitation | null> {
+  const db = admin()
+  if (!db || !/^[0-9a-f]{32}$/.test(code)) return null
+  const { data } = await db.from('formation_invitations').select('code, nom, created_at, utilisee_le').eq('code', code).maybeSingle()
+  return data ? (data as Invitation) : null
+}
+
+// Marque l'invitation comme utilisée ; renvoie false si elle l'était déjà (une invitation ne sert qu'une fois).
+export async function consommerInvitation(code: string): Promise<boolean> {
+  const db = admin()
+  if (!db) return false
+  const { data } = await db.from('formation_invitations').update({ utilisee_le: new Date().toISOString() }).eq('code', code).is('utilisee_le', null).select('code')
+  return !!data && data.length === 1
+}
+
+// Remet l'invitation en service (la création du compte a échoué).
+export async function rendreInvitation(code: string): Promise<void> {
+  await admin()?.from('formation_invitations').update({ utilisee_le: null }).eq('code', code)
+}
+
+export async function lierInvitation(code: string, formateurId: string): Promise<void> {
+  await admin()?.from('formation_invitations').update({ utilisee_par: formateurId }).eq('code', code)
+}
+
+export async function supprimerInvitation(code: string): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  const { error } = await db.from('formation_invitations').delete().eq('code', code)
+  return error ? error.message : null
+}
+
+// Propriétaire d'une formation (null si elle n'existe pas).
+export async function proprietaireDe(slug: string): Promise<string | null> {
+  const { formations, erreur } = await lireFormations()
+  if (erreur) return null
+  return formations.find(f => f.slug === slug)?.proprietaire ?? null
+}
+
+export async function formationDeExercice(id: string): Promise<string | null> {
+  const db = admin()
+  if (!db || !UUID.test(id)) return null
+  const { data } = await db.from('formation_exercices').select('formation_slug').eq('id', id).maybeSingle()
+  return data?.formation_slug ?? null
+}
+
+export async function formationDAtelier(id: string): Promise<string | null> {
+  const db = admin()
+  if (!db || !UUID.test(id)) return null
+  const { data } = await db.from('formation_ateliers').select('formation_slug').eq('id', id).maybeSingle()
+  return data?.formation_slug ?? null
+}
+
+export async function formationDuDirect(directId: string): Promise<string | null> {
+  const { formations } = await lireFormations()
+  return formations.find(f => f.directs.some(d => d.id === directId))?.slug ?? null
 }
 
 // ---- Directs : page publique et inscriptions ----

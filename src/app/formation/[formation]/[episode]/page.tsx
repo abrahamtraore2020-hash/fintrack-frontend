@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getTrainerServer } from '@/lib/formationApi'
 import { getEpisode } from '@/lib/formationStore'
 import { Whiteboard } from '@/components/formation/Whiteboard'
 import { DownloadPptx } from '@/components/formation/DownloadPptx'
@@ -12,12 +13,15 @@ export const dynamic = 'force-dynamic'
 type Params = { params: { formation: string; episode: string } }
 
 export async function generateMetadata({ params }: Params) {
-  const found = await getEpisode(params.formation, params.episode)
+  const trainer = await getTrainerServer()
+  const found = await getEpisode(params.formation, params.episode, trainer?.id)
   return { title: found?.episode.titre ?? 'Module' }
 }
 
 export default async function EpisodePage({ params }: Params) {
-  const found = await getEpisode(params.formation, params.episode)
+  const trainer = await getTrainerServer()
+  if (!trainer) redirect('/formation/acces')
+  const found = await getEpisode(params.formation, params.episode, trainer.id)
   if (!found) notFound()
   const { formation, episode, suivant, erreur } = found
 
