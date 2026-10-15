@@ -5,6 +5,7 @@ import { slugify } from '@/lib/slug'
 import { DEFAULT_THEME, normalizeTheme, type Theme } from '@/data/theme'
 import { normalizeDirects, type Direct, type Inscription } from '@/data/direct'
 import { normalizeQuestions, type Exercice, type Resultat } from '@/data/exercice'
+import { normaliserFiche, type Fiche } from '@/data/persona'
 
 export interface Formation {
   slug: string
@@ -114,6 +115,7 @@ export async function deleteFormation(slug: string): Promise<string | null> {
   const db = admin()
   if (!db) return 'Supabase n’est pas configuré'
   const { error } = await db.from('formation_formations').delete().eq('slug', slug)
+  await db.from('formation_ateliers').delete().eq('formation_slug', slug) // ateliers persona et leurs fiches (cascade)
   await db.from('formation_exercices').delete().eq('formation_slug', slug) // et leurs résultats (cascade) ; ignoré si la table n'existe pas encore
   return error ? error.message : null
 }
@@ -285,4 +287,115 @@ export async function enregistrerResultat(exerciceId: string, nom: string, email
   if (!db) return 'Service indisponible'
   const { error } = await db.from('formation_resultats').insert({ exercice_id: exerciceId, nom, email, score, total, note, reponses })
   return error ? messageTable(error.message) : null
+}
+
+// ---- Ateliers « Comprendre son persona » ----
+
+export interface Atelier {
+  id: string
+  formation: string
+  titre: string
+  ouvert: boolean
+  created_at: string
+}
+export interface FicheEleve {
+  id: string
+  nom: string
+  email: string
+  data: Fiche
+  generations: number
+  created_at: string
+  updated_at: string
+}
+type LigneAtelier = { id: string; formation_slug: string; titre: string; ouvert: boolean; created_at: string }
+const versAtelier = (r: LigneAtelier): Atelier => ({ id: r.id, formation: r.formation_slug, titre: r.titre, ouvert: r.ouvert, created_at: r.created_at })
+const messageAtelier = (m: string) => (/formation_(ateliers|personas)/.test(m) ? 'Exécutez le SQL 012_formation_persona.sql dans Supabase' : m)
+
+export const MAX_FICHES = 500
+export const MAX_GENERATIONS = 12 // appels IA par fiche : protège votre clé
+
+export async function listerAteliers(formation: string): Promise<{ ateliers: (Atelier & { fiches: number })[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { ateliers: [], erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_ateliers').select('*').eq('formation_slug', formation).order('created_at', { ascending: false })
+  if (error) return { ateliers: [], erreur: messageAtelier(error.message) }
+  const ids = (data ?? []).map(r => r.id)
+  const n: Record<string, number> = {}
+  if (ids.length) {
+    const { data: f } = await db.from('formation_personas').select('atelier_id').in('atelier_id', ids)
+    for (const r of f ?? []) n[r.atelier_id] = (n[r.atelier_id] ?? 0) + 1
+  }
+  return { ateliers: (data as LigneAtelier[]).map(r => ({ ...versAtelier(r), fiches: n[r.id] ?? 0 })), erreur: null }
+}
+
+export async function lireAtelier(id: string): Promise<{ atelier: Atelier | null; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { atelier: null, erreur: 'Supabase n’est pas configuré' }
+  if (!UUID.test(id)) return { atelier: null, erreur: null }
+  const { data, error } = await db.from('formation_ateliers').select('*').eq('id', id).maybeSingle()
+  if (error) return { atelier: null, erreur: messageAtelier(error.message) }
+  return { atelier: data ? versAtelier(data as LigneAtelier) : null, erreur: null }
+}
+
+export async function creerAtelier(formation: string, titre: string): Promise<{ id: string } | { erreur: string }> {
+  const db = admin()
+  if (!db) return { erreur: 'Supabase n’est pas configuré' }
+  const { data, error } = await db.from('formation_ateliers').insert({ formation_slug: formation, titre }).select('id').single()
+  return error || !data ? { erreur: messageAtelier(error?.message ?? 'Création impossible') } : { id: data.id }
+}
+
+export async function sauverAtelier(id: string, a: { titre: string; ouvert: boolean }): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  if (!UUID.test(id)) return 'Atelier introuvable'
+  const { data, error } = await db.from('formation_ateliers').update({ titre: a.titre, ouvert: a.ouvert }).eq('id', id).select('id')
+  if (error) return messageAtelier(error.message)
+  return data.length === 0 ? 'Atelier introuvable' : null
+}
+
+export async function supprimerAtelier(id: string): Promise<string | null> {
+  const db = admin()
+  if (!db) return 'Supabase n’est pas configuré'
+  if (!UUID.test(id)) return 'Atelier introuvable'
+  const { error } = await db.from('formation_ateliers').delete().eq('id', id)
+  return error ? messageAtelier(error.message) : null
+}
+
+export async function listerFiches(atelierId: string): Promise<{ fiches: FicheEleve[]; erreur: string | null }> {
+  const db = admin()
+  if (!db) return { fiches: [], erreur: 'Supabase n’est pas configuré' }
+  if (!UUID.test(atelierId)) return { fiches: [], erreur: null }
+  const { data, error } = await db.from('formation_personas').select('id, nom, email, data, generations, created_at, updated_at').eq('atelier_id', atelierId).order('created_at', { ascending: false })
+  if (error) return { fiches: [], erreur: messageAtelier(error.message) }
+  return { fiches: (data ?? []).map(r => ({ ...r, data: normaliserFiche(r.data) })) as FicheEleve[], erreur: null }
+}
+
+// L'étudiant n'a pas de compte : la fiche est protégée par une clé secrète que seul son navigateur connaît.
+export async function creerFiche(atelierId: string, nom: string, email: string): Promise<{ id: string; cle: string } | { erreur: string }> {
+  const db = admin()
+  if (!db) return { erreur: 'Service indisponible' }
+  const { count, error: errCount } = await db.from('formation_personas').select('id', { count: 'exact', head: true }).eq('atelier_id', atelierId)
+  if (errCount) return { erreur: messageAtelier(errCount.message) }
+  if ((count ?? 0) >= MAX_FICHES) return { erreur: 'Cet atelier est complet' }
+  const cle = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
+  const { data, error } = await db.from('formation_personas').insert({ atelier_id: atelierId, cle, nom, email, data: normaliserFiche({}) }).select('id').single()
+  return error || !data ? { erreur: 'Impossible de démarrer, réessayez' } : { id: data.id, cle }
+}
+
+export async function lireFiche(id: string, cle: string): Promise<{ fiche: (FicheEleve & { atelier_id: string }) | null }> {
+  const db = admin()
+  if (!db || !UUID.test(id) || typeof cle !== 'string' || cle.length < 20) return { fiche: null }
+  const { data } = await db.from('formation_personas').select('*').eq('id', id).maybeSingle()
+  if (!data || data.cle !== cle) return { fiche: null }
+  return { fiche: { id: data.id, atelier_id: data.atelier_id, nom: data.nom, email: data.email, data: normaliserFiche(data.data), generations: data.generations, created_at: data.created_at, updated_at: data.updated_at } }
+}
+
+export async function sauverFiche(id: string, cle: string, fiche: Fiche, generations?: number): Promise<boolean> {
+  const db = admin()
+  const { fiche: f } = await lireFiche(id, cle)
+  if (!db || !f) return false
+  const maj: Record<string, unknown> = { data: normaliserFiche(fiche), updated_at: new Date().toISOString() }
+  if (generations !== undefined) maj.generations = generations
+  const { error } = await db.from('formation_personas').update(maj).eq('id', id)
+  return !error
 }
