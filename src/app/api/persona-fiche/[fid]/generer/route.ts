@@ -7,6 +7,30 @@ export const maxDuration = 60
 
 const MODELE = 'claude-sonnet-5-5'
 
+// Google retire régulièrement d'anciens modèles : on lui demande la liste de ceux qui existent et on prend les « flash » les plus récents.
+const SECOURS = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite']
+let memo: { le: number; liste: string[] } | null = null
+async function modelesGemini(base: string, cle: string): Promise<string[]> {
+  if (memo && Date.now() - memo.le < 3_600_000) return memo.liste
+  try {
+    const res = await fetch(`${base}/v1beta/models?pageSize=200`, { headers: { 'x-goog-api-key': cle }, signal: AbortSignal.timeout(8000) })
+    if (res.ok) {
+      const d = await res.json()
+      const noms: string[] = (d.models ?? [])
+        .filter((m: { name?: string; supportedGenerationMethods?: string[] }) => m.name && m.supportedGenerationMethods?.includes('generateContent'))
+        .map((m: { name: string }) => m.name.replace(/^models\//, ''))
+        .filter((n: string) => /^gemini-[\d.]+-flash(-lite)?$/.test(n))
+      const version = (n: string) => parseFloat(n.split('-')[1]) || 0
+      noms.sort((a, b) => version(b) - version(a) || (a.includes('lite') ? 1 : 0) - (b.includes('lite') ? 1 : 0))
+      if (noms.length) {
+        memo = { le: Date.now(), liste: [...noms.slice(0, 3), 'gemini-flash-latest'] }
+        return memo.liste
+      }
+    }
+  } catch {}
+  return SECOURS
+}
+
 type Reponse = { texte: string | null; detail: string }
 
 async function lireErreur(res: Response): Promise<string> {
@@ -20,7 +44,7 @@ async function demanderIA(consigne: string): Promise<Reponse> {
   const gem = process.env.GEMINI_API_KEY?.trim()
   if (gem) {
     const base = process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com'
-    const modeles = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
+    const modeles = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : await modelesGemini(base, gem)
     const fin = Date.now() + 48_000 // la route est limitée à 60 s
     let detail = ''
     for (const modele of modeles) {
