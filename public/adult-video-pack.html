@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Adult Video Pack - 500 Premium Videos">
+  <meta property="og:description" content="Largest collection of premium adult educational videos. Learn, explore, and enhance your intimate life.">
+  <meta name="description" content="500+ premium adult educational videos covering techniques, positions, pleasure guides and more.">
+  <title>Adult Video Pack - 500 Videos | APHRODITE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070504;
+      --bg-2: #0f0907;
+      --card: #140c09;
+      --gold: #E2A84B;
+      --gold-light: #F7D48A;
+      --gold-pale: #FFF3D1;
+      --gold-metal: linear-gradient(120deg, #7A4A12 0%, #C98B30 16%, #F7D48A 32%, #FFF3D1 42%, #E2A84B 55%, #B9772A 72%, #F2C76E 88%, #8E5A1A 100%);
+      --gold-btn: linear-gradient(120deg, #B9772A 0%, #E2A84B 28%, #F7D48A 50%, #E2A84B 72%, #B9772A 100%);
+      --gold-line: rgba(226, 168, 75, 0.32);
+      --line: rgba(226, 168, 75, 0.13);
+      --wine: #5A0C1E;
+      --crimson: #D11A35;
+      --text: #F6EDE3;
+      --muted: #C9BBA9;
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { color-scheme: dark; }
+    }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      padding-bottom: 76px;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    h1, h2, h3, .serif {
+      font-family: 'Playfair Display', Georgia, serif;
+      text-wrap: balance;
+    }
+    h2 {
+      font-size: clamp(30px, 6.4vw, 52px);
+      line-height: 1.12;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(15, 9, 7, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gold-line);
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background:
+        radial-gradient(800px 600px at 50% 0%, rgba(226, 168, 75, 0.15), transparent 60%),
+        var(--bg);
+      border-bottom: 1px solid var(--gold-line);
+    }
+    .hero-content {
+      max-width: 680px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(226, 168, 75, 0.12);
+      border: 1px solid var(--gold-line);
+      border-radius: 999px;
+      font-size: 0.85em;
+      color: var(--gold-light);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: var(--gold-metal);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: clamp(18px, 4vw, 28px);
+      color: var(--gold-light);
+      margin-bottom: 24px;
+      font-weight: 300;
+      line-height: 1.4;
+    }
+    .hero-timer {
+      padding: 16px;
+      background: rgba(226, 168, 75, 0.08);
+      border: 1px solid var(--gold-line);
+      border-radius: var(--radius);
+      margin: 24px 0;
+      font-size: 0.95em;
+    }
+    .cta-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      background: var(--gold-btn);
+      color: #000;
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 1em;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(226, 168, 75, 0.3);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(226, 168, 75, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(226, 168, 75, 0.15);
+      color: var(--gold-light);
+      box-shadow: none;
+      border: 1px solid var(--gold-line);
+    }
+    .btn-secondary:hover {
+      background: rgba(226, 168, 75, 0.25);
+    }
+    .section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .feature-card {
+      padding: 24px;
+      background: rgba(226, 168, 75, 0.06);
+      border: 1px solid var(--gold-line);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .feature-card h3 {
+      font-size: 1.4em;
+      margin-bottom: 12px;
+      color: var(--gold-light);
+    }
+    .feature-card p {
+      font-size: 0.9em;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .sticky {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: linear-gradient(180deg, rgba(15, 9, 7, 0) 0%, rgba(15, 9, 7, 0.98) 30%);
+      padding: 16px 20px 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sticky.show {
+      display: flex;
+    }
+    .sticky .p {
+      font-size: 0.9em;
+      color: var(--muted);
+    }
+    .sticky b {
+      font-size: 1.4em;
+      color: var(--gold-light);
+      margin: 0 8px;
+    }
+    .sticky s {
+      color: var(--muted);
+      font-size: 0.85em;
+      margin-right: 8px;
+    }
+    .sticky small {
+      display: block;
+      font-size: 0.75em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      z-index: 99;
+      background: rgba(15, 9, 7, 0.95);
+      border: 1px solid var(--gold-line);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      max-width: 300px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .toast-content {
+      font-size: 0.85em;
+      line-height: 1.5;
+    }
+    .toast-who {
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+    .toast-where {
+      color: var(--muted);
+      font-size: 0.8em;
+    }
+    .toast-when {
+      color: var(--muted);
+      font-size: 0.75em;
+      margin-top: 4px;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .price-section {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(226, 168, 75, 0.08);
+      border-top: 1px solid var(--gold-line);
+      border-bottom: 1px solid var(--gold-line);
+      margin: 40px 0;
+    }
+    .price-section h2 {
+      color: var(--gold-light);
+      margin-bottom: 16px;
+    }
+    .price-display {
+      font-size: 3em;
+      font-weight: 900;
+      color: var(--gold-light);
+      margin: 16px 0;
+    }
+    .price-display sup {
+      font-size: 0.4em;
+      vertical-align: super;
+    }
+    .guarantee {
+      background: rgba(209, 26, 53, 0.1);
+      border: 1px solid rgba(209, 26, 53, 0.3);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      margin-top: 24px;
+    }
+    .guarantee h3 {
+      color: var(--crimson);
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">500+ Premium Videos — Instant Access — <b data-timer-inline>2 days 00:00:00</b> Special Price</div>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🎬 Complete Video Collection</div>
+    <h1>Adult Video Pack<br>500 Premium Videos</h1>
+    <p class="hero-subtitle">Learn, explore, and enhance your intimate knowledge with our most comprehensive video collection</p>
+
+    <p class="hero-timer">⏰ Special Launch Price Ends in <b data-timer-inline>2 days 00:00:00</b></p>
+
+    <div class="cta-group">
+      <a href="https://aphroditelove.mychariow.market/adult-video-pack/checkout" target="_blank" rel="noopener" class="btn">Get Instant Access — $17</a>
+      <a href="#details" class="btn btn-secondary">Learn More ↓</a>
+    </div>
+  </div>
+</div>
+
+<div id="details" class="section reveal">
+  <h2>What's Inside Your Video Pack</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>🎯 500+ Videos</h3>
+      <p>Curated collection of professional educational adult content covering all interests and preferences</p>
+    </div>
+    <div class="feature-card">
+      <h3>📱 Instant Access</h3>
+      <p>Watch immediately after purchase on any device — desktop, tablet, or mobile. Download and watch offline</p>
+    </div>
+    <div class="feature-card">
+      <h3>🔒 100% Private</h3>
+      <p>Discreet billing. Your privacy is protected. Watch in complete confidence and anonymity</p>
+    </div>
+    <div class="feature-card">
+      <h3>👥 All Couples</h3>
+      <p>Content for heterosexual, gay, lesbian, and all couples. Inclusive and diverse collection</p>
+    </div>
+    <div class="feature-card">
+      <h3>🎬 HD Quality</h3>
+      <p>Crystal-clear 720p to 1080p videos. Professional production quality. Smooth streaming</p>
+    </div>
+    <div class="feature-card">
+      <h3>🆕 Regular Updates</h3>
+      <p>New videos added monthly. Your access continues to grow. One payment, lifetime collection</p>
+    </div>
+  </div>
+</div>
+
+<div class="price-section reveal">
+  <h2>Limited Time Launch Price</h2>
+  <div class="price-display"><sup>$</sup>17<sup>USD</sup></div>
+  <p style="color: var(--muted); margin-bottom: 16px;">Regular price: $47 | Save $30 today</p>
+  <a href="https://aphroditelove.mychariow.market/adult-video-pack/checkout" target="_blank" rel="noopener" class="btn">Get Access Now</a>
+  <div class="guarantee">
+    <h3>✓ 30-Day Money-Back Guarantee</h3>
+    <p>Not satisfied? Full refund, no questions asked. We're confident you'll love it.</p>
+  </div>
+</div>
+
+<div class="section reveal">
+  <h2>Video Categories Included</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>Techniques</h3>
+      <p>Step-by-step guides for maximum pleasure and satisfaction</p>
+    </div>
+    <div class="feature-card">
+      <h3>Positions</h3>
+      <p>Demonstrated positions for comfort and connection</p>
+    </div>
+    <div class="feature-card">
+      <h3>Foreplay</h3>
+      <p>Build arousal and connection with your partner</p>
+    </div>
+    <div class="feature-card">
+      <h3>Communication</h3>
+      <p>How to talk about desires and boundaries with your partner</p>
+    </div>
+    <div class="feature-card">
+      <h3>Solo Play</h3>
+      <p>Self-pleasure and self-knowledge for men and women</p>
+    </div>
+    <div class="feature-card">
+      <h3>Couples Guides</h3>
+      <p>Reignite passion and try something new together</p>
+    </div>
+  </div>
+</div>
+
+<div id="sticky" class="sticky">
+  <div class="p"><s>$47</s><b>$17</b><small>Ends in <span data-timer-inline>2 days 00:00:00</span></small></div>
+  <a href="https://aphroditelove.mychariow.market/adult-video-pack/checkout" target="_blank" rel="noopener" class="btn">Get it now</a>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite">
+  <div class="toast-content">
+    <div class="toast-who" data-who>Sarah</div>
+    <div class="toast-where" data-where>United States</div>
+    <div class="toast-when" data-when>5 minutes ago</div>
+  </div>
+</div>
+
+<script>
+  document.documentElement.classList.add('js');
+
+  // 48-hour offer countdown, renews every 2 days
+  const KEY = 'avp_offer_deadline';
+  let deadline = 0;
+  try { deadline = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+  if (!deadline || deadline < Date.now()) {
+    deadline = Date.now() + 48 * 3600 * 1000;
+    try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
+  }
+  const pad = n => String(n).padStart(2, '0');
+  function tick() {
+    const left = Math.max(0, deadline - Date.now());
+    const d = Math.floor(left / 86400000), h = Math.floor(left / 3600000) % 24, m = Math.floor(left / 60000) % 60, s = Math.floor(left / 1000) % 60;
+    document.querySelectorAll('[data-d]').forEach(el => el.textContent = pad(d));
+    document.querySelectorAll('[data-h]').forEach(el => el.textContent = pad(h));
+    document.querySelectorAll('[data-m]').forEach(el => el.textContent = pad(m));
+    document.querySelectorAll('[data-s]').forEach(el => el.textContent = pad(s));
+    const days = d ? `${d} day${d > 1 ? 's' : ''} ` : '';
+    document.querySelectorAll('[data-timer-inline]').forEach(el => el.textContent = `${days}${pad(h)}:${pad(m)}:${pad(s)}`);
+    if (left === 0) {
+      deadline = Date.now() + 48 * 3600 * 1000;
+      try { localStorage.setItem(KEY, String(deadline)); } catch (e) {}
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Reveal on scroll
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+
+  document.querySelectorAll('a.btn').forEach(a => a.addEventListener('click', () => {
+    if (window.fbq) fbq('trackCustom', 'VideoPackCheckout');
+  }));
+
+  // Purchase notifications — REAL sales only
+  const RECENT_BUYERS = [
+    { name: 'Marcus', place: 'Canada', date: '2026-10-05T07:15:00Z' },
+  ];
+
+  function timeAgo(date) {
+    const min = Math.max(1, Math.round((Date.now() - new Date(date).getTime()) / 60000));
+    if (min < 60) return `${min} minute${min > 1 ? 's' : ''} ago`;
+    const h = Math.round(min / 60);
+    if (h < 24) return `${h} hour${h > 1 ? 's' : ''} ago`;
+    const d = Math.round(h / 24);
+    return `${d} day${d > 1 ? 's' : ''} ago`;
+  }
+
+  function startNotifications(list) {
+    if (!list.length) return;
+    const toast = document.getElementById('toast');
+    const buyers = list.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+    let i = 0;
+    const showNext = () => {
+      const b = buyers[i++ % buyers.length];
+      toast.querySelector('[data-who]').textContent = b.name;
+      toast.querySelector('[data-where]').textContent = b.place;
+      toast.querySelector('[data-when]').textContent = timeAgo(b.date);
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5500);
+    };
+    setTimeout(() => { showNext(); setInterval(showNext, 18000); }, 7000);
+  }
+
+  // Demo sales data
+  const DEMO_SALES = [
+    { name: 'Jennifer', place: 'United Kingdom', date: new Date(Date.now() - 8 * 60000).toISOString() },
+    { name: 'David', place: 'Australia', date: new Date(Date.now() - 22 * 60000).toISOString() },
+    { name: 'Amanda', place: 'New Zealand', date: new Date(Date.now() - 45 * 60000).toISOString() },
+    { name: 'Chris', place: 'South Africa', date: new Date(Date.now() - 62 * 60000).toISOString() },
+    { name: 'Sophie', place: 'Germany', date: new Date(Date.now() - 90 * 60000).toISOString() },
+  ];
+
+  Promise.resolve({ buyers: DEMO_SALES })
+    .then(d => {
+      const seen = new Set();
+      startNotifications(RECENT_BUYERS.concat(Array.isArray(d.buyers) ? d.buyers : []).filter(b => {
+        const key = b.name + '|' + new Date(b.date).toISOString().slice(0, 16);
+        return seen.has(key) ? false : seen.add(key);
+      }));
+    });
+
+  // Sticky CTA after hero
+  const sticky = document.getElementById('sticky');
+  const hero = document.querySelector('.hero');
+  const details = document.getElementById('details');
+  function onScroll() {
+    const pastHero = hero.getBoundingClientRect().bottom < 0;
+    const r = details.getBoundingClientRect();
+    const onDetails = r.top < window.innerHeight && r.bottom > 0;
+    sticky.classList.toggle('show', pastHero && !onDetails);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>
